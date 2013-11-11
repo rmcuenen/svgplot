@@ -1,4 +1,4 @@
 svgplot
 =======
 
-SVG Plot module extension
+SVG Plot Module Extension
