@@ -40,4 +40,7 @@
   <welcome-file-list>
     <welcome-file>/svg/plots.html</welcome-file>
   </welcome-file-list>
+  <error-page>
+    <location>/svg/error.html</location>
+  </error-page>
 </web-app>

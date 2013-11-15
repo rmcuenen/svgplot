@@ -38,10 +38,17 @@
   <url>http://rmcuenen.github.io/svgplot</url>
   <build>
     <finalName>svgplot</finalName>
-    <resources>
-      <resource>
-        <directory>src/main/js</directory>
-      </resource>
-    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/js</directory>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
+    </plugins>
   </build>
 </project>
