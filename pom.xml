@@ -35,12 +35,33 @@
   <packaging>war</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>SVG Plot Module Extension</name>
-  <url>http://rmcuenen.github.io/svgplot</url>
+  <url>http://rmcuenen.github.io/svgplot/plots.html</url>
+  <dependencies>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.8.7</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+      <artifactId>selenium-java-client-driver</artifactId>
+      <version>1.0.2</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-server</artifactId>
+      <version>2.35.0</version>
+    </dependency> 
+  </dependencies>
   <build>
     <finalName>svgplot</finalName>
     <plugins>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <version>2.4</version>
         <configuration>
           <webResources>
             <resource>
