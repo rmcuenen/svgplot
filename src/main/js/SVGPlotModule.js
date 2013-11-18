@@ -32,7 +32,7 @@
     if (!(Object.prototype.toString.call(dependencies) === '[object Array]')) {
       throw "Invalid dependencies";
     }
-    if (callback !== undefined &&
+    if (callback != undefined &&
           !(Object.prototype.toString.call(callback) === '[object Function]')) {
       throw "Invalid callback";
     }
@@ -49,7 +49,7 @@
 
   Module.prototype = {
     addDependency: function(module) {
-      if (this.dependencies.indexOf(module) === -1) {
+      if (this.dependencies.indexOf(module) == -1) {
         this.dependencies.push(module);
       }
     },
@@ -77,13 +77,13 @@
   ModuleLoader.prototype = {
     defineModule: function(name, factory) {
       var module = this.waiting[name];
-      if (module !== undefined) {
+      if (module != undefined) {
         delete this.waiting[name];
         module.factory = factory;
-        if (module.injected !== "ARRIVED") {
+        if (module.injected != "ARRIVED") {
           for (var i = 0; i < factory.dependencies.length; ++i) {
             var moduleId = factory.dependencies[i];
-            if (moduleId.charAt(0) === '.') {
+            if (moduleId.charAt(0) == '.') {
               moduleId = this.resolveRelative(module, moduleId);
             }
             module.addDependency(this.getModule(moduleId));
@@ -105,7 +105,7 @@
       this.checkModules();
     },
     injectModule: function(module) {
-      if (module.executed !== undefined || module.injected !== undefined) {
+      if (module.executed != undefined || module.injected != undefined) {
         return;
       }
       module.injected = "REQUESTED";
@@ -117,7 +117,7 @@
     },
     getModule: function(moduleId) {
       var module = this.modules[moduleId];
-      if (module === undefined) {
+      if (module == undefined) {
         module = new Module(moduleId);
         this.modules[moduleId] = module;
       }
@@ -129,24 +129,24 @@
       }
     },
     executeModule: function(module) {
-      if (module.executed === "EXECUTING") {
+      if (module.executed == "EXECUTING") {
         return;
       }
-      if (module.executed === undefined) {
-        if (module.factory === undefined) {
+      if (module.executed == undefined) {
+        if (module.factory == undefined) {
           return;
         }
         module.executed = "EXECUTING";
         var args = [];
         for (var i = 0; i < module.dependencies.length; ++i) {
           var def = this.executeModule(module.dependencies[i]);
-          if (def === undefined) {
+          if (def == undefined) {
             delete module.executed;
             return;
           }
           args.push(def);
         }
-        if (module.factory !== undefined) {
+        if (module.factory != undefined) {
           module.exports = module.factory.callback.apply(window, args);
         }
         module.executed = "EXECUTED";
@@ -173,16 +173,16 @@
       var result = null;
       for (var i = path.length; i > 0; i--) {
         var s = path[i - 1];
-        if ("." === s) {
+        if ("." == s) {
           result = hierarchy[hIndex] + "/" + result;
-        } else if (".." === s ) {
+        } else if (".." == s ) {
           hIndex--;
           if (hIndex < 0) {
             break;
           }
           result = hierarchy[hIndex] + "/" + result;
         } else {
-          if (result === undefined) {
+          if (result == null) {
             result = s;
           } else {
             result = s + "/" + result;
@@ -213,15 +213,15 @@
     }
   };
 
-  if (node === undefined) {
+  if (node == undefined) {
     LOADER.base = "/";
   } else {
     var base = node.getAttribute("base");
-    if (base === undefined) {
+    if (base == undefined) {
       base = node.getAttributeNS(SVGModule.XLINK_NS, "href");
       base = base.slice(0, base.lastIndexOf('/'));
     }
-    if (base.charAt(base.length - 1) !== '/') {
+    if (base.charAt(base.length - 1) != '/') {
       base += '/';
     }
     LOADER.base = base;
