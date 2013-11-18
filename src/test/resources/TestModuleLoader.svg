@@ -1,4 +1,5 @@
-/*
+<?xml version="1.0" encoding="utf-8"?>
+<!--/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
  * The contents of this file are subject to the Common Development and Distribution
@@ -25,10 +26,16 @@
  * your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- */
-SVGModule.define("TestModule", [], function() {
-  var element = document.createElementNS(SVGModule.SVG_NS, "text");
-  element.setAttribute("id", "loaded-text");
-  element.appendChild(document.createTextNode("LOADED"));
-  return element;
-});
+ */-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink\">
+  <title>SVG Plot Module Loader Test</title>
+  <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" base="test" />
+  <script>
+    <![CDATA[
+      SVGModule.require(["TestModule"], function(element) {
+        document.documentElement.appendChild(element);
+      });
+    ]]>
+  </script>
+</svg>

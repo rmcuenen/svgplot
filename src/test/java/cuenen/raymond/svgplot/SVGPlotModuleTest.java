@@ -28,14 +28,10 @@
  */
 package cuenen.raymond.svgplot;
 
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.mortbay.jetty.Server;
-import org.mortbay.jetty.servlet.ServletHolder;
-import org.mortbay.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.webapp.WebAppContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -52,9 +48,10 @@ import org.testng.annotations.Test;
  *
  * @author R. M. Cuenen
  */
-public class SVGPlotModuleTest extends HttpServlet {
+public class SVGPlotModuleTest {
 
     private static final String CONTEXT = "/test";
+    private static final String LOADER_RESOURCE = "/TestModuleLoader.svg";
     private String baseResourceUrl;
     private Server server;
     private WebDriver driver;
@@ -62,11 +59,12 @@ public class SVGPlotModuleTest extends HttpServlet {
     @BeforeClass
     public void startServer() throws Exception {
         server = new Server(0);
-        WebAppContext context = new WebAppContext("src/test/resources", "/test-modules");
-        server.addHandler(context);
+        HandlerCollection handlers = new ContextHandlerCollection();
+        WebAppContext context = new WebAppContext("src/test/resources", CONTEXT);
+        handlers.addHandler(context);
         context = new WebAppContext("src/main/js", "/");
-        context.addServlet(new ServletHolder(this), CONTEXT);
-        server.addHandler(context);
+        handlers.addHandler(context);
+        server.setHandler(handlers);
         server.start();
         int actualPort = server.getConnectors()[0].getLocalPort();
         baseResourceUrl = "http://localhost:" + actualPort + CONTEXT;
@@ -76,24 +74,9 @@ public class SVGPlotModuleTest extends HttpServlet {
         driver = new RemoteWebDriver(dc);
     }
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String page = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-                + "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n"
-                + "  <title>SVG Plot test</title>\n"
-                + "  <script id=\"svgplot-loader\" xlink:href=\"/SVGPlotModule.js\" base=\"test-modules\" />\n"
-                + "  <script>\n"
-                + "    <![CDATA[\n"
-                + "      SVGModule.require([\"TestModule\"]);\n"
-                + "    ]]>\n"
-                + "  </script>\n"
-                + "</svg>";
-        resp.getWriter().write(page);
-    }
-
     @Test
-    public void testSVGPlotModule() {
-        driver.get(baseResourceUrl);
+    public void testSVGPlotModuleLoader() {
+        driver.get(baseResourceUrl + LOADER_RESOURCE);
         WebDriverWait wait = new WebDriverWait(driver, 10);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("loaded-text")));
     }
