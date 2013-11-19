@@ -28,9 +28,13 @@
  */
 package cuenen.raymond.svgplot;
 
+import java.net.InetAddress;
+import java.net.MalformedURLException;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.webapp.WebAppContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -48,7 +52,7 @@ import org.testng.annotations.Test;
  *
  * @author R. M. Cuenen
  */
-public class SVGPlotModuleTest {
+public class SVGPlotModuleTest extends ResourceHandler {
 
     private static final String CONTEXT = "/test";
     private static final String LOADER_RESOURCE = "/TestModuleLoader.svg";
@@ -59,15 +63,17 @@ public class SVGPlotModuleTest {
     @BeforeClass
     public void startServer() throws Exception {
         server = new Server(0);
-        HandlerCollection handlers = new ContextHandlerCollection();
-        WebAppContext context = new WebAppContext("src/test/resources", CONTEXT);
+        ContextHandlerCollection handlers = new ContextHandlerCollection();
+        WebAppContext context = new WebAppContext("src/main/js", "/");
         handlers.addHandler(context);
-        context = new WebAppContext("src/main/js", "/");
-        handlers.addHandler(context);
+        ContextHandler handler = new ContextHandler();
+        handler.setContextPath(CONTEXT);
+        handler.setHandler(this);
+        handlers.addHandler(handler);
         server.setHandler(handlers);
         server.start();
         int actualPort = server.getConnectors()[0].getLocalPort();
-        baseResourceUrl = "http://localhost:" + actualPort + CONTEXT;
+        baseResourceUrl = "http://" + InetAddress.getLocalHost().getHostName() + ":" + actualPort + CONTEXT;
         ChromeOptions options = new ChromeOptions();
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         dc.setCapability(ChromeOptions.CAPABILITY, options);
@@ -85,5 +91,10 @@ public class SVGPlotModuleTest {
     public void stopServer() throws Exception {
         driver.quit();
         server.stop();
+    }
+
+    @Override
+    public Resource getResource(String path) throws MalformedURLException {
+        return Resource.newClassPathResource(path.replace(CONTEXT, ""));
     }
 }
