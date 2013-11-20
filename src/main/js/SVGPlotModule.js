@@ -214,14 +214,14 @@
   };
 
   if (node == undefined) {
-    LOADER.base = "/";
+    LOADER.base = "";
   } else {
     var base = node.getAttribute("base");
     if (base == undefined) {
       base = node.getAttributeNS(SVGModule.XLINK_NS, "href");
-      base = base.slice(0, base.lastIndexOf('/'));
+      base = base.slice(0, base.lastIndexOf('/') + 1);
     }
-    if (base.charAt(base.length - 1) != '/') {
+    if (base.length > 0 && base.charAt(base.length - 1) != '/') {
       base += '/';
     }
     LOADER.base = base;

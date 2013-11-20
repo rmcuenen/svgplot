@@ -28,14 +28,6 @@
  */
 package cuenen.raymond.svgplot;
 
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -52,28 +44,17 @@ import org.testng.annotations.Test;
  *
  * @author R. M. Cuenen
  */
-public class SVGPlotModuleTest extends ResourceHandler {
+public class SVGPlotModuleTest {
 
+    private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";
-    private static final String LOADER_RESOURCE = "/TestModuleLoader.svg";
-    private String baseResourceUrl;
-    private Server server;
+    private static final String TEST_MODULE_ID = "loaded-text";
+    private static final String TEST_MODULE_LOADER_WITH_BASE = "/TestModuleLoaderWithBase.svg";
+    private static final String TEST_MODULE_LOADER_RELATIVE = "/TestModuleLoaderRelative.svg";
     private WebDriver driver;
 
     @BeforeClass
-    public void startServer() throws Exception {
-        server = new Server(0);
-        ContextHandlerCollection handlers = new ContextHandlerCollection();
-        WebAppContext context = new WebAppContext("src/main/js", "/");
-        handlers.addHandler(context);
-        ContextHandler handler = new ContextHandler();
-        handler.setContextPath(CONTEXT);
-        handler.setHandler(this);
-        handlers.addHandler(handler);
-        server.setHandler(handlers);
-        server.start();
-        int actualPort = server.getConnectors()[0].getLocalPort();
-        baseResourceUrl = "http://" + InetAddress.getLocalHost().getHostName() + ":" + actualPort + CONTEXT;
+    public void startSelenium() throws Exception {
         ChromeOptions options = new ChromeOptions();
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         dc.setCapability(ChromeOptions.CAPABILITY, options);
@@ -81,20 +62,20 @@ public class SVGPlotModuleTest extends ResourceHandler {
     }
 
     @Test
-    public void testSVGPlotModuleLoader() {
-        driver.get(baseResourceUrl + LOADER_RESOURCE);
+    public void testSVGPlotModuleLoaderWithBase() {
+        driver.get(BASE_URL + CONTEXT + TEST_MODULE_LOADER_WITH_BASE);
         WebDriverWait wait = new WebDriverWait(driver, 10);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("loaded-text")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
+    }
+
+    @Test
+    public void testSVGPlotModuleRelative() {
+        driver.get(BASE_URL + CONTEXT + TEST_MODULE_LOADER_RELATIVE);
+        //TODO
     }
 
     @AfterClass(alwaysRun = true)
-    public void stopServer() throws Exception {
+    public void stopSelenium() throws Exception {
         driver.quit();
-        server.stop();
-    }
-
-    @Override
-    public Resource getResource(String path) throws MalformedURLException {
-        return Resource.newClassPathResource(path.replace(CONTEXT, ""));
     }
 }
