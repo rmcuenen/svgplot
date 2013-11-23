@@ -36,6 +36,33 @@
     <version>1.0-SNAPSHOT</version>
     <name>SVG Plot Module Extension</name>
     <url>http://rmcuenen.github.io/svgplot/plots.html</url>
+    <licenses>
+        <license>
+            <name>Common Development and Distribution License 1.0</name>
+            <url>http://opensource.org/licenses/CDDL-1.0/</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:git:git@github.com:rmcuenen/svg.git</connection>
+        <developerConnection>scm:git:git@github.com:rmcuenen/svgplot.git</developerConnection>
+        <url>git@github.com:rmcuenen/svgplot.git</url>
+    </scm>
+    <developers>
+        <developer>
+            <id>rmcuenen</id>
+            <name>Raymond Cuenen</name>
+            <email>Raymond.Cuenen@gmail.com</email>
+            <roles>
+                <role>Software Architect</role>
+                <role>Software Engineer</role>
+            </roles>
+        </developer>
+    </developers>
+    <properties>
+        <jetty.version>9.1.0.v20131115</jetty.version>
+        <selenium.version>2.37.1</selenium.version>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.testng</groupId>
@@ -46,7 +73,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.37.1</version>
+            <version>${selenium.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -94,9 +121,40 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>selenium-maven-plugin</artifactId>
+                <version>2.4-SNAPSHOT</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.seleniumhq.selenium</groupId>
+                        <artifactId>selenium-server</artifactId>
+                        <version>${selenium.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start-server</goal>
+                        </goals>
+                        <configuration>
+                            <background>true</background>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop-server</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.eclipse.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
-                <version>9.1.0.v20131115</version>
+                <version>${jetty.version}</version>
                 <configuration>
                     <stopKey>stop</stopKey>
                     <stopPort>9999</stopPort>

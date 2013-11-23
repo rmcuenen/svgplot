@@ -30,9 +30,9 @@ package cuenen.raymond.svgplot;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
@@ -58,7 +58,7 @@ public class SVGPlotModuleTest {
         ChromeOptions options = new ChromeOptions();
         DesiredCapabilities dc = DesiredCapabilities.chrome();
         dc.setCapability(ChromeOptions.CAPABILITY, options);
-        driver = new RemoteWebDriver(dc);
+        driver = new ChromeDriver(dc);
     }
 
     @Test
@@ -71,7 +71,8 @@ public class SVGPlotModuleTest {
     @Test
     public void testSVGPlotModuleRelative() {
         driver.get(BASE_URL + CONTEXT + TEST_MODULE_LOADER_RELATIVE);
-        //TODO
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
 
     @AfterClass(alwaysRun = true)

@@ -1,7 +1,4 @@
-<!DOCTYPE web-app PUBLIC 
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd">
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--/*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -30,18 +27,15 @@
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
  */-->
-
-<web-app>
-  <icon>
-    <small-icon>small-icon.gif</small-icon>
-    <large-icon>large-icon.gif</large-icon>
-  </icon>
-  <display-name>SVG Plot Module Extension</display-name>
-  <welcome-file-list>
-    <welcome-file>/svg/plots.html</welcome-file>
-  </welcome-file-list>
-  <error-page>
-      <error-code>404</error-code>
-    <location>/error.html</location>
-  </error-page>
-</web-app>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>SVG Plot Module Loader Test</title>
+  <script xlink:href="/SVGPlotModule.js" />
+  <script>
+    <![CDATA[
+      SVGModule.require(["TestModule"], function(element) {
+        document.documentElement.appendChild(element);
+      });
+    ]]>
+  </script>
+</svg>
