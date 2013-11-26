@@ -27,8 +27,8 @@
  *
  */
 SVGModule.define("TestModule", [], function() {
-  var element = document.createElementNS(SVGModule.SVG_NS, "text");
-  element.setAttribute("id", "loaded-text");
-  element.appendChild(document.createTextNode("LOADED"));
-  return element;
+    var element = document.createElementNS(SVGModule.SVG_NS, "text");
+    element.setAttribute("id", "loaded-text");
+    element.appendChild(document.createTextNode("LOADED"));
+    return element;
 });
