@@ -29,18 +29,17 @@
 
 (function(node) {
     /**
-     * The ModuleFactory is responsible for creating a Module. Only one Module
-     * can be created by any one factory. However, the factory can specify which
-     * modules need to be resolved before the target Module can be created by means
-     * of dependencies. These depending modules are passed into the factory's
-     * creation method to provide access to those modules.
+     * The ModuleFactory is responsible for creating a {@link Module}.
+     * Only one {@link Module} can be created by any one factory.
+     * However, the factory can specify which modules need to be resolved before
+     * the target {@link Module} can be created by means of dependencies.
+     * These depending modules are passed into the factory's creation method to
+     * provide access to those modules.
      * 
-     * @argument {array} dependencies
-     *           The module identifiers the target Module depends on.
-     * @argument {function} callback
-     *           This method is invoked when the module dependencies (and their
-     *           dependencies) are resolved, at which point the factory is supposed
-     *           to create and return the Module.
+     * @constructor
+     * @param {String[]} dependencies The module identifiers the target module depends on.
+     * @param {function} callback     Callback method. This method is invoked when the
+     *                                requested modules (and their dependencies) are resolved.
      */
     function ModuleFactory(dependencies, callback) {
         if (!(Object.prototype.toString.call(dependencies) === '[object Array]')) {
@@ -50,23 +49,79 @@
                 !(Object.prototype.toString.call(callback) === '[object Function]')) {
             throw "Invalid callback";
         }
+        /**
+         * Module identifiers the target module depends on.
+         * @type String[]
+         */
         this.dependencies = dependencies;
+        /**
+         * Creation method. This method is invoked when the module dependencies
+         * (and their dependencies) are resolved, at which point the factory is
+         * supposed to create and return the module.
+         * @type function
+         */
         this.callback = callback;
     }
+
+    /**
+     * Status enumeration that indicates the module is requested (by another module),
+     * or its resources are resolved.
+     * @typedef {String} Status
+     * @readonly
+     * @enum {String}
+     * @property {String} REQUESTED The REQUESTED status indicates that the module is requested but not yet resolved.
+     * @property {String} ARRIVED   The ARRIVED status indicates that the module is resolved.
+     */
+
+    /**
+     * Process enumeration that indicates the (resolved) module is in the process
+     * of being defined, or its definition function has successfully executed.
+     * @typedef {String} Process
+     * @readonly
+     * @enum {String}
+     * @property {String} EXECUTING The EXECUTING status indicates that the module is in the process of being defined.
+     * @property {String} EXECUTED  The EXECUTED status indicates that the module's definition function has executed successfully.
+     */
 
     /**
      * The Module class holds all the information about a module. This class is
      * used during the loading process. It is not the module itself, but keeps track
      * of the module status (while being loaded), its definition function and its resources.
      * 
-     * @argument {string} moduleId
-     *           The module identifier.
+     * @constructor
+     * @param {String} moduleId The module identifier.
      */
     function Module(moduleId) {
+        /**
+         * List of dependencies.
+         * @type Module[]
+         */
         this.dependencies = [];
+        /**
+         * The module identifier.
+         * @type String
+         */
         this.moduleId = moduleId;
+        /**
+         * The root of this module resources.
+         * @type String
+         */
         this.file = moduleId + ".js";
+        /**
+         * The module name.
+         * @type String
+         */
         this.name = this.file.replace(/\.[^\.]+$/, "");
+        /**
+         * The resolve status.
+         * @type Status
+         * @name injected
+         */
+        /**
+         * The process status.
+         * @type Process
+         * @name executed
+         */
     }
 
     Module.prototype = {
@@ -74,8 +129,7 @@
          * Add the given Module as a dependency to this module. When the given
          * module is already a dependency of this module it is not added again.
          * 
-         * @argument {object} module
-         *           The dependency.
+         * @param {Module} module The dependency.
          */
         addDependency: function(module) {
             if (this.dependencies.indexOf(module) === -1) {
@@ -85,9 +139,8 @@
         /**
          * Modules are equal by their identifier.
          * 
-         * @argument {object} obj
-         *           The object to compare to this module.
-         * @return {boolean}
+         * @param {Object} obj The object to compare to this module.
+         * @returns {boolean}
          */
         equals: function(obj) {
             return this.moduleId === obj.moduleId;
@@ -95,7 +148,7 @@
         /**
          * Returns a string representation of the module.
          * 
-         * @return {string}
+         * @returns {String}
          */
         toString: function() {
             return JSON.stringify({
@@ -110,12 +163,24 @@
         }
     };
 
+    /**
+     * The ModuleLoader is the loader that will load the module's resources.
+     * Since this class implements the singleton pattern there is only one
+     * ModuleLoader at one time. Therefore the module store can be used globally
+     * so no module needs to be loaded twice.
+     */
     function ModuleLoader() {
         this.waiting = {};
         this.modules = {};
     }
 
     ModuleLoader.prototype = {
+        /**
+         * Start the definition process of the Module identified by the given class name.
+         * 
+         * @param {String}   name    The name of the defining {@link Module}.
+         * @param {function} factory The {@link ModuleFactory} providing the module's dependencies and definition function.
+         */
         defineModule: function(name, factory) {
             var module = this.waiting[name];
             if (typeof module !== undefined) {
