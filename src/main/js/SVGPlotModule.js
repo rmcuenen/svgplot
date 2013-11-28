@@ -84,9 +84,8 @@
      */
 
     /**
-     * The Module class holds all the information about a module. This class is
-     * used during the loading process. It is not the module itself, but keeps track
-     * of the module status (while being loaded), its definition function and its resources.
+     * Creates the Module instance with the given identifier. The module name and
+     * JavaScript file are determined from this identifier.
      * 
      * @constructor
      * @param {String} moduleId The module identifier.
@@ -97,33 +96,50 @@
          * @type Module[]
          */
         this.dependencies = [];
+
         /**
          * The module identifier.
          * @type String
          */
         this.moduleId = moduleId;
+
         /**
-         * The root of this module resources.
+         * The JavaScript file of this module.
          * @type String
          */
         this.file = moduleId + ".js";
+
         /**
          * The module name.
          * @type String
          */
         this.name = this.file.replace(/\.[^\.]+$/, "");
+
         /**
          * The resolve status.
          * @type Status
          * @name injected
          */
+
         /**
          * The process status.
          * @type Process
          * @name executed
          */
+
+        /**
+         * The module itself, made available by the execution of the definition function.
+         * @type Object
+         * @name exports
+         */
     }
 
+    /**
+     * @classdesc The Module class holds all the information about a module.
+     * This class is used during the loading process. It is not the module itself,
+     * but keeps track of the module status (while being loaded),its definition
+     * function and its resources.
+     */
     Module.prototype = {
         /**
          * Add the given Module as a dependency to this module. When the given
@@ -164,22 +180,37 @@
     };
 
     /**
-     * The ModuleLoader is the loader that will load the module's resources.
-     * Since this class implements the singleton pattern there is only one
-     * ModuleLoader at one time. Therefore the module store can be used globally
-     * so no module needs to be loaded twice.
+     * Private constructor (singleton pattern).
+     * 
+     * @constructor
+     * @private
      */
     function ModuleLoader() {
+        /**
+         * Map containing modules for which the module resource is being loaded.
+         * @type Object.<String, Module>
+         */
         this.waiting = {};
+
+        /**
+         * Map containing the created modules.
+         * @type Object.<String, Module>
+         */
         this.modules = {};
     }
 
+    /**
+     * @classdesc The ModuleLoader is the loader that will load the module's resources.
+     * Since this class implements the singleton pattern there is only one ModuleLoader
+     * at one time. Therefore the module store can be used globally so no module
+     * needs to be loaded twice.
+     */
     ModuleLoader.prototype = {
         /**
          * Start the definition process of the Module identified by the given class name.
          * 
-         * @param {String}   name    The name of the defining {@link Module}.
-         * @param {function} factory The {@link ModuleFactory} providing the module's dependencies and definition function.
+         * @param {String}        name    The name of the defining {@link Module}.
+         * @param {ModuleFactory} factory The {@link ModuleFactory} providing the module's dependencies and definition function.
          */
         defineModule: function(name, factory) {
             var module = this.waiting[name];
@@ -200,6 +231,11 @@
                 this.checkModules();
             }
         },
+        /**
+         * Start the request procedure.
+         * 
+         * @param {ModuleFactory} factory The {@link ModuleFactory} providing the requested module identifiers.
+         */
         requireModule: function(factory) {
             var module = this.getModule(uid());
             module.injected = "ARRIVED";
@@ -210,6 +246,12 @@
             this.injectDependencies(module);
             this.checkModules();
         },
+        /**
+         * Inject the resources of the given {@link Module}. This means the module's
+         * JavaScript file is added to the document to start the definition process.
+         * 
+         * @param {Module} module The {@link Module} which resources is to be loaded.
+         */
         injectModule: function(module) {
             if (module.executed || module.injected) {
                 return;
@@ -221,6 +263,12 @@
             var base = document.getElementsByTagName("script");
             document.documentElement.insertBefore(moduleClass, base[base.length - 1].nextSibling);
         },
+        /**
+         * Get a {@link Module} from the store, or create one if it does not exists.
+         * 
+         * @param {String} moduleId The module identifier.
+         * @returns {Module} The {@link Module} instance representing the requested module.
+         */
         getModule: function(moduleId) {
             var module = this.modules[moduleId];
             if (typeof module === 'undefined') {
@@ -229,11 +277,25 @@
             }
             return module;
         },
+        /**
+         * Inject the resources of the dependencies of the given module.
+         * 
+         * @private
+         * @see ModuleLoader#injectModule
+         * @param {Module} module The module to inject the dependencies for.
+         */
         injectDependencies: function(module) {
             for (var i = 0; i < module.dependencies.length; ++i) {
                 this.injectModule(module.dependencies[i]);
             }
         },
+        /**
+         * Execute the definition of the given module. First the definition of
+         * the dependencies is executed before the given module.
+         * 
+         * @private
+         * @param {Module} module The module to be defined.
+         */
         executeModule: function(module) {
             if (module.executed === "EXECUTING") {
                 return;
@@ -262,6 +324,9 @@
             }
             return module.exports;
         },
+        /**
+         * Check if requested modules need and can be executed.
+         */
         checkModules: function() {
             for (var moduleId in this.modules) {
                 if (this.modules.hasOwnProperty(moduleId)) {
@@ -269,6 +334,16 @@
                 }
             }
         },
+        /**
+         * This method resolves a relative identifier to an absolute identifier.
+         * Module identifiers in dependencies may be relative to the module that
+         * depends on them.
+         * 
+         * @private
+         * @param {Module} module The module having the module identifier as a dependency.
+         * @param {String} id The relative module identifier.
+         * @returns {String} The absolute module identifier.
+         */
         resolveRelative: function(module, id) {
             var hierarchy = module.moduleId.split("/");
             var hIndex = hierarchy.length - 2;
@@ -302,18 +377,84 @@
         }
     };
 
+    /**
+     * Pattern to identify dummy modules.
+     * @private
+     * @constant {Regex}
+     */
     var REQUIRE_ID = /^require\\*/;
+
+    /**
+     * Counter for dummy module identifiers.
+     * @private
+     * @static
+     * @type Number
+     */
     var _uid = 1;
+
+    /**
+     * Generate a module identifier. This identifier is used in the request process.
+     * 
+     * @function
+     * @private
+     * @static
+     * @returns {String} An unique, internal use, module identifier.
+     */
     function uid() {
         return "require*_" + _uid++;
     }
+
+    /**
+     * Reference to the singleton instance.
+     * 
+     * @private
+     * @static
+     * @type ModuleLoader
+     */
     var LOADER = new ModuleLoader();
+
+    /**
+     *  Utility object that provides the means to request and define modules.
+     *  
+     * @global
+     * @type Object
+     */
     var SVGModule = {
+        /**
+         * SVG namespace identifier.
+         * @type String
+         */
         SVG_NS: "http://www.w3.org/2000/svg",
+        /**
+         * XLINK namespace identifier.
+         * @type String
+         */
         XLINK_NS: "http://www.w3.org/1999/xlink",
+        /**
+         * This method is invoked to request one or more modules. This is usually
+         * done by the application during startup, but it is also possible to request
+         * modules within a module execution context. However, it is more common to 
+         * require a module as dependency rather then to request it upon execution.
+         * The request is asynchronous. That means that this method returns as soon
+         * as possible after it is invoked. When the requested module (and its dependencies)
+         * are resolved the callback method is invoked.
+         * 
+         * @static
+         * @param {String[]} dependencies The module identifiers being requested.
+         * @param {function} callback     Callback method.
+         */
         require: function(dependencies, callback) {
             LOADER.requireModule(new ModuleFactory(dependencies, callback));
         },
+        /**
+         * This method should be invoked from within a initialization block of the
+         * defining {@link Module}.
+         * 
+         * @static
+         * @param {String}   name
+         * @param {String[]} dependencies
+         * @param {function} callback
+         */
         define: function(name, dependencies, callback) {
             LOADER.defineModule(name, new ModuleFactory(dependencies, callback));
         }
