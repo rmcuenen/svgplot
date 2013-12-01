@@ -27,7 +27,7 @@
  *
  */
 
-(function(node) {    
+(function(node) {
     /**
      * @class The ModuleFactory is responsible for creating a {@link Module}.
      *        Only one {@link Module} can be created by any one factory.
@@ -35,11 +35,17 @@
      *        before the target {@link Module} can be created by means of dependencies.
      *        These depending modules are passed into the factory's creation method
      *        to provide access to those modules.
+     * @name ModuleFactory
      * @param {String[]} dependencies The module identifiers the target module depends on.
      * @param {function(...[Object])} callback Callback method. This method is invoked
      *        when therequested modules (and their dependencies) are resolved.
+     * @property {String[]} dependencies Module identifiers the target module depends on.
+     * @property {function(...[Object])} callback Creation method. This method is
+     *           invoked when the module dependencies (and their dependencies) are
+     *           resolved, at which point the factory is supposed to create and
+     *           return the module.
      */
-    ModuleFactory = function(dependencies, callback) {
+    function ModuleFactory(dependencies, callback) {
         if (!(Object.prototype.toString.call(dependencies) === '[object Array]')) {
             throw "Invalid dependencies";
         }
@@ -47,20 +53,10 @@
                 !(Object.prototype.toString.call(callback) === '[object Function]')) {
             throw "Invalid callback";
         }
-        /**
-         * Module identifiers the target module depends on.
-         * @type String[]
-         */
         this.dependencies = dependencies;
-        /**
-         * Creation method. This method is invoked when the module dependencies
-         * (and their dependencies) are resolved, at which point the factory is
-         * supposed to create and return the module.
-         * @type function(...[Object])
-         */
         this.callback = callback;
-    };
-    
+    }
+
     /**
      * Status enumeration that indicates the module is requested (by another module),
      * or its resources are resolved.
@@ -68,7 +64,7 @@
      * @readonly
      * @enum {String}
      */
-    Status = {
+    var Status = {
         /**
          * The REQUESTED status indicates that the module is requested but not
          * yet resolved.
@@ -79,7 +75,7 @@
          */
         ARRIVED: "ARRIVED"
     };
-    
+
     /**
      * Process enumeration that indicates the (resolved) module is in the process
      * of being defined, or its definition function has successfully executed.
@@ -87,7 +83,7 @@
      * @readonly
      * @enum {String} 
      */
-    Process = {
+    var Process = {
         /**
          * The EXECUTING status indicates that the module is in the process of
          * being defined.
@@ -99,7 +95,7 @@
          */
         EXECUTED: "EXECUTED"
     };
-    
+
     /**
      * Creates the Module instance with the given identifier. The module name and
      * JavaScript file are determined from this identifier.
@@ -108,44 +104,29 @@
      *        This class is used during the loading process. It is not the module
      *        itself, but keeps track of the module status (while being loaded),
      *        its definition function and its resources.
+     * @name Module
      * @param {String} moduleId The module identifier.
+     * @property {Module[]} dependencies List of dependencies.
+     * @property {String} moduleId The module identifier.
+     * @property {String} file The JavaScript file of this module.
+     * @property {String} name The module name.
      * @property {Status} injected The resolve status.
      * @property {Process} executed The process status.
      * @property {Object} exports The module itself, made available by the execution
      *           of the definition function.
      * @property {ModuleFactory} factory The definition function.
      */
-    Module = function(moduleId) {
-        /**
-         * List of dependencies.
-         * @type Module[]
-         */
+    function Module(moduleId) {
         this.dependencies = [];
-        
-        /**
-         * The module identifier.
-         * @type String
-         */
         this.moduleId = moduleId;
-        
-        /**
-         * The JavaScript file of this module.
-         * @type String
-         */
         this.file = moduleId + ".js";
-        
-        /**
-         * The module name.
-         * @type String
-         */
         this.name = this.file.replace(/\.[^\.]+$/, "");
-    };
-    
-    Module.prototype =
+    }
+
     /**
      * @lends Module#
      */
-    {
+    Module.prototype = {
         /**
          * Add the given Module as a dependency to this module. When the given
          * module is already a dependency of this module it is not added again.
@@ -183,7 +164,7 @@
             });
         }
     };
-    
+
     /**
      * Private constructor (singleton pattern).
      * 
@@ -191,27 +172,21 @@
      *        Since this class implements the singleton pattern there is only one
      *        ModuleLoader at one time. Therefore the module store can be used
      *        globally so no module needs to be loaded twice.
+     * @name ModuleLoader
      * @property {String} base The base URL for loading modules.
+     * @property {Object.<String, Module>} waiting Map containing modules for which
+     *           the module resource is being loaded.
+     * @property {Object.<String, Module>} modules Map containing the created modules.
      */
-    ModuleLoader = function() {
-        /**
-         * Map containing modules for which the module resource is being loaded.
-         * @type Object.<String, Module>
-         */
+    function ModuleLoader() {
         this.waiting = {};
-        
-        /**
-         * Map containing the created modules.
-         * @type Object.<String, Module>
-         */
         this.modules = {};
-    };
-    
-    ModuleLoader.prototype =
+    }
+
     /**
      * @lends ModuleLoader#
      */
-    {
+    ModuleLoader.prototype = {
         /**
          * Start the definition process of the Module identified by the given class name.
          * 
@@ -381,40 +356,42 @@
             return result;
         }
     };
-    
+
     /**
      * Pattern to identify dummy modules.
      * 
-     * @constant {Regex}
+     * @constant
+     * @type Regex
      */
-    REQUIRE_ID = /^require\\*/;
-    
+    var REQUIRE_ID = /^require\\*/;
+
     /**
      * Counter for dummy module identifiers.
      * 
      * @static
-     * @type {Number}
+     * @type Number
      */
-    _uid = 1;
-    
+    var _uid = 1;
+
     /**
      * Generate a module identifier. This identifier is used in the request process.
      * 
      * @static
      * @returns {String} An unique, internal use, module identifier.
      */
-    uid = function() {
+    function uid() {
         return "require*_" + _uid++;
-    };
-    
+    }
+    ;
+
     /**
      * Reference to the singleton instance.
      * 
      * @static
-     * @type {ModuleLoader}
+     * @type ModuleLoader
      */
-    LOADER = new ModuleLoader();
-    
+    var LOADER = new ModuleLoader();
+
     /**
      * Utility object that provides the means to request and define modules.
      * 
@@ -424,13 +401,13 @@
         /**
          * SVG namespace identifier.
          * 
-         * @type {String}
+         * @type String
          */
         SVG_NS: "http://www.w3.org/2000/svg",
         /**
          * XLINK namespace identifier.
          * 
-         * @type {String}
+         * @type String
          */
         XLINK_NS: "http://www.w3.org/1999/xlink",
         /**
@@ -460,7 +437,7 @@
             LOADER.defineModule(name, new ModuleFactory(dependencies, callback));
         }
     };
-    
+
     if (node === null) {
         LOADER.base = "";
     } else {
@@ -474,8 +451,7 @@
         }
         LOADER.base = base;
     }
-    
-    window.SVGModule = SVGModule;
+
     window.onerror = function(msg, url, line) {
         alert(msg + "\n\n" + url + " (" + line + ")");
         return false;
