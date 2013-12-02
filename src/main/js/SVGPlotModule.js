@@ -279,19 +279,19 @@
          */
         executeModule: function(module) {
             if (module.executed === Process.EXECUTING) {
-                return;
+                return null;
             }
             if (typeof module.executed === 'undefined') {
                 if (typeof module.factory === 'undefined') {
-                    return;
+                    return null;
                 }
                 module.executed = Process.EXECUTING;
                 var args = [];
                 for (var i = 0; i < module.dependencies.length; ++i) {
                     var def = this.executeModule(module.dependencies[i]);
-                    if (typeof def === 'undefined') {
+                    if (def === null) {
                         delete module.executed;
-                        return;
+                        return null;
                     }
                     args.push(def);
                 }

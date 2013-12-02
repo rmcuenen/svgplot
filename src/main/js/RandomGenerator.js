@@ -32,7 +32,7 @@ SVGModule.define(
         [],
         function() {
             /**
-             * The Euclidean algorithm to determine the greatest common dividor
+             * The Euclidean algorithm to determine the greatest common divisor
              * (GCD) between two natural numbers.
              * 
              * @param {Number} a The first natural number.
