@@ -29,13 +29,6 @@
 */-->
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>SVG Plot Module Loader Test</title>
-    <script xlink:href="/SVGPlotModule.js" />
-    <script>
-    <![CDATA[
-      SVGModule.require(["TestModule"], function(element) {
-        document.documentElement.appendChild(element);
-      });
-    ]]>
-    </script>
+    <title>SVG Plot Module Extension Test</title>
+    <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" base="/test" />
 </svg>

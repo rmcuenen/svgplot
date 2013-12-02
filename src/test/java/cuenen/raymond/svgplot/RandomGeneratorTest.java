@@ -28,33 +28,28 @@
  */
 package cuenen.raymond.svgplot;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Wait;
+import java.util.List;
 import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 /**
- * Test class for testing {@code SVGPlotModule.js}.
+ * Test class for testing {@code RandomGenerator.js}.
  *
  * @author R. M. Cuenen
  */
-public class SVGPlotModuleTest extends AbstractTestClass {
+public class RandomGeneratorTest extends AbstractTestClass {
 
-    private static final String TEST_MODULE_NAME = "TestModule";
-    private static final String TEST_MODULE_CALLBACK = "function(element) { document.documentElement.appendChild(element); }";
-    private static final String TEST_MODULE_ID = "loaded-text";
-
-    @Test
-    public void testSVGPlotModuleLoaderWithBase() {
-        Wait wait = load(MODULE_LOADER_WITH_BASE, 10);
-        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
-    }
+    private static final String MODULE_NAME = "../RandomGenerator";
+    private static final String FUNCTION_FORMAT = "function(RNG) { var d; %s for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } return d; }";
+    private static final Object[] RANGE_TEST = {"d = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];",
+        "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r)"};
 
     @Test
-    public void testSVGPlotModuleRelative() {
-        Wait wait = load(MODULE_LOADER_RELATIVE, 10);
-        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
+    public void rangeTest() {
+        load(MODULE_LOADER_WITH_BASE, 1);
+        String rangeTestCallback = String.format(FUNCTION_FORMAT, RANGE_TEST);
+        List<Object> range = (List<Object>) require(rangeTestCallback, MODULE_NAME);
+        assertEquals((Double) range.get(0), 0D, 0.01);
+        assertEquals((Double) range.get(1), 1D, 0.01);
     }
 }
