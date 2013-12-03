@@ -120,7 +120,7 @@
         this.dependencies = [];
         this.moduleId = moduleId;
         this.file = moduleId + ".js";
-        this.name = this.file.replace(/\.[^\.]+$/, "");
+        this.name = this.moduleId.replace(/^.*\//, "");
     }
 
     /**
@@ -196,7 +196,7 @@
          */
         defineModule: function(name, factory) {
             var module = this.waiting[name];
-            if (typeof module !== undefined) {
+            if (typeof module !== 'undefined') {
                 delete this.waiting[name];
                 module.factory = factory;
                 if (module.injected !== Status.ARRIVED) {

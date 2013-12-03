@@ -40,6 +40,8 @@ import org.testng.annotations.Test;
  */
 public class SVGPlotModuleTest extends AbstractTestClass {
 
+    private static final String MODULE_LOADER_WITH_BASE = "/ModuleLoaderWithBase.svg";
+    private static final String MODULE_LOADER_RELATIVE = "/ModuleLoaderRelative.svg";
     private static final String TEST_MODULE_NAME = "TestModule";
     private static final String TEST_MODULE_CALLBACK = "function(element) { document.documentElement.appendChild(element); }";
     private static final String TEST_MODULE_ID = "loaded-text";

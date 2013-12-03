@@ -39,17 +39,17 @@ import static org.testng.Assert.*;
  */
 public class RandomGeneratorTest extends AbstractTestClass {
 
-    private static final String MODULE_NAME = "../RandomGenerator";
-    private static final String FUNCTION_FORMAT = "function(RNG) { var d; %s for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } return d; }";
-    private static final Object[] RANGE_TEST = {"d = [Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY];",
-        "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r)"};
+    private static final String MODULE_NAME = "RandomGenerator";
+    private static final String FUNCTION_FORMAT = "function(RNG) { var d = %s; for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } alert(d); return d; }";
+    private static final Object[] RANGE_TEST = {"[Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]",
+        "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r);"};
 
     @Test
     public void rangeTest() {
-        load(MODULE_LOADER_WITH_BASE, 1);
+        load(MODULE_LOADER, 1);
         String rangeTestCallback = String.format(FUNCTION_FORMAT, RANGE_TEST);
         List<Object> range = (List<Object>) require(rangeTestCallback, MODULE_NAME);
-        assertEquals((Double) range.get(0), 0D, 0.01);
-        assertEquals((Double) range.get(1), 1D, 0.01);
+        assertEquals((Double) range.get(0), 0D, 1E-6);
+        assertEquals((Double) range.get(1), 1D, 1E-6);
     }
 }

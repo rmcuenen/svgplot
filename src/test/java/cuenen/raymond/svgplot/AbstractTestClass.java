@@ -45,8 +45,7 @@ import org.testng.annotations.BeforeClass;
  */
 public abstract class AbstractTestClass {
 
-    public static final String MODULE_LOADER_WITH_BASE = "/ModuleLoaderWithBase.svg";
-    public static final String MODULE_LOADER_RELATIVE = "/ModuleLoaderRelative.svg";
+    public static final String MODULE_LOADER = "/ModuleLoader.svg";
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";
 
