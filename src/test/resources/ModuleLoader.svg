@@ -31,4 +31,13 @@
      xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>SVG Plot Module Extension Test</title>
     <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" />
+    <script>
+    <![CDATA[
+        function setResult(result) {
+            var placeholder = document.getElementById("placeholder");
+            placeholder.setAttribute("result", result);
+        }
+    ]]>
+    </script>
+    <text id="placeholder" x="100" y="100">Result Placeholder</text>
 </svg>

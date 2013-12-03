@@ -28,7 +28,6 @@
  */
 package cuenen.raymond.svgplot;
 
-import java.util.List;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -39,17 +38,54 @@ import static org.testng.Assert.*;
  */
 public class RandomGeneratorTest extends AbstractTestClass {
 
+    private static final double DIVIATION = Math.sqrt(3) / 3000D;
     private static final String MODULE_NAME = "RandomGenerator";
-    private static final String FUNCTION_FORMAT = "function(RNG) { var d = %s; for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } alert(d); return d; }";
+    private static final String FUNCTION_FORMAT = "function(RNG) { var d = %s; for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } %s setResult(d); }";
     private static final Object[] RANGE_TEST = {"[Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]",
-        "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r);"};
+        "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r);", ""};
+    private static final Object[] MEAN_TEST = {"0", "d += r;", "d /= 1e6;"};
+    private static final Object[] VARIANCE_TEST = {"0; var m = 0; var s = []", "s.push(r); m += r;",
+        "m /= 1e6; for (var i = 0; i < 1e6; i++) { d += (s[i] - m) * (s[i] - m); } d /= (1e6 - 1);"};
 
     @Test
     public void rangeTest() {
         load(MODULE_LOADER, 1);
         String rangeTestCallback = String.format(FUNCTION_FORMAT, RANGE_TEST);
-        List<Object> range = (List<Object>) require(rangeTestCallback, MODULE_NAME);
-        assertEquals((Double) range.get(0), 0D, 1E-6);
-        assertEquals((Double) range.get(1), 1D, 1E-6);
+        require(rangeTestCallback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        String[] range = result.split(",");
+        assertEquals(Double.parseDouble(range[0]), 0D, DIVIATION);
+        assertEquals(Double.parseDouble(range[1]), 1D, DIVIATION);
+    }
+
+    @Test
+    public void meanTest() {
+        load(MODULE_LOADER, 1);
+        String meanTestCallback = String.format(FUNCTION_FORMAT, MEAN_TEST);
+        require(meanTestCallback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        assertEquals(Double.parseDouble(result), 0.5, DIVIATION);
+    }
+
+    @Test
+    public void varianceTest() {
+        load(MODULE_LOADER, 1);
+        String varianceTestCallback = String.format(FUNCTION_FORMAT, VARIANCE_TEST);
+        require(varianceTestCallback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        assertEquals(Double.parseDouble(result), 1D / 12D, DIVIATION);
+    }
+
+    @Test
+    public void bucketTest() {
+        //TODO
+    }
+
+    @Test
+    public void ksTest() {
+        //TODO
     }
 }

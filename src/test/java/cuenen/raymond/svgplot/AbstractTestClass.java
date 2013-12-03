@@ -28,8 +28,10 @@
  */
 package cuenen.raymond.svgplot;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -46,6 +48,8 @@ import org.testng.annotations.BeforeClass;
 public abstract class AbstractTestClass {
 
     public static final String MODULE_LOADER = "/ModuleLoader.svg";
+    private static final String PLACEHOLDER_ID = "placeholder";
+    private static final String RESULT_ATTRIBUTE = "result";
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";
 
@@ -71,12 +75,21 @@ public abstract class AbstractTestClass {
         return new WebDriverWait(driver, timeout);
     }
 
-    protected Object require(String callback, String... modules) {
+    protected void require(String callback, String... modules) {
         StringBuilder script = new StringBuilder();
         script.append("SVGModule.require(");
         script.append(toString(modules)).append(',');
         script.append(callback).append(");");
-        return js.executeScript(script.toString());
+        js.executeScript(script.toString());
+    }
+
+    protected String getResult() {
+        WebElement placeholder = getElementById(PLACEHOLDER_ID);
+        return placeholder.getAttribute(RESULT_ATTRIBUTE);
+    }
+
+    protected WebElement getElementById(String id) {
+        return driver.findElement(By.id(id));
     }
 
     private static String toString(String[] a) {
