@@ -38,7 +38,6 @@ import static org.testng.Assert.*;
  */
 public class RandomGeneratorTest extends AbstractTestClass {
 
-    private static final double DIVIATION = Math.sqrt(3) / 3000D;
     private static final String MODULE_NAME = "RandomGenerator";
     private static final String FUNCTION_FORMAT = "function(RNG) { var d = %s; for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } %s setResult(d); }";
     private static final Object[] RANGE_TEST = {"[Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]",
@@ -46,6 +45,9 @@ public class RandomGeneratorTest extends AbstractTestClass {
     private static final Object[] MEAN_TEST = {"0", "d += r;", "d /= 1e6;"};
     private static final Object[] VARIANCE_TEST = {"0; var m = 0; var s = []", "s.push(r); m += r;",
         "m /= 1e6; for (var i = 0; i < 1e6; i++) { d += (s[i] - m) * (s[i] - m); } d /= (1e6 - 1);"};
+    private static final Object[] BUCKET_TEST = {"0; b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
+        "b[Math.floor(r * 1e4)]++;",
+        "d = b.reduce(function(t, o) { return t + ((o - 100) * (o - 100) / 100); }, 0);"};
 
     @Test
     public void rangeTest() {
@@ -55,8 +57,8 @@ public class RandomGeneratorTest extends AbstractTestClass {
         String result = getResult();
         assertNotNull(result);
         String[] range = result.split(",");
-        assertEquals(Double.parseDouble(range[0]), 0D, DIVIATION);
-        assertEquals(Double.parseDouble(range[1]), 1D, DIVIATION);
+        assertEquals(Double.parseDouble(range[0]), 0D, 1E-5);
+        assertEquals(Double.parseDouble(range[1]), 1D, 1E-5);
     }
 
     @Test
@@ -66,7 +68,7 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(meanTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
-        assertEquals(Double.parseDouble(result), 0.5, DIVIATION);
+        assertEquals(Double.parseDouble(result), 0.5, Math.sqrt(3) / 3000D);
     }
 
     @Test
@@ -76,12 +78,17 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(varianceTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
-        assertEquals(Double.parseDouble(result), 1D / 12D, DIVIATION);
+        assertEquals(Double.parseDouble(result), 1D / 12D, Math.sqrt(222222D) / 3999996D);
     }
 
     @Test
     public void bucketTest() {
-        //TODO
+        load(MODULE_LOADER, 1);
+        String bucketTestCallback = String.format(FUNCTION_FORMAT, BUCKET_TEST);
+        require(bucketTestCallback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        assertEquals(Double.parseDouble(result), 1E4 - 1D, Math.sqrt(2E4 - 2D));
     }
 
     @Test
