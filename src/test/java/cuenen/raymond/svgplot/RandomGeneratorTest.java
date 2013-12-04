@@ -49,6 +49,10 @@ public class RandomGeneratorTest extends AbstractTestClass {
         "b[Math.floor(r * 1e4)]++;",
         "d = b.reduce(function(t, o) { return t + ((o - 100) * (o - 100) / 100); }, 0);"};
 
+    /**
+     * If a probability distribution has a limited range, the simplest thing to
+     * test is whether the output values fall in that range.
+     */
     @Test
     public void rangeTest() {
         load(MODULE_LOADER, 1);
@@ -57,10 +61,26 @@ public class RandomGeneratorTest extends AbstractTestClass {
         String result = getResult();
         assertNotNull(result);
         String[] range = result.split(",");
+        /* Verify the range [0, 1). */
         assertEquals(Double.parseDouble(range[0]), 0D, 1E-5);
         assertEquals(Double.parseDouble(range[1]), 1D, 1E-5);
     }
 
+    /**
+     * One of the most obvious things to do to test a random number generator is
+     * to average a large number of values to see whether the average is close
+     * to the theoretical value.
+     * <p>
+     * The central limit theorem says if we average enough values, any
+     * distribution acts like a normal distribution. We can test whether the
+     * average falls between two or three standard deviations of what we expect.
+     * <p>
+     * In summary, the way to test samples from a random number generator with
+     * mean &mu; and standard deviation &sigma; is to average n values for some
+     * large value of n. Then look for the average to be between &mu; − 2&sigma;/&radic;n
+     * and &mu; + 2&sigma;/&radic;n around 95% of the time, or between
+     * &mu; − 3&sigma;/&radic;n and &mu; + 3&sigma;/&radic;n around 99.7% of the time.
+     */
     @Test
     public void meanTest() {
         load(MODULE_LOADER, 1);
@@ -68,9 +88,26 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(meanTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
-        assertEquals(Double.parseDouble(result), 0.5, Math.sqrt(3) / 3000D);
+        /* The standard uniform distribution has mean 1/2 and variance 1/12. */
+        double expectedAVG = 0.5;
+        double expectedSTD = Math.sqrt(1D / 12D) / 1000D;
+        assertEquals(Double.parseDouble(result), expectedAVG, 2D * expectedSTD);
     }
 
+    /**
+     * Just as the mean test compares the mean of the samples to the mean of the
+     * distribution, the variance test compares the variance of the samples to
+     * the variance of the distribution.
+     * <p>
+     * As with testing the mean, we can test whether the sample variance falls
+     * between two or three standard deviations of what we expect.
+     * <p>
+     * Suppose we compute the sample variance of some large number of outputs
+     * from an RNG. The outputs are random, so the sample variance is also
+     * random. Let S&sup2; be the sample variance based on n values from the
+     * RNG. If n is very large, then S&sup2; approximately has a normal
+     * distribution with mean &sigma;&sup2; and variance 2&sigma;&#x2074;/(n−1).
+     */
     @Test
     public void varianceTest() {
         load(MODULE_LOADER, 1);
@@ -78,9 +115,35 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(varianceTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
-        assertEquals(Double.parseDouble(result), 1D / 12D, Math.sqrt(222222D) / 3999996D);
+        /* The standard uniform distribution has variance 1/12. */
+        double expectedVAR = 1D / 12D;
+        double expectedSTD = Math.sqrt(2D * expectedVAR * expectedVAR / (1E6 - 1D));
+        assertEquals(Double.parseDouble(result), expectedVAR, 2D * expectedSTD);
     }
 
+    /**
+     * Suppose the RNG passes both the mean and the variance test. That gives you
+     * some confidence that the code generates samples from <i>some</i> distribution
+     * with the right mean and variance, but it’s still possible the samples are
+     * coming from an entirely wrong distribution.
+     * <p>
+     * You could count how many values fall into various "buckets," or ranges of
+     * values. (What we call "the bucket test" here is commonly known as the chi-square
+     * (&Chi;&sup2;) test.)
+     * <p>
+     * Here’s how to do a bucket test. Divide your output range into k buckets.
+     * The buckets should cover the entire range of the output and not overlap.
+     * Let E&#x2097; be the expected number of samples for the lth bucket, and let
+     * O&#x2097; be the number of samples you actually observe. Then, compute the
+     * chi-square statistic: &Chi;&sup2; = &sum; (O&#x2097; - E&#x2097;)&sup2; / E&#x2097;.
+     * <p>
+     * If we have b buckets, the statistic &Chi;&sup2; has a chi-square distribution
+     * with b−1 degrees of freedom. For large b, a chi-square distribution with b−1
+     * degrees of freedom has approximately the same distribution as a normal distribution
+     * with mean b−1 and variance 2b−2. Then we can use the same rules as before
+     * regarding how often a normal random variable is within two or three standard
+     * deviations of its mean.
+     */
     @Test
     public void bucketTest() {
         load(MODULE_LOADER, 1);
@@ -88,7 +151,9 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(bucketTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
-        assertEquals(Double.parseDouble(result), 1E4 - 1D, Math.sqrt(2E4 - 2D));
+        double expectedMEAN = 1E4 - 1D;
+        double expectedSTD = Math.sqrt(2E4 - 2D);
+        assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD);
     }
 
     @Test
