@@ -45,9 +45,12 @@ public class RandomGeneratorTest extends AbstractTestClass {
     private static final Object[] MEAN_TEST = {"0", "d += r;", "d /= 1e6;"};
     private static final Object[] VARIANCE_TEST = {"0; var m = 0; var s = []", "s.push(r); m += r;",
         "m /= 1e6; for (var i = 0; i < 1e6; i++) { d += (s[i] - m) * (s[i] - m); } d /= (1e6 - 1);"};
-    private static final Object[] BUCKET_TEST = {"0; b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
+    private static final Object[] BUCKET_TEST = {"0; var b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
         "b[Math.floor(r * 1e4)]++;",
         "d = b.reduce(function(t, o) { return t + ((o - 100) * (o - 100) / 100); }, 0);"};
+    private static final Object[] KS_TEST = {"0; var k = [0, 0]; b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
+        "b[Math.floor(r * 1e4)]++;",
+        "b.reduce(function(t, o, i) { k[0] = Math.max(k[0], t - i / 1e4); k[1] = Math.max(k[1], i / 1e4 - t); return t += o / 1e6; }, 0); d = 1000 * Math.max(k[0], k[1]);"};
 
     /**
      * If a probability distribution has a limited range, the simplest thing to
@@ -77,9 +80,10 @@ public class RandomGeneratorTest extends AbstractTestClass {
      * <p>
      * In summary, the way to test samples from a random number generator with
      * mean &mu; and standard deviation &sigma; is to average n values for some
-     * large value of n. Then look for the average to be between &mu; − 2&sigma;/&radic;n
-     * and &mu; + 2&sigma;/&radic;n around 95% of the time, or between
-     * &mu; − 3&sigma;/&radic;n and &mu; + 3&sigma;/&radic;n around 99.7% of the time.
+     * large value of n. Then look for the average to be between &mu; −
+     * 2&sigma;/&radic;n and &mu; + 2&sigma;/&radic;n around 95% of the time, or
+     * between &mu; − 3&sigma;/&radic;n and &mu; + 3&sigma;/&radic;n around
+     * 99.7% of the time.
      */
     @Test
     public void meanTest() {
@@ -122,27 +126,28 @@ public class RandomGeneratorTest extends AbstractTestClass {
     }
 
     /**
-     * Suppose the RNG passes both the mean and the variance test. That gives you
-     * some confidence that the code generates samples from <i>some</i> distribution
-     * with the right mean and variance, but it’s still possible the samples are
-     * coming from an entirely wrong distribution.
+     * Suppose the RNG passes both the mean and the variance test. That gives
+     * you some confidence that the code generates samples from <i>some</i>
+     * distribution with the right mean and variance, but it’s still possible
+     * the samples are coming from an entirely wrong distribution.
      * <p>
      * You could count how many values fall into various "buckets," or ranges of
-     * values. (What we call "the bucket test" here is commonly known as the chi-square
-     * (&Chi;&sup2;) test.)
+     * values. (What we call "the bucket test" here is commonly known as the
+     * chi-square (&Chi;&sup2;) test.)
      * <p>
      * Here’s how to do a bucket test. Divide your output range into k buckets.
      * The buckets should cover the entire range of the output and not overlap.
-     * Let E&#x2097; be the expected number of samples for the lth bucket, and let
-     * O&#x2097; be the number of samples you actually observe. Then, compute the
-     * chi-square statistic: &Chi;&sup2; = &sum; (O&#x2097; - E&#x2097;)&sup2; / E&#x2097;.
+     * Let E&#x2097; be the expected number of samples for the lth bucket, and
+     * let O&#x2097; be the number of samples you actually observe. Then,
+     * compute the chi-square statistic: &Chi;&sup2; = &sum; (O&#x2097; -
+     * E&#x2097;)&sup2; / E&#x2097;.
      * <p>
-     * If we have b buckets, the statistic &Chi;&sup2; has a chi-square distribution
-     * with b−1 degrees of freedom. For large b, a chi-square distribution with b−1
-     * degrees of freedom has approximately the same distribution as a normal distribution
-     * with mean b−1 and variance 2b−2. Then we can use the same rules as before
-     * regarding how often a normal random variable is within two or three standard
-     * deviations of its mean.
+     * If we have b buckets, the statistic &Chi;&sup2; has a chi-square
+     * distribution with b−1 degrees of freedom. For large b, a chi-square
+     * distribution with b−1 degrees of freedom has approximately the same
+     * distribution as a normal distribution with mean b−1 and variance 2b−2.
+     * Then we can use the same rules as before regarding how often a normal
+     * random variable is within two or three standard deviations of its mean.
      */
     @Test
     public void bucketTest() {
@@ -158,6 +163,13 @@ public class RandomGeneratorTest extends AbstractTestClass {
 
     @Test
     public void ksTest() {
-        //TODO
+        load(MODULE_LOADER, 1);
+        String ksTestCallback = String.format(FUNCTION_FORMAT, KS_TEST);
+        require(ksTestCallback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        double expected = 0.794145;
+        double delta = 0.723255;
+        assertEquals(Double.parseDouble(result), expected, delta);
     }
 }
