@@ -36,9 +36,9 @@ import static org.testng.Assert.*;
  *
  * @author R. M. Cuenen
  */
-public class RandomGeneratorTest extends AbstractTestClass {
+public class RandomNumberGeneratorTest extends AbstractTestClass {
 
-    private static final String MODULE_NAME = "RandomGenerator";
+    private static final String MODULE_NAME = "RandomNumberGenerator";
     private static final String FUNCTION_FORMAT = "function(RNG) { var d = %s; for (var i = 0; i < 1e6; i++) { var r = RNG.random(); %s } %s setResult(d); }";
     private static final Object[] RANGE_TEST = {"[Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]",
         "d[0] = Math.min(d[0], r); d[1] = Math.max(d[1], r);", ""};
@@ -48,13 +48,16 @@ public class RandomGeneratorTest extends AbstractTestClass {
     private static final Object[] BUCKET_TEST = {"0; var b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
         "b[Math.floor(r * 1e4)]++;",
         "d = b.reduce(function(t, o) { return t + ((o - 100) * (o - 100) / 100); }, 0);"};
-    private static final Object[] KS_TEST = {"0; var k = [0, 0]; b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
+    private static final Object[] KS_TEST = {"0; var b = Array.apply(null, new Array(1e4)).map(Number.prototype.valueOf, 0);",
         "b[Math.floor(r * 1e4)]++;",
-        "b.reduce(function(t, o, i) { k[0] = Math.max(k[0], t - i / 1e4); k[1] = Math.max(k[1], i / 1e4 - t); return t += o / 1e6; }, 0); d = 1000 * Math.max(k[0], k[1]);"};
+        "b.reduce(function(t, o, i) { d = Math.max(d, Math.abs(t - i / 1e4)); return t += o / 1e6; }, 0); d *= 1000;"};
 
     /**
      * If a probability distribution has a limited range, the simplest thing to
-     * test is whether the output values fall in that range.
+     * test is whether the output values fall in that range. There is one aspect
+     * of output ranges that cannot be tested effectively by black-box testing:
+     * boundary values. It may be impractical to test whether the endpoints of
+     * intervals are included.
      */
     @Test
     public void rangeTest() {
@@ -131,7 +134,7 @@ public class RandomGeneratorTest extends AbstractTestClass {
      * distribution with the right mean and variance, but it’s still possible
      * the samples are coming from an entirely wrong distribution.
      * <p>
-     * You could count how many values fall into various "buckets," or ranges of
+     * You could count how many values fall into various "buckets", or ranges of
      * values. (What we call "the bucket test" here is commonly known as the
      * chi-square (&Chi;&sup2;) test.)
      * <p>
@@ -156,11 +159,35 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(bucketTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
+        /* We test with 10^4 buckets. */
         double expectedMEAN = 1E4 - 1D;
         double expectedSTD = Math.sqrt(2E4 - 2D);
         assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD);
     }
 
+    /**
+     * One shortcoming of the bucket test is that it is "chunky". It is possible
+     * that a random number generator puts approximately the expected number of
+     * samples in each bucket and yet the samples are not properly distributed
+     * within the buckets. We would like a more fine-grained test of how the
+     * random samples are distributed.
+     * <p>
+     * We will compare the empirical distribution function with the theoretical
+     * distribution function. The empirical distribution is defined as:
+     * F&#x2099;(x) = (the number of x&#x2097; values &le; x) / n and the
+     * theoretical distribution function F(x) is the theoretical probability of
+     * the RNG returning a value no greater than x. We want to look at the
+     * differences between F(x) and F&#x2099;(x). In short, we want to do a
+     * direct comparison of the theoretical and empirical distribution of
+     * values. This is the idea behind the Kolmogorov-Smirnov (K-S) test.
+     * <p>
+     * With the previous tests, we appealed to the central limit theorem to
+     * reduce our problem to a normal distribution. That’s not going to work
+     * here. We’re going to pull a rabbit out of the hat and give range values
+     * without saying where they came from. For large n, we expect the maximum
+     * absolute difference to be between 0.07089 and 1.5174 around 98% of the
+     * time.
+     */
     @Test
     public void ksTest() {
         load(MODULE_LOADER, 1);
@@ -168,6 +195,7 @@ public class RandomGeneratorTest extends AbstractTestClass {
         require(ksTestCallback, MODULE_NAME);
         String result = getResult();
         assertNotNull(result);
+        /* Midpoint and delta of the range [0.07089, 1.5174]. */
         double expected = 0.794145;
         double delta = 0.723255;
         assertEquals(Double.parseDouble(result), expected, delta);

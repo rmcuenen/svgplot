@@ -28,7 +28,7 @@
  */
 
 SVGModule.define(
-        "RandomGenerator",
+        "RandomNumberGenerator",
         [],
         function() {
             /**
