@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 /**
- * Test class for testing {@code RandomGenerator.js}.
+ * Test class for testing {@code RandomNumberGenerator.js}.
  *
  * @author R. M. Cuenen
  */
