@@ -36,8 +36,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <title>Plots – SVG Plot Module Extension</title>
         <link rel="shortcut icon" type="image/gif" href="fav-icon.gif" />
-        <link rel="stylesheet" type="text/css" media="screen" href="http://www.w3.org/TR/SVG/style/svg-style.css" />
-        <link rel="stylesheet" href="http://www.w3.org/StyleSheets/TR/W3C-REC" type="text/css" media="screen" />
+        <link rel="stylesheet" type="text/css" media="screen"
+              href="http://www.w3.org/TR/SVG/style/svg-style.css" />
+        <link rel="stylesheet" type="text/css" media="screen"
+              href="http://www.w3.org/StyleSheets/TR/W3C-REC" />
         <style type="text/css">
             body {
                 background-image: none;
@@ -46,57 +48,59 @@
     </head>
     <body>
         <div class="header top">
-            <span class="namedate">SVG Plot Module Extension - 6 December 2013</span> ⋅ 
+            <span class="namedate">SVG Plot Module Extension - 7 December 2013</span>⋅ 
         </div>
         <h1>1 Plots</h1>
-
         <h2 id="toc">Contents</h2>
         <ul class="toc">
-            <li>
-                <a href="#Introduction">1.1 Introduction</a>
-            </li>
-            <li>
-                <a href="#PlotElement">1.2 The <span class="element-name">‘plot’</span> element</a>
-            </li>
-            <li>
-                <a href="#PlotData">1.3 Plot data</a>
+            <li><a href="#Introduction">1.1 Introduction</a></li>
+            <li><a href="#PlotElement">1.2 The <span class="element-name">‘plot’</span> element</a></li>
+            <li><a href="#PlotData">1.3 Plot data</a>
                 <ul class="toc">
-                    <li>
-                        <a href="#PlotDataGeneralInformation">1.3.1 General information about plot data</a>
-                    </li>
-                    <li>
-                        <a href="#PlotDataMathematicalOperators">1.3.2 The mathematical operators</a>
-                    </li>
-                    <li>
-                        <a href="#PlotDataMathematicalFunctions">1.3.3 The mathematical functions</a>
-                    </li>
-                    <li>
-                        <a href="#PlotDataBNF">1.3.4 The grammar for plot data</a>
-                    </li>
+                    <li><a href="#PlotDataGeneralInformation">1.3.1 General information about plot data</a></li>
+                    <li><a href="#PlotDataMathematicalOperators">1.3.2 The mathematical operators</a></li>
+                    <li><a href="#PlotDataMathematicalFunctions">1.3.3 The mathematical functions</a></li>
+                    <li><a href="#PlotDataBNF">1.3.4 The grammar for plot data</a></li>
                 </ul>
             </li>
-            <li>
-                <a href="#LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</a>
-            </li>
+            <li><a href="#LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</a></li>
         </ul>
-
         <h2 id="Introduction">1.1 Introduction</h2>
         <p>
-            The <a href="#PlotElement"><span class="element-name">‘plot’</span></a> path operation can be used to append a line or curve to the path that goes through a large number of coordinates.
-            The coordinates of the plot data are computed by evaluating a mathematical expression. Since the SVG Plot Module Extension comes with a mathematical engine, you can specify this expression and then have the desired coordinates produced for you, automatically.<br/>
-            Since this case is quite common when plotting a function, the syntax is easy: Following the <a href="#PlotElement"><span class="element-name">‘plot’</span></a> element and its attributes, you directly provide a &#12296;<i>coordinate expression</i>&#12297;.
-            It looks like a normal coordinate, but inside you may use a special macro, which is <em>#x</em> by default, but this can be changed using the <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a> attribute. The &#12296;<i>coordinate expression</i>&#12297; is then evaluated for different values for <em>#x</em> and the resulting coordinates are plotted.
+            The <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            path operation can be used to append a line or curve to the path that
+            goes through a large number of coordinates. <br/>
+            The coordinates of the plot data are computed by evaluating a mathematical
+            expression. <br/>
+            Since the SVG Plot Module Extension comes with a mathematical engine,
+            you can specify this expression and then have the desired coordinates
+            produced for you, automatically.<br/>
+            Since this case is quite common when plotting a function, the syntax
+            is easy: Following the <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            element and its attributes, you directly provide a
+            &#12296;<i>coordinate expression</i>&#12297;.<br/>
+            It looks like a normal coordinate, but inside you may use a special 
+            macro, which is <em>#x</em> by default, but this can be changed using
+            the <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a>
+            attribute. <br/>
+            The &#12296;<i>coordinate expression</i>&#12297; is then evaluated for
+            different values for <em>#x</em> and the resulting coordinates are plotted.
         </p>
         <p>
-            The SVG Plot Module Extension (conceptually) uses a two-stage process for generating plots.
-            First, a <i>plot stream</i> must be produced.
-            This stream consists (more or less) of a large number of coordinates.
-            Second a <i>plot handler</i> is applied to the stream.
-            The plot handler "does something" with the stream.
-            The handler will issue <a href="http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands">line-to</a> commands to the coordinates in the stream by default.
-            However, using the <a href="#ConnectedAttribute"><span class="attr-name">‘connected’</span></a> attribute, the handler can also issue appropriate <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">curve-to</a> commands in order to smooth the curve.
+            The SVG Plot Module Extension (conceptually) uses a two-stage process
+            for generating plots. <br/>
+            First, a <i>plot stream</i> must be produced. This stream consists
+            (more or less) of a large number of coordinates. <br/>
+            Second a <i>plot handler</i> is applied to the stream. The plot handler
+            "does something" with the stream. <br/>
+            The handler will issue
+            <a href="http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands">line-to</a>
+            commands to the coordinates in the stream by default. However, using
+            the <a href="#ConnectedAttribute"><span class="attr-name">‘connected’</span></a>
+            attribute, the handler can also issue appropriate
+            <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">curve-to</a>
+            commands in order to smooth the curve.
         </p>
-
         <h2 id="PlotElement">1.2 The <span class="element-name">‘plot’</span> element</h2>
         <div class="element-summary">
             <div class="element-summary-name">
@@ -104,22 +108,29 @@
             </div>
             <dl>
                 <dt>Categories:</dt>
-                <dd><a href="http://www.w3.org/TR/SVG/intro.html#TermGraphicsElement">Graphics element</a>, <a href="http://www.w3.org/TR/SVG/intro.html#TermShapeElement">shape element</a></dd>
+                <dd>
+                    <a href="http://www.w3.org/TR/SVG/intro.html#TermGraphicsElement">Graphics element</a>,
+                    <a href="http://www.w3.org/TR/SVG/intro.html#TermShapeElement">shape element</a>
+                </dd>
                 <dt>Content model:</dt>
                 <dd>Any number of the following elements, in any order:
                     <ul class="no-bullets">
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermAnimationElement">animation elements</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/animate.html#AnimateElement"><span class="element-name">‘animate’</span></a>, <a href="http://www.w3.org/TR/SVG/animate.html#AnimateColorElement"><span class="element-name">‘animateColor’</span></a>, <a href="http://www.w3.org/TR/SVG/animate.html#AnimateMotionElement"><span class="element-name">‘animateMotion’</span></a>, <a href="http://www.w3.org/TR/SVG/animate.html#AnimateTransformElement"><span class="element-name">‘animateTransform’</span></a>, <a href="http://www.w3.org/TR/SVG/animate.html#SetElement"><span class="element-name">‘set’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/animate.html#AnimateElement"><span class="element-name">‘animate’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/animate.html#AnimateColorElement"><span class="element-name">‘animateColor’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/animate.html#AnimateMotionElement"><span class="element-name">‘animateMotion’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/animate.html#AnimateTransformElement"><span class="element-name">‘animateTransform’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/animate.html#SetElement"><span class="element-name">‘set’</span></a>
                             </span>
                         </li>
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermDescriptiveElement">descriptive elements</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/struct.html#DescElement"><span class="element-name">‘desc’</span></a>, <a href="http://www.w3.org/TR/SVG/metadata.html#MetadataElement"><span class="element-name">‘metadata’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#TitleElement"><span class="element-name">‘title’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/struct.html#DescElement"><span class="element-name">‘desc’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/metadata.html#MetadataElement"><span class="element-name">‘metadata’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#TitleElement"><span class="element-name">‘title’</span></a>
                             </span>
                         </li>
                     </ul>
@@ -129,126 +140,181 @@
                     <ul class="no-bullets">
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermConditionalProcessingAttribute">conditional processing attributes</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/struct.html#RequiredFeaturesAttribute"><span class="attr-name">‘requiredFeatures’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#RequiredExtensionsAttribute"><span class="attr-name">‘requiredExtensions’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#SystemLanguageAttribute"><span class="attr-name">‘systemLanguage’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/struct.html#RequiredFeaturesAttribute"><span class="attr-name">‘requiredFeatures’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#RequiredExtensionsAttribute"><span class="attr-name">‘requiredExtensions’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#SystemLanguageAttribute"><span class="attr-name">‘systemLanguage’</span></a>
                             </span>
                         </li>
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermCoreAttributes">core attributes</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/struct.html#IDAttribute"><span class="attr-name">‘id’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#XMLBaseAttribute"><span class="attr-name">‘xml:base’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#XMLLangAttribute"><span class="attr-name">‘xml:lang’</span></a>, <a href="http://www.w3.org/TR/SVG/struct.html#XMLSpaceAttribute"><span class="attr-name">‘xml:space’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/struct.html#IDAttribute"><span class="attr-name">‘id’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#XMLBaseAttribute"><span class="attr-name">‘xml:base’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#XMLLangAttribute"><span class="attr-name">‘xml:lang’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/struct.html#XMLSpaceAttribute"><span class="attr-name">‘xml:space’</span></a>
                             </span>
                         </li>
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermGraphicalEventAttribute">graphical event attributes</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/script.html#OnFocusInEventAttribute"><span class="attr-name">‘onfocusin’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnFocusOutEventAttribute"><span class="attr-name">‘onfocusout’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnActivateEventAttribute"><span class="attr-name">‘onactivate’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnClickEventAttribute"><span class="attr-name">‘onclick’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnMouseDownEventAttribute"><span class="attr-name">‘onmousedown’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnMouseUpEventAttribute"><span class="attr-name">‘onmouseup’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnMouseOverEventAttribute"><span class="attr-name">‘onmouseover’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnMouseMoveEventAttribute"><span class="attr-name">‘onmousemove’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnMouseOutEventAttribute"><span class="attr-name">‘onmouseout’</span></a>, <a href="http://www.w3.org/TR/SVG/script.html#OnLoadEventAttribute"><span class="attr-name">‘onload’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnFocusInEventAttribute"><span class="attr-name">‘onfocusin’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnFocusOutEventAttribute"><span class="attr-name">‘onfocusout’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnActivateEventAttribute"><span class="attr-name">‘onactivate’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnClickEventAttribute"><span class="attr-name">‘onclick’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnMouseDownEventAttribute"><span class="attr-name">‘onmousedown’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnMouseUpEventAttribute"><span class="attr-name">‘onmouseup’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnMouseOverEventAttribute"><span class="attr-name">‘onmouseover’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnMouseMoveEventAttribute"><span class="attr-name">‘onmousemove’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnMouseOutEventAttribute"><span class="attr-name">‘onmouseout’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/script.html#OnLoadEventAttribute"><span class="attr-name">‘onload’</span></a>
                             </span>
                         </li>
                         <li>
                             <a href="http://www.w3.org/TR/SVG/intro.html#TermPresentationAttribute">presentation attributes</a>
-                            <span class="expanding">
-                                <span> <span class="expander" onclick="expand(event.target)"></span></span>
-                                <span style="display: none;"> — <a href="http://www.w3.org/TR/SVG/text.html#AlignmentBaselineProperty"><span class="attr-name" title="Presentation attribute for property ‘alignment-baseline’">‘alignment-baseline’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#BaselineShiftProperty"><span class="attr-name" title="Presentation attribute for property ‘baseline-shift’">‘baseline-shift’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#ClipProperty"><span class="attr-name" title="Presentation attribute for property ‘clip’">‘clip’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#ClipPathProperty"><span class="attr-name" title="Presentation attribute for property ‘clip-path’">‘clip-path’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#ClipRuleProperty"><span class="attr-name" title="Presentation attribute for property ‘clip-rule’">‘clip-rule’</span></a>, <a href="http://www.w3.org/TR/SVG/color.html#ColorProperty"><span class="attr-name" title="Presentation attribute for property ‘color’">‘color’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#ColorInterpolationProperty"><span class="attr-name" title="Presentation attribute for property ‘color-interpolation’">‘color-interpolation’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#ColorInterpolationFiltersProperty"><span class="attr-name" title="Presentation attribute for property ‘color-interpolation-filters’">‘color-interpolation-filters’</span></a>, <a href="http://www.w3.org/TR/SVG/color.html#ColorProfileProperty"><span class="attr-name" title="Presentation attribute for property ‘color-profile’">‘color-profile’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#ColorRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘color-rendering’">‘color-rendering’</span></a>, <a href="http://www.w3.org/TR/SVG/interact.html#CursorProperty"><span class="attr-name" title="Presentation attribute for property ‘cursor’">‘cursor’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#DirectionProperty"><span class="attr-name" title="Presentation attribute for property ‘direction’">‘direction’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#DisplayProperty"><span class="attr-name" title="Presentation attribute for property ‘display’">‘display’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#DominantBaselineProperty"><span class="attr-name" title="Presentation attribute for property ‘dominant-baseline’">‘dominant-baseline’</span></a>, <a href="http://www.w3.org/TR/SVG/filters.html#EnableBackgroundProperty"><span class="attr-name" title="Presentation attribute for property ‘enable-background’">‘enable-background’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#FillProperty"><span class="attr-name" title="Presentation attribute for property ‘fill’">‘fill’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#FillOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘fill-opacity’">‘fill-opacity’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#FillRuleProperty"><span class="attr-name" title="Presentation attribute for property ‘fill-rule’">‘fill-rule’</span></a>, <a href="http://www.w3.org/TR/SVG/filters.html#FilterProperty"><span class="attr-name" title="Presentation attribute for property ‘filter’">‘filter’</span></a>, <a href="http://www.w3.org/TR/SVG/filters.html#FloodColorProperty"><span class="attr-name" title="Presentation attribute for property ‘flood-color’">‘flood-color’</span></a>, <a href="http://www.w3.org/TR/SVG/filters.html#FloodOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘flood-opacity’">‘flood-opacity’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontFamilyProperty"><span class="attr-name" title="Presentation attribute for property ‘font-family’">‘font-family’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontSizeProperty"><span class="attr-name" title="Presentation attribute for property ‘font-size’">‘font-size’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontSizeAdjustProperty"><span class="attr-name" title="Presentation attribute for property ‘font-size-adjust’">‘font-size-adjust’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontStretchProperty"><span class="attr-name" title="Presentation attribute for property ‘font-stretch’">‘font-stretch’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontStyleProperty"><span class="attr-name" title="Presentation attribute for property ‘font-style’">‘font-style’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontVariantProperty"><span class="attr-name" title="Presentation attribute for property ‘font-variant’">‘font-variant’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#FontWeightProperty"><span class="attr-name" title="Presentation attribute for property ‘font-weight’">‘font-weight’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#GlyphOrientationHorizontalProperty"><span class="attr-name" title="Presentation attribute for property ‘glyph-orientation-horizontal’">‘glyph-orientation-horizontal’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#GlyphOrientationVerticalProperty"><span class="attr-name" title="Presentation attribute for property ‘glyph-orientation-vertical’">‘glyph-orientation-vertical’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#ImageRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘image-rendering’">‘image-rendering’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#KerningProperty"><span class="attr-name" title="Presentation attribute for property ‘kerning’">‘kerning’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#LetterSpacingProperty"><span class="attr-name" title="Presentation attribute for property ‘letter-spacing’">‘letter-spacing’</span></a>, <a href="http://www.w3.org/TR/SVG/filters.html#LightingColorProperty"><span class="attr-name" title="Presentation attribute for property ‘lighting-color’">‘lighting-color’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#MarkerEndProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-end’">‘marker-end’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#MarkerMidProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-mid’">‘marker-mid’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#MarkerStartProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-start’">‘marker-start’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#MaskProperty"><span class="attr-name" title="Presentation attribute for property ‘mask’">‘mask’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#OpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘opacity’">‘opacity’</span></a>, <a href="http://www.w3.org/TR/SVG/masking.html#OverflowProperty"><span class="attr-name" title="Presentation attribute for property ‘overflow’">‘overflow’</span></a>, <a href="http://www.w3.org/TR/SVG/interact.html#PointerEventsProperty"><span class="attr-name" title="Presentation attribute for property ‘pointer-events’">‘pointer-events’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#ShapeRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘shape-rendering’">‘shape-rendering’</span></a>, <a href="http://www.w3.org/TR/SVG/pservers.html#StopColorProperty"><span class="attr-name" title="Presentation attribute for property ‘stop-color’">‘stop-color’</span></a>, <a href="http://www.w3.org/TR/SVG/pservers.html#StopOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘stop-opacity’">‘stop-opacity’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke’">‘stroke’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-dasharray’">‘stroke-dasharray’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDashoffsetProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-dashoffset’">‘stroke-dashoffset’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeLinecapProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-linecap’">‘stroke-linecap’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeLinejoinProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-linejoin’">‘stroke-linejoin’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-miterlimit’">‘stroke-miterlimit’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-opacity’">‘stroke-opacity’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-width’">‘stroke-width’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#TextAnchorProperty"><span class="attr-name" title="Presentation attribute for property ‘text-anchor’">‘text-anchor’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#TextDecorationProperty"><span class="attr-name" title="Presentation attribute for property ‘text-decoration’">‘text-decoration’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#TextRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘text-rendering’">‘text-rendering’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#UnicodeBidiProperty"><span class="attr-name" title="Presentation attribute for property ‘unicode-bidi’">‘unicode-bidi’</span></a>, <a href="http://www.w3.org/TR/SVG/painting.html#VisibilityProperty"><span class="attr-name" title="Presentation attribute for property ‘visibility’">‘visibility’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#WordSpacingProperty"><span class="attr-name" title="Presentation attribute for property ‘word-spacing’">‘word-spacing’</span></a>, <a href="http://www.w3.org/TR/SVG/text.html#WritingModeProperty"><span class="attr-name" title="Presentation attribute for property ‘writing-mode’">‘writing-mode’</span></a></span>
+                            <span class="expanding"> —
+                                <a href="http://www.w3.org/TR/SVG/text.html#AlignmentBaselineProperty"><span class="attr-name" title="Presentation attribute for property ‘alignment-baseline’">‘alignment-baseline’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#BaselineShiftProperty"><span class="attr-name" title="Presentation attribute for property ‘baseline-shift’">‘baseline-shift’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#ClipProperty"><span class="attr-name" title="Presentation attribute for property ‘clip’">‘clip’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#ClipPathProperty"><span class="attr-name" title="Presentation attribute for property ‘clip-path’">‘clip-path’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#ClipRuleProperty"><span class="attr-name" title="Presentation attribute for property ‘clip-rule’">‘clip-rule’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/color.html#ColorProperty"><span class="attr-name" title="Presentation attribute for property ‘color’">‘color’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#ColorInterpolationProperty"><span class="attr-name" title="Presentation attribute for property ‘color-interpolation’">‘color-interpolation’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#ColorInterpolationFiltersProperty"><span class="attr-name" title="Presentation attribute for property ‘color-interpolation-filters’">‘color-interpolation-filters’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/color.html#ColorProfileProperty"><span class="attr-name" title="Presentation attribute for property ‘color-profile’">‘color-profile’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#ColorRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘color-rendering’">‘color-rendering’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/interact.html#CursorProperty"><span class="attr-name" title="Presentation attribute for property ‘cursor’">‘cursor’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#DirectionProperty"><span class="attr-name" title="Presentation attribute for property ‘direction’">‘direction’</span></a>
+                                <a href="http://www.w3.org/TR/SVG/painting.html#DisplayProperty"><span class="attr-name" title="Presentation attribute for property ‘display’">‘display’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#DominantBaselineProperty"><span class="attr-name" title="Presentation attribute for property ‘dominant-baseline’">‘dominant-baseline’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/filters.html#EnableBackgroundProperty"><span class="attr-name" title="Presentation attribute for property ‘enable-background’">‘enable-background’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#FillProperty"><span class="attr-name" title="Presentation attribute for property ‘fill’">‘fill’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#FillOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘fill-opacity’">‘fill-opacity’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#FillRuleProperty"><span class="attr-name" title="Presentation attribute for property ‘fill-rule’">‘fill-rule’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/filters.html#FilterProperty"><span class="attr-name" title="Presentation attribute for property ‘filter’">‘filter’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/filters.html#FloodColorProperty"><span class="attr-name" title="Presentation attribute for property ‘flood-color’">‘flood-color’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/filters.html#FloodOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘flood-opacity’">‘flood-opacity’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontFamilyProperty"><span class="attr-name" title="Presentation attribute for property ‘font-family’">‘font-family’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontSizeProperty"><span class="attr-name" title="Presentation attribute for property ‘font-size’">‘font-size’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontSizeAdjustProperty"><span class="attr-name" title="Presentation attribute for property ‘font-size-adjust’">‘font-size-adjust’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontStretchProperty"><span class="attr-name" title="Presentation attribute for property ‘font-stretch’">‘font-stretch’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontStyleProperty"><span class="attr-name" title="Presentation attribute for property ‘font-style’">‘font-style’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontVariantProperty"><span class="attr-name" title="Presentation attribute for property ‘font-variant’">‘font-variant’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#FontWeightProperty"><span class="attr-name" title="Presentation attribute for property ‘font-weight’">‘font-weight’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#GlyphOrientationHorizontalProperty"><span class="attr-name" title="Presentation attribute for property ‘glyph-orientation-horizontal’">‘glyph-orientation-horizontal’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#GlyphOrientationVerticalProperty"><span class="attr-name" title="Presentation attribute for property ‘glyph-orientation-vertical’">‘glyph-orientation-vertical’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#ImageRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘image-rendering’">‘image-rendering’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#KerningProperty"><span class="attr-name" title="Presentation attribute for property ‘kerning’">‘kerning’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#LetterSpacingProperty"><span class="attr-name" title="Presentation attribute for property ‘letter-spacing’">‘letter-spacing’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/filters.html#LightingColorProperty"><span class="attr-name" title="Presentation attribute for property ‘lighting-color’">‘lighting-color’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#MarkerEndProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-end’">‘marker-end’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#MarkerMidProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-mid’">‘marker-mid’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#MarkerStartProperty"><span class="attr-name" title="Presentation attribute for property ‘marker-start’">‘marker-start’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#MaskProperty"><span class="attr-name" title="Presentation attribute for property ‘mask’">‘mask’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#OpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘opacity’">‘opacity’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/masking.html#OverflowProperty"><span class="attr-name" title="Presentation attribute for property ‘overflow’">‘overflow’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/interact.html#PointerEventsProperty"><span class="attr-name" title="Presentation attribute for property ‘pointer-events’">‘pointer-events’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#ShapeRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘shape-rendering’">‘shape-rendering’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/pservers.html#StopColorProperty"><span class="attr-name" title="Presentation attribute for property ‘stop-color’">‘stop-color’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/pservers.html#StopOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘stop-opacity’">‘stop-opacity’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke’">‘stroke’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDasharrayProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-dasharray’">‘stroke-dasharray’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeDashoffsetProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-dashoffset’">‘stroke-dashoffset’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeLinecapProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-linecap’">‘stroke-linecap’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeLinejoinProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-linejoin’">‘stroke-linejoin’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeMiterlimitProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-miterlimit’">‘stroke-miterlimit’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeOpacityProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-opacity’">‘stroke-opacity’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#StrokeWidthProperty"><span class="attr-name" title="Presentation attribute for property ‘stroke-width’">‘stroke-width’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#TextAnchorProperty"><span class="attr-name" title="Presentation attribute for property ‘text-anchor’">‘text-anchor’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#TextDecorationProperty"><span class="attr-name" title="Presentation attribute for property ‘text-decoration’">‘text-decoration’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#TextRenderingProperty"><span class="attr-name" title="Presentation attribute for property ‘text-rendering’">‘text-rendering’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#UnicodeBidiProperty"><span class="attr-name" title="Presentation attribute for property ‘unicode-bidi’">‘unicode-bidi’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/painting.html#VisibilityProperty"><span class="attr-name" title="Presentation attribute for property ‘visibility’">‘visibility’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#WordSpacingProperty"><span class="attr-name" title="Presentation attribute for property ‘word-spacing’">‘word-spacing’</span></a>,
+                                <a href="http://www.w3.org/TR/SVG/text.html#WritingModeProperty"><span class="attr-name" title="Presentation attribute for property ‘writing-mode’">‘writing-mode’</span></a>
                             </span>
                         </li>
-                        <li>
-                            <a href="http://www.w3.org/TR/SVG/styling.html#ClassAttribute"><span class="attr-name">‘class’</span></a>
-                        </li>
-                        <li>
-                            <a href="http://www.w3.org/TR/SVG/styling.html#StyleAttribute"><span class="attr-name">‘style’</span></a>
-                        </li>
-                        <li>
-                            <a href="http://www.w3.org/TR/SVG/coords.html#TransformAttribute"><span class="attr-name">‘transform’</span></a>
-                        </li>
-                        <li>
-                            <a href="#DomainAttribute"><span class="attr-name">‘domain’</span></a>
-                        </li>
-                        <li>
-                            <a href="#SamplesAttribute"><span class="attr-name">‘samples’</span></a>
-                        </li>
-                        <li>
-                            <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a>
-                        </li>
-                        <li>
-                            <a href="#ConnectedAttribute"><span class="attr-name">‘connected’</span></a>
-                        </li>
-                        <li>
-                            <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a>
-                        </li>
+                        <li><a href="http://www.w3.org/TR/SVG/styling.html#ClassAttribute"><span class="attr-name">‘class’</span></a></li>
+                        <li><a href="http://www.w3.org/TR/SVG/styling.html#StyleAttribute"><span class="attr-name">‘style’</span></a></li>
+                        <li><a href="http://www.w3.org/TR/SVG/coords.html#TransformAttribute"><span class="attr-name">‘transform’</span></a></li>
+                        <li><a href="#DomainAttribute"><span class="attr-name">‘domain’</span></a></li>
+                        <li><a href="#SamplesAttribute"><span class="attr-name">‘samples’</span></a></li>
+                        <li><a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a></li>
+                        <li><a href="#ConnectedAttribute"><span class="attr-name">‘connected’</span></a></li>
+                        <li><a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a></li>
                     </ul>
                 </dd>
             </dl>
         </div>
-
         <div class="adef-list">
-            <p>
-                <em>Attribute definitions:</em>
-            </p>
+            <p><em>Attribute definitions:</em></p>
             <dl>
-                <dt id="DomainAttribute">
-                    <span class="adef">domain</span> = "&lt;min-value&gt; : &lt;max-value&gt;"
-                </dt>
+                <dt id="DomainAttribute"><span class="adef">domain</span> = "&lt;min-value&gt; : &lt;max-value&gt;"</dt>
                 <dd>
-                    TBS.
-                    If the attribute is not specified, the effect is as a value of <span class="attr-value">'-5:5'</span> were specified.
+                    Sets the domain between which the samples are taken. <br/>
+                    For both <span class="attr-value">&lt;min-value&gt;</span> and
+                    <span class="attr-value">&lt;max-value&gt;</span> an <i>expression</i>
+                    is allowed, but the use of an <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a>
+                    is not allowed. In other words, the expression should evaluate
+                    to a numerical value. <br/>
+                    If the attribute is not specified, the effect is as a value
+                    of <span class="attr-value">'-5:5'</span> were specified.
                 </dd>
-                <dt id="SamplesAttribute">
-                    <span class="adef">samples</span> = "<a href="http://www.w3.org/TR/SVG/types.html#Integer">&lt;integer&gt;</a>"
-                </dt>
+                <dt id="SamplesAttribute"><span class="adef">samples</span> = "<a href="http://www.w3.org/TR/SVG/types.html#Integer">&lt;integer&gt;</a>"</dt>
                 <dd>
-                    TBS.
-                    If the attribute is not specified, the effect is as a value of <span class="attr-value">'25'</span> were specified.
+                    Sets the number of samples used in the plot. <br/>
+                    If the attribute is not specified, the effect is as a value
+                    of <span class="attr-value">'25'</span> were specified.
                 </dd>
-                <dt id="VariableAttribute">
-                    <span class="adef">variable</span> = "&lt;string&gt;"
-                </dt>
+                <dt id="VariableAttribute"><span class="adef">variable</span> = "&lt;string&gt;"</dt>
                 <dd>
-                    Sets the macro whose value is set to the different values when the &#12296;<i>coordinate expression</i>&#12297;, as defined by the <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a> attribute, is evaluated. <br/>
-                    The <em>#</em>-character is optional when specifying the variable, but it is mandatory when using the variable. <br/>
-                    If the attribute is not specified, the effect is as a value of <span class="attr-value">'#x'</span> were specified.
+                    Sets the macro whose value is set to the different values when
+                    the &#12296;<i>coordinate expression</i>&#12297;, as defined
+                    by the <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a>
+                    attribute, is evaluated. <br/>
+                    The <em>#</em>-character is optional when specifying the variable,
+                    but it is mandatory when using the variable. <br/>
+                    If the attribute is not specified, the effect is as a value
+                    of <span class="attr-value">'#x'</span> were specified.
                 </dd>
-                <dt id="ConnectedAttribute">
-                    <span class="adef">connected</span> = "<span class="attr-value">sharp|smooth</span>"
-                </dt>
+                <dt id="ConnectedAttribute"><span class="adef">connected</span> = "<span class="attr-value">sharp|smooth</span>"</dt>
                 <dd>
-                    Indicates how the coordinates produced by the <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a> attribute should be connected.<br/>
-                    <span class="attr-value">'sharp'</span> indicates that coordinates are connected by issuing <a href="http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands">line-to</a> commands.<br/>
-                    <span class="attr-value">'smooth'</span> indicates that coordinates are connected by issuing <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">curve-to</a> commands.<br/>
-                    The control point needed for the shorthand/smooth curveto command is taken by evaluating the coordinate expression at the value for <em>#x</em>, as defined by the <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a> attribute, between the original values, as determined by the <a href="#DomainAttribute"><span class="attr-name">‘domain’</span></a> and <a href="#SamplesAttribute"><span class="attr-name">‘samples’</span></a> attributes.<br/>
-                    If the attribute is not specified, the effect is as a value of <span class="attr-value">'sharp'</span> were specified.
+                    Indicates how the coordinates produced by the
+                    <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a>
+                    attribute should be connected.<br/>
+                    <span class="attr-value">'sharp'</span> indicates that coordinates
+                    are connected by issuing <a href="http://www.w3.org/TR/SVG/paths.html#PathDataLinetoCommands">line-to</a>
+                    commands. <br/>
+                    <span class="attr-value">'smooth'</span> indicates that coordinates
+                    are connected by issuing <a href="http://www.w3.org/TR/SVG/paths.html#PathDataCubicBezierCommands">curve-to</a>
+                    commands. <br/>
+                    The control point needed for the shorthand/smooth curveto command
+                    is taken by evaluating the coordinate expression at the value
+                    for <em>#x</em>, as defined by the <a href="#VariableAttribute"><span class="attr-name">‘variable’</span></a>
+                    attribute, between the original values, as determined by the
+                    <a href="#DomainAttribute"><span class="attr-name">‘domain’</span></a>
+                    and <a href="#SamplesAttribute"><span class="attr-name">‘samples’</span></a>
+                    attributes. <br/>
+                    If the attribute is not specified, the effect is as a value
+                    of <span class="attr-value">'sharp'</span> were specified.
                 </dd>
-                <dt id="FunctionAttribute">
-                    <span class="adef">function</span> = "<em>plot data</em>"
-                </dt>
-                <dd>
-                    The definition of the coordinate expression. See <a href="#PlotData">Plot data</a>.
-                </dd>
+                <dt id="FunctionAttribute"><span class="adef">function</span> = "<em>plot data</em>"</dt>
+                <dd>The definition of the coordinate expression. See <a href="#PlotData">Plot data</a>.</dd>
             </dl>
         </div>
-
         <h2 id="PlotData">1.3 Plot data</h2>
-
         <h3 id="PlotDataGeneralInformation">1.3.1 General information about plot data</h3>
         <p>TBS.</p>
-
         <h3 id="PlotDataMathematicalOperators">1.3.2 The mathematical operators</h3>
         <p>TBS.</p>
-
         <h3 id="PlotDataMathematicalFunction">1.3.3 The mathematical functions</h3>
         <p>TBS.</p>
-
         <h3 id="PlotDataBNF">1.3.4 The grammar for plot data</h3>
         <p>TBS.</p>
-
         <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>
         <p>TBS.</p>
-
         <div class="header bottom">
-            <span class="namedate">SVG Plot Module Extension - 28 October 2013</span> ⋅ 
+            <span class="namedate">SVG Plot Module Extension - 7 December 2013</span> ⋅ 
         </div>
         <script src="http://www.w3.org/TR/SVG/style/expanders.js" type="text/javascript"></script>
     </body>
