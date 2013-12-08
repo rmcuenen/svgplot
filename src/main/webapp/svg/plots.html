@@ -44,6 +44,8 @@
             body {
                 background-image: none;
             }
+            .fix-align-char span.left { float: left; text-align: right; }
+            .fix-align-char span.right { float: right; text-align: left; }
         </style>
     </head>
     <body>
@@ -306,9 +308,622 @@
         <h3 id="PlotDataGeneralInformation">1.3.1 General information about plot data</h3>
         <p>TBS.</p>
         <h3 id="PlotDataMathematicalOperators">1.3.2 The mathematical operators</h3>
-        <p>TBS.</p>
+        <p>The following operators (presented in the context in which they are used) are recognized:</p>
+        <table summary="mathematical operators" class="vert" border="1" cellspacing="2" cellpadding="5">
+            <tbody>
+                <tr>
+                    <th>Operator</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>x <strong>+</strong> y</td>
+                    <td>infix operator; uses the <strong>add</strong> function.</td>
+                    <td>Adds x to y.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>-</strong> y</td>
+                    <td>infix operator; uses the <strong>subtract</strong> function.</td>
+                    <td>Subtracts x from y.</td>
+                </tr>
+                <tr>
+                    <td><strong>-</strong>x</td>
+                    <td>prefix operator; uses the <strong>neg</strong> function.</td>
+                    <td>Reverses the sign of x.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>*</strong> y</td>
+                    <td>infix operator; uses the <strong>multiply</strong> function.</td>
+                    <td>Multiples x by y.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>/</strong> y</td>
+                    <td>infix operator; uses the <strong>divide</strong> function.</td>
+                    <td>
+                        Divides x by y.<br/>
+                        An error will result if y is 0, or if the result of the division is too big for the mathematical engine.
+                    </td>
+                </tr>
+                <tr>
+                    <td>x <strong>^</strong> y</td>
+                    <td>infix operator; uses the <strong>pow</strong> function.</td>
+                    <td>Raises x to the power y.</td>
+                </tr>
+                <tr>
+                    <td>x<strong>!</strong></td>
+                    <td>postfix operator; uses the <strong>factorial</strong> function.</td>
+                    <td>Calculates the factorial of x .</td>
+                </tr>
+                <tr>
+                    <td>x<strong>r</strong></td>
+                    <td>postfix operator; uses the <strong>deg</strong> function.</td>
+                    <td>
+                        Converts x to degrees (x is assumed to be in radians).<br/>
+                        This operator has the same precedence as multiplication.
+                    </td>
+                </tr>
+                <tr>
+                    <td>x <strong>?</strong> y <strong>:</strong> z</td>
+                    <td>conditional operators; use the <strong>ifthenelse</strong> function.</td>
+                    <td>
+                        <strong>?</strong> and <strong>:</strong> are special operators
+                        which can be used as a shorthand for 
+                        <strong>if</strong> x <strong>then</strong> y <strong>else</strong> z 
+                        inside the parser.<br/>
+                        The expression x is taken to be true if it evaluates to any non-zero value.
+                    </td>
+                </tr>
+                <tr>
+                    <td>x <strong>==</strong> y</td>
+                    <td>infix operator; uses the <strong>equal</strong> function.</td>
+                    <td>Returns 1 if x = y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>&gt;</strong> y</td>
+                    <td>infix operator; uses the <strong>greater</strong> function.</td>
+                    <td>Returns 1 if x &gt; y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>&lt;</strong> y</td>
+                    <td>infix operator; uses the <strong>less</strong> function.</td>
+                    <td>Returns 1 if x &lt; y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>!=</strong> y</td>
+                    <td>infix operator; uses the <strong>notequal</strong> function.</td>
+                    <td>Returns 1 if x &ne; y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>&gt;=</strong> y</td>
+                    <td>infix operator; uses the <strong>notless</strong> function.</td>
+                    <td>Returns 1 if x &ge; y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>&lt;=</strong> y</td>
+                    <td>infix operator; uses the <strong>notgreater</strong> function.</td>
+                    <td>Returns 1 if x &le; y, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>&amp;&amp;</strong> y</td>
+                    <td>infix operator; uses the <strong>and</strong> function.</td>
+                    <td>Returns 1 if both x and y evaluate to some non-zero value. Both arguments are evaluated.</td>
+                </tr>
+                <tr>
+                    <td>x <strong>| |</strong> y</td>
+                    <td>infix operator; uses the <strong>or</strong> function.</td>
+                    <td>Returns 1 if either x or y evaluate to some non-zero value.</td>
+                </tr>
+                <tr>
+                    <td><strong>!</strong>x</td>
+                    <td>prefix operator; uses the <strong>not</strong> function.</td>
+                    <td>Returns 1 if x evaluates to zero, 0 otherwise.</td>
+                </tr>
+                <tr>
+                    <td><strong>(</strong>x<strong>)</strong></td>
+                    <td>group operators.</td>
+                    <td>
+                        These operators act in the usual way, that is, to control
+                        the order in which operators are executed, for example, <strong>(1+2)*3</strong>.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <h3 id="PlotDataMathematicalFunction">1.3.3 The mathematical functions</h3>
-        <p>TBS.</p>
+        <p>The following functions are recognized:</p>
+        <table summary="mathematical functions" class="vert fix-align-char" border="1" cellspacing="2" cellpadding="5">
+            <tbody>
+                <tr>
+                    <th>Function</th>
+                    <th>Parameters</th>
+                    <th>Description</th>
+                    <th>Example</th>
+                </tr>
+                <tr>
+                    <td><strong>abs</strong></td>
+                    <td>x</td>
+                    <td>Evaluates the absolute value of x.</td>
+                    <td>
+                        <span class="element-name left">5.0</span>&nbsp;<span class="attr-name right">abs(-5)</span><br/>
+                        <span class="element-name left">-12.0</span>&nbsp;<span class="attr-name right" style="float:right;">-abs(4*-3)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>acos</strong></td>
+                    <td>x</td>
+                    <td>Arccosine of x in degrees. The result is in the range [0&deg;, 180&deg;].</td>
+                    <td>
+                        <span class="element-name left">60.0</span>&nbsp;<span class="attr-name right">acos(0.5)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>add</strong></td>
+                    <td>x, y</td>
+                    <td>Adds x and y.</td>
+                    <td>
+                        <span class="element-name left">81.0</span>&nbsp;<span class="attr-name right">add(75,6)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>and</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x and y both evaluate to non-zero values. Otherwise 0 is returned.</td>
+                    <td>
+                        <span class="element-name left">0</span>&nbsp;<span class="attr-name right">and(5>4,6>7)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>asin</strong></td>
+                    <td>x</td>
+                    <td>Arcsine of x. The result is in degrees and in the range &plusmn;90&deg;.</td>
+                    <td>
+                        <span class="element-name left">44.99945</span>&nbsp;<span class="attr-name right">asin(0.7071)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>atan</strong></td>
+                    <td>x</td>
+                    <td>Arctangent of x in degrees.</td>
+                    <td>
+                        <span class="element-name left">45.0</span>&nbsp;<span class="attr-name right">atan(1)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>atan2</strong></td>
+                    <td>x, y</td>
+                    <td>Arctangent of y &divide; x in degrees. This also takes into account the quadrants.</td>
+                    <td>
+                        <span class="element-name left">143.130102</span>&nbsp;<span class="attr-name right">atan2(-4,3)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>ceil</strong></td>
+                    <td>x</td>
+                    <td>Rounds x up to the nearest integer.</td>
+                    <td>
+                        <span class="element-name left">2.0</span>&nbsp;<span class="attr-name right">ceil(32.5/17)</span><br/>
+                        <span class="element-name left">34.0</span>&nbsp;<span class="attr-name right">ceil(398/12)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>cos</strong></td>
+                    <td>x</td>
+                    <td>Cosine of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">0.5</span>&nbsp;<span class="attr-name right">cos(60)</span><br/>
+                        <span class="element-name left">0.5</span>&nbsp;<span class="attr-name right">cos(pi/3 r)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>cosec</strong></td>
+                    <td>x</td>
+                    <td>Cosecant of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">2.0</span>&nbsp;<span class="attr-name right">cosec(30)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>cosh</strong></td>
+                    <td>x</td>
+                    <td>The hyperbolic cosine of x.</td>
+                    <td>
+                        <span class="element-name left">1.12763</span>&nbsp;<span class="attr-name right">cosh(0.5)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>cot</strong></td>
+                    <td>x</td>
+                    <td>Cotangent of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">3.73205</span>&nbsp;<span class="attr-name right">cot(15)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>deg</strong></td>
+                    <td>x</td>
+                    <td>Convert x to degrees. x is assumed to be in radians.</td>
+                    <td>
+                        <span class="element-name left">270.0</span>&nbsp;<span class="attr-name right">deg(3*pi/2)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>div</strong></td>
+                    <td>x, y</td>
+                    <td>Divide x by y and round to the nearest integer.</td>
+                    <td>
+                        <span class="element-name left">8</span>&nbsp;<span class="attr-name right">div(75,9)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>divide</strong></td>
+                    <td>x, y</td>
+                    <td>Divide x by y.</td>
+                    <td>
+                        <span class="element-name left">12.5</span>&nbsp;<span class="attr-name right">divide(75,6)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>e</strong></td>
+                    <td>—</td>
+                    <td>Returns Euler's number (e, the base of the natural logarithm).</td>
+                    <td>
+                        <span class="element-name left">3.62686</span>&nbsp;<span class="attr-name right">(e^2-e^-2)/2</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>equal</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x = y and 0 otherwise.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">equal(20,20)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>exp</strong></td>
+                    <td>x</td>
+                    <td>Returns the value of e^x, where e is Euler's number and x is the power.</td>
+                    <td>
+                        <span class="element-name left">2.71828</span>&nbsp;<span class="attr-name right">exp(1)</span><br/>
+                        <span class="element-name left">10.38124</span>&nbsp;<span class="attr-name right">exp(2.34)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>factorial</strong></td>
+                    <td>x</td>
+                    <td>Return x!.</td>
+                    <td>
+                        <span class="element-name left">120.0</span>&nbsp;<span class="attr-name right">factorial(5)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>false</strong></td>
+                    <td>—</td>
+                    <td>This evaluates to 0.</td>
+                    <td>
+                        <span class="element-name left">no</span>&nbsp;<span class="attr-name right">false ? "yes" : "no"</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>floor</strong></td>
+                    <td>x</td>
+                    <td>Rounds x down to the nearest integer.</td>
+                    <td>
+                        <span class="element-name left">1.0</span>&nbsp;<span class="attr-name right">floor(32.5/17)</span><br/>
+                        <span class="element-name left">33.0</span>&nbsp;<span class="attr-name right">floor(398/12)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>frac</strong></td>
+                    <td>x</td>
+                    <td>Returns the fractional part of x.</td>
+                    <td>
+                        <span class="element-name left">0.91176</span>&nbsp;<span class="attr-name right">frac(32.5/17)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>greater</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x &gt; y and 0 otherwise.</td>
+                    <td>
+                        <span class="element-name left">0</span>&nbsp;<span class="attr-name right">greater(20,25)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>int</strong></td>
+                    <td>x</td>
+                    <td>Returns the integer part of x.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">int(32.5/17)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>ifthenelse</strong></td>
+                    <td>x, y, z</td>
+                    <td>This returns y if x evaluates to some non-zero value, otherwise z is returned.</td>
+                    <td>
+                        <span class="element-name left">no</span>&nbsp;<span class="attr-name right">ifthenelse(5==4,"yes","no")</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>less</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x &lt; y and 0 otherwise.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">less(20,25)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>ln</strong></td>
+                    <td>x</td>
+                    <td>Returns the natural logarithm of the given number.</td>
+                    <td>
+                        <span class="element-name left">2.30259</span>&nbsp;<span class="attr-name right">ln(10)</span><br/>
+                        <span class="element-name left">5.0</span>&nbsp;<span class="attr-name right">ln(exp(5))</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>log10</strong></td>
+                    <td>x</td>
+                    <td>Returns the logarithm in base 10 of the given number.</td>
+                    <td>
+                        <span class="element-name left">2.0</span>&nbsp;<span class="attr-name right">log10(100)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>log2</strong></td>
+                    <td>x</td>
+                    <td>Returns the logarithm in base 2 of the given number.</td>
+                    <td>
+                        <span class="element-name left">7.0</span>&nbsp;<span class="attr-name right">log2(128)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>max</strong></td>
+                    <td>x&#x2081;, x&#x2082;, ..., x&#x2099;</td>
+                    <td>Return the maximum value from x&#x2081;...x&#x2099;.</td>
+                    <td>
+                        <span class="element-name left">250.0</span>&nbsp;<span class="attr-name right">max(3,4,-2,250,-8,100)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>min</strong></td>
+                    <td>x&#x2081;, x&#x2082;, ..., x&#x2099;</td>
+                    <td>Return the minimum value from x&#x2081;...x&#x2099;.</td>
+                    <td>
+                        <span class="element-name left">-8.0</span>&nbsp;<span class="attr-name right">min(3,4,-2,250,-8,100)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>mod</strong></td>
+                    <td>x, y</td>
+                    <td>This evaluates x modulo y, using truncated division.<br/>The sign of the result is the same as the sign of x/y.</td>
+                    <td>
+                        <span class="element-name left">2.0</span>&nbsp;<span class="attr-name right">mod(20,6)</span><br/>
+                        <span class="element-name left">-10.0</span>&nbsp;<span class="attr-name right">mod(-100,30)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Mod</strong></td>
+                    <td>x, y</td>
+                    <td>This evaluates x modulo y, using floored division. The sign of the result is never negative.</td>
+                    <td>
+                        <span class="element-name left">20.0</span>&nbsp;<span class="attr-name right">Mod(-100,30)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>multiply</strong></td>
+                    <td>x, y</td>
+                    <td>Multiply x by y.</td>
+                    <td>
+                        <span class="element-name left">450.0</span>&nbsp;<span class="attr-name right">multiply(75,6)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>neg</strong></td>
+                    <td>x</td>
+                    <td>This returns −x.</td>
+                    <td>
+                        <span class="element-name left">-50.0</span>&nbsp;<span class="attr-name right">neg(50)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>not</strong></td>
+                    <td>x</td>
+                    <td>This returns 1 if x = 0, otherwise 0.</td>
+                    <td>
+                        <span class="element-name left">0</span>&nbsp;<span class="attr-name right">not(true)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>notequal</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 0 if x = y and 1 otherwise.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">notequal(20,25)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>notgreater</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x &le; y and 0 otherwise.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">notgreater(20,25)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>notless</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if x &ge; y and 0 otherwise.</td>
+                    <td>
+                        <span class="element-name left">0</span>&nbsp;<span class="attr-name right">notless(20,25)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>or</strong></td>
+                    <td>x, y</td>
+                    <td>This returns 1 if either x or y evaluate to non-zero values. Otherwise 0 is returned.</td>
+                    <td>
+                        <span class="element-name left">1</span>&nbsp;<span class="attr-name right">or(5>4,6>7)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>pi</strong></td>
+                    <td>—</td>
+                    <td>Represents the ratio of any circle's circumference to its diameter in Euclidean geometry.</td>
+                    <td>
+                        <span class="element-name left">3.141592654</span>&nbsp;<span class="attr-name right">pi</span><br/>
+                        <span class="element-name left">180.0</span>&nbsp;<span class="attr-name right">pi r</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>pow</strong></td>
+                    <td>x, y</td>
+                    <td>Raises x to the power y.</td>
+                    <td>
+                        <span class="element-name left">128.0</span>&nbsp;<span class="attr-name right">pow(2,7)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>rad</strong></td>
+                    <td>x</td>
+                    <td>Convert x to radians. x is assumed to be in degrees.</td>
+                    <td>
+                        <span class="element-name left">1.570796</span>&nbsp;<span class="attr-name right">rad(90)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>rand</strong></td>
+                    <td>—</td>
+                    <td>Generates a pseudo-random number between -1 and 1.</td>
+                    <td>
+                        <span class="element-name left">-0.94656, -0.8609004, 0.37192, -0.86581, 0.97071</span><br/>
+                        <span class="attr-name right">rand, rand, ...</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>random</strong></td>
+                    <td>
+                        —<br/><br/>
+                        x<br/><br/>
+                        x, y
+                    </td>
+                    <td>
+                        Generates a pseudo-random number between 0 and 1.<br/><br/>
+                        Generates a pseudo-random number between 1 and x.<br/><br/>
+                        Generates a pseudo-random number between x and y.
+                    </td>
+                    <td>
+                        <span class="element-name left">0.25446, 0.41486, 0.51493, 0.20302, 0.14762</span><br/>
+                        <span class="attr-name right">random(), random(), ...</span><br/>
+                        <span class="element-name left">3.867897, 74.12244, 19.95458, 65.53422, 2.11416, </span><br/>
+                        <span class="attr-name right">random(100), random(100), ...</span><br/>
+                        <span class="element-name left">689.65701, 306.6019, 250.50901, 598.1285, 487.07434, </span><br/>
+                        <span class="attr-name right">random(232,762), random(232,762), ...</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>real</strong></td>
+                    <td>x</td>
+                    <td>Ensures x contains a decimal point.</td>
+                    <td>
+                        <span class="element-name left">4.0</span>&nbsp;<span class="attr-name right">real(4)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>rnd</strong></td>
+                    <td>—</td>
+                    <td>Generates a pseudo-random number between 0 and 1.</td>
+                    <td>
+                        <span class="element-name left">0.12447, 0.10929, 0.18663, 0.73818, 0.83187</span><br/>
+                        <span class="attr-name right">rnd, rnd, ...</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>round</strong></td>
+                    <td>x</td>
+                    <td>Rounds x to the nearest integer. It uses "asymmetric half-up" rounding.<br/>
+                        So 1.5 is rounded to 2, but -1.5 is rounded to -2 (<em>not</em> 1).</td>
+                    <td>
+                        <span class="element-name left">2.0</span>&nbsp;<span class="attr-name right">round(32.5/17)</span><br/>
+                        <span class="element-name left">33.0</span>&nbsp;<span class="attr-name right">round(398/12)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>sec</strong></td>
+                    <td>x</td>
+                    <td>Secant of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">1.41421</span>&nbsp;<span class="attr-name right">sec(45)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>sin</strong></td>
+                    <td>x</td>
+                    <td>Sine of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">0.86603</span>&nbsp;<span class="attr-name right">sin(60)</span><br/>
+                        <span class="element-name left">0.86603</span>&nbsp;<span class="attr-name right">sin(pi/3 r)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>sinh</strong></td>
+                    <td>x</td>
+                    <td>The hyperbolic sine of x.</td>
+                    <td>
+                        <span class="element-name left">0.521095</span>&nbsp;<span class="attr-name right">sinh(0.5)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>sqrt</strong></td>
+                    <td>x</td>
+                    <td>Calculates &radic;x.</td>
+                    <td>
+                        <span class="element-name left">3.16228</span>&nbsp;<span class="attr-name right">sqrt(10)</span><br/>
+                        <span class="element-name left">93.62389</span>&nbsp;<span class="attr-name right">sqrt(8765.432)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>subtract</strong></td>
+                    <td>x, y</td>
+                    <td>Subtract x from y.</td>
+                    <td>
+                        <span class="element-name left">69.0</span>&nbsp;<span class="attr-name right">subtract(75,6)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>tan</strong></td>
+                    <td>x</td>
+                    <td>Tangent of x. By employing the <strong>r</strong> operator, x can be in radians.</td>
+                    <td>
+                        <span class="element-name left">1.0</span>&nbsp;<span class="attr-name right">tan(45)</span><br/>
+                        <span class="element-name left">1.0</span>&nbsp;<span class="attr-name right">tan(2*pi/8 r)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>tanh</strong></td>
+                    <td>x</td>
+                    <td>The hyperbolic tangent of x.</td>
+                    <td>
+                        <span class="element-name left">0.46212</span><span class="attr-name right">tanh(0.5)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>true</strong></td>
+                    <td>—</td>
+                    <td>This evaluates to 1.</td>
+                    <td>
+                        <span class="element-name left">yes</span><span class="attr-name right">true ? "yes" : "no"</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>veclen</strong></td>
+                    <td>x, y</td>
+                    <td>Calculates &radic;(x&sup2; + y&sup2;)</td>
+                    <td>
+                        <span class="element-name left">13.0</span><span class="attr-name right">veclen(12,5)</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <h3 id="PlotDataBNF">1.3.4 The grammar for plot data</h3>
         <p>TBS.</p>
         <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>
