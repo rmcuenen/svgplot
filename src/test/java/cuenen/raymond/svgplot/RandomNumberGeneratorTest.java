@@ -61,11 +61,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      */
     @Test
     public void rangeTest() {
-        load(MODULE_LOADER, 1);
-        String rangeTestCallback = String.format(FUNCTION_FORMAT, RANGE_TEST);
-        require(rangeTestCallback, MODULE_NAME);
-        String result = getResult();
-        assertNotNull(result);
+        String result = executeTest(RANGE_TEST);
         String[] range = result.split(",");
         /* Verify the range [0, 1). */
         assertEquals(Double.parseDouble(range[0]), 0D, 1E-5);
@@ -90,11 +86,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      */
     @Test
     public void meanTest() {
-        load(MODULE_LOADER, 1);
-        String meanTestCallback = String.format(FUNCTION_FORMAT, MEAN_TEST);
-        require(meanTestCallback, MODULE_NAME);
-        String result = getResult();
-        assertNotNull(result);
+        String result = executeTest(MEAN_TEST);
         /* The standard uniform distribution has mean 1/2 and variance 1/12. */
         double expectedAVG = 0.5;
         double expectedSTD = Math.sqrt(1D / 12D) / 1000D;
@@ -117,11 +109,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      */
     @Test
     public void varianceTest() {
-        load(MODULE_LOADER, 1);
-        String varianceTestCallback = String.format(FUNCTION_FORMAT, VARIANCE_TEST);
-        require(varianceTestCallback, MODULE_NAME);
-        String result = getResult();
-        assertNotNull(result);
+        String result = executeTest(VARIANCE_TEST);
         /* The standard uniform distribution has variance 1/12. */
         double expectedVAR = 1D / 12D;
         double expectedSTD = Math.sqrt(2D * expectedVAR * expectedVAR / (1E6 - 1D));
@@ -154,11 +142,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      */
     @Test
     public void bucketTest() {
-        load(MODULE_LOADER, 1);
-        String bucketTestCallback = String.format(FUNCTION_FORMAT, BUCKET_TEST);
-        require(bucketTestCallback, MODULE_NAME);
-        String result = getResult();
-        assertNotNull(result);
+        String result = executeTest(BUCKET_TEST);
         /* We test with 10^4 buckets. */
         double expectedMEAN = 1E4 - 1D;
         double expectedSTD = Math.sqrt(2E4 - 2D);
@@ -190,14 +174,26 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      */
     @Test
     public void ksTest() {
-        load(MODULE_LOADER, 1);
-        String ksTestCallback = String.format(FUNCTION_FORMAT, KS_TEST);
-        require(ksTestCallback, MODULE_NAME);
-        String result = getResult();
-        assertNotNull(result);
+        String result = executeTest(KS_TEST);
         /* Midpoint and delta of the range [0.07089, 1.5174]. */
         double expected = 0.794145;
         double delta = 0.723255;
         assertEquals(Double.parseDouble(result), expected, delta);
+    }
+
+    /**
+     * Convenience function for executing the tests.
+     *
+     * @param testDescription The array of objects to be used with the
+     * {@link #FUNCTION_FORMAT}.
+     * @return The result from the placeholder WebElement.
+     */
+    private String executeTest(Object... testDescription) {
+        load(MODULE_LOADER, 1);
+        String callback = String.format(FUNCTION_FORMAT, testDescription);
+        require(callback, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        return result;
     }
 }

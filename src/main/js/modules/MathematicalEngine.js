@@ -100,7 +100,7 @@ SVGModule.define(
                  * @returns {Number}
                  */
                 atan2: function(x, y) {
-                    return this.ifthenelse(this.not(y), this.ifthenelse(this.less(x, 0), 180, 0), this.multiply(2, this.atan(this.divide(y, this.add(this.sqrt(this.add(this.pow(x, 2), this.pow(y, 2))), x)))));
+                    return this.ifthenelse(this.not(y), this.ifthenelse(this.less(x, 0), 180, 0), this.multiply(2, this.atan(this.divide(y, this.add(this.veclen(x, y), x)))));
                 },
                 /**
                  * Rounds x up to the nearest integer.
@@ -439,7 +439,7 @@ SVGModule.define(
                  * @returns {Number}
                  */
                 pow: function(x, y) {
-                    return this.exp(this.multiply(y, this.ln(x)));
+                    return Math.pow(x, y);
                 },
                 /**
                  * Convert x to radians. x is assumed to be in degrees.
