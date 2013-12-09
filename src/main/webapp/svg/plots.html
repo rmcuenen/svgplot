@@ -925,7 +925,73 @@
             </tbody>
         </table>
         <h3 id="PlotDataBNF">1.3.4 The grammar for plot data</h3>
-        <p>TBS.</p>
+        <p>The following notation is used in the Backus-Naur Form (BNF) description of the grammar for plot data:</p>
+        <ul>
+            <li>*: 0 or more</li>
+            <li>+: 1 or more</li>
+            <li>?: 0 or 1</li>
+            <li>(): grouping</li>
+            <li>|: separates alternatives</li>
+            <li>double quotes surround literals</li>
+        </ul>
+        <p>The following is the BNF for SVG plots.</p>
+        <pre class="grammar">
+            svg-plot:
+                coordinate-expression
+            coordinate-expression:
+                expression ("," expression)?
+            expression:
+                function
+                | "(" expression ")"
+                | expression "!"
+                | expression wsp "r"
+                | "-" expression
+                | "!" expression
+                | expression "^" expression
+                | expression ( "*" | "/" ) expression
+                | expression ( "+" | "-" ) expression
+                | expression ( "<=" | ">=" | ">" | "<" ) expression
+                | expression ( "==" | "!=" ) expression
+                | expression "&amp;&amp;" expression
+                | expression "||" expression
+                | expression "?" expression ":" expression
+                | literal
+                | variable
+            literal
+                "0"
+                | positive-integer
+                | floating-point
+            variable:
+                "#" identifier
+            function:
+                identifier
+                | identifier "(" (expression (| ("," expression)*))? ")"
+            floating-point:
+                (zero | non-zero-integer) "." integer exponent-part?
+                | "." integer exponent-part?
+                | positive-integer exponent-part
+            exponent-part:
+                ("e" | "E") ("+" | "-")? non-zero-integer
+            identifier:
+                [a-zA-Z] [a-zA-Z0-9]*
+            non-zero-integer:
+                digit integer
+            integer:
+               (zero | digit) (zero | digit)*
+            zero:
+                "0"
+            digit:
+                "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+            wsp:
+                (#x20 | #x9 | #xD | #xA)
+                -> skip
+        </pre>
+        <p>
+            Note that all the white spaces (wsp) in the BNF are skipped by the parser
+            with the exception of the one needed in combination with the <strong>r</strong>
+            operator. Here a wsp is needed to distinguish between the use of the 
+            <strong>r</strong> operator and a <strong>function</strong>.
+        </p>
         <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>
         <p>TBS.</p>
         <div class="header bottom">
