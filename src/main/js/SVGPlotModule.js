@@ -242,6 +242,9 @@
             module.injected = Status.REQUESTED;
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
             moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.base + module.file);
+            moduleClass.onerror = function() {
+                throw 'error while loading ' + module.file;
+            };
             this.waiting[module.name] = module;
             var base = document.getElementsByTagName("script");
             document.documentElement.insertBefore(moduleClass, base[base.length - 1].nextSibling);

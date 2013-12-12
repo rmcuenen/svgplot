@@ -30,4 +30,9 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink">
     <text x="25" y="25" fill="maroon">Submit plot data!</text>
+    <path d="M190,30L190,10M185,15L190,10M195,15L190,10" stroke="#000" stroke-width="2">
+        <animateTransform attributeName="transform" attributeType="XML" 
+                          type="translate" from="0,5" to="0,-5" dur="1s" additive="replace"
+                          fill="freeze" repeatCount="indefinite" />
+    </path>
 </svg>
