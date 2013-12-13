@@ -32,6 +32,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
+import static org.testng.Assert.*;
 
 /**
  * Test class for testing {@code SVGPlotModule.js}.
@@ -45,6 +46,7 @@ public class SVGPlotModuleTest extends AbstractTestClass {
     private static final String TEST_MODULE_NAME = "TestModule";
     private static final String TEST_MODULE_CALLBACK = "function(element) { document.documentElement.appendChild(element); }";
     private static final String TEST_MODULE_ID = "loaded-text";
+    private static final String ERROR_MESSAGE = "Error while loading TestModule2.js";
 
     @Test
     public void testSVGPlotModuleLoaderWithBase() {
@@ -58,5 +60,13 @@ public class SVGPlotModuleTest extends AbstractTestClass {
         Wait wait = load(MODULE_LOADER_RELATIVE, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
+    }
+
+    @Test
+    public void testSVGPlotModuleWithError() {
+        Wait wait = load(MODULE_LOADER, 10);
+        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
+        wait.until(ExpectedConditions.alertIsPresent());
+        assertTrue(getAlert().getText().startsWith(ERROR_MESSAGE));
     }
 }

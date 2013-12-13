@@ -41,6 +41,7 @@
         <div>
             <form id="plotinput" onsubmit="postData();
                     return false;">
+                <input type="hidden" id="base" name="base" />
                 <input type="hidden" id="domain" name="domain" />
                 <table>
                     <tbody>
@@ -78,6 +79,11 @@
                         </tr>
                     </tbody>
                 </table>
+                <script type="text/javascript">
+                    var base = window.location.href;
+                    document.getElementById("base").value = 
+                            base.slice(0, base.lastIndexOf('/'));
+                </script>
             </form>
         </div>
         <div><iframe id="plotwindow" /></div>

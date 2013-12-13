@@ -28,6 +28,7 @@
  */
 package cuenen.raymond.svgplot;
 
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -86,6 +87,10 @@ public abstract class AbstractTestClass {
     protected String getResult() {
         WebElement placeholder = getElementById(PLACEHOLDER_ID);
         return placeholder.getAttribute(RESULT_ATTRIBUTE);
+    }
+
+    protected Alert getAlert() {
+        return driver.switchTo().alert();
     }
 
     protected WebElement getElementById(String id) {

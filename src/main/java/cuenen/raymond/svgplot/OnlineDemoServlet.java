@@ -41,12 +41,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * Servlet that takes the plot-input from the {@code demo.html} page to fill in
+ * and return the SVG template demonstrating the plot-element.
  *
  * @author R. M. Cuenen
  */
 public class OnlineDemoServlet extends HttpServlet {
 
-    private static final String[] PARAMETERS = {"domain", "samples", "variable", "connected", "function"};
+    private static final String[] PARAMETERS = {"base", "domain", "samples", "variable", "connected", "function"};
     private static final String CONTENT_TYPE = "image/svg+xml";
     private static final String TEMPLATE_FILE = "template.svg";
     private static final String CHARSET = "UTF-8";
