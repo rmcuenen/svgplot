@@ -243,7 +243,7 @@
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
             moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.base + module.file);
             moduleClass.onerror = function() {
-                throw 'error while loading ' + module.file;
+                throw 'Error while loading ' + module.file;
             };
             this.waiting[module.name] = module;
             var base = document.getElementsByTagName("script");
@@ -456,7 +456,7 @@
     }
 
     window.onerror = function(msg, url, line) {
-        alert(msg + "\n\n" + url + " (" + line + ")");
+        alert(msg.replace("Uncaught ", '') + "\n\n" + url + " (" + line + ")");
         return false;
     };
 })(document.getElementById('svgplot-loader'));

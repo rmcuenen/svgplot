@@ -28,17 +28,14 @@
  */
 
 .label {
-
     width: 70px;
 }
 
 body {
-    
     background: wheat;
 }
 
 div {
-    
     width: 395px;
     background: white;
     border: 2px solid steelblue;
@@ -58,39 +55,32 @@ iframe {
 }
 
 table {
-
     width: 380px;
     border: none;
 }
 
 input {
-
     width: 170px;
 }
 
 select {
-
     width: 100%;
 }
 
 #min {
-
     width: 75px;
 }
 
 #max {
-
     width: 75px;
     float: right;
 }
 
 
 #buttons {
-
     text-align: center;
 }
 
 #buttons input {
-
     width: 100px;
 }

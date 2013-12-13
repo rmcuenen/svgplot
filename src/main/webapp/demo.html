@@ -35,18 +35,12 @@
         <title>SVG Plot - Online Demo</title>
         <link rel="shortcut icon" type="image/gif" href="/icons/fav-icon.gif" />
         <link rel="stylesheet" type="text/css" media="screen" href="demo.css" />
-        <script type="text/javascript">
-            function setDomain() {
-                var minValue = document.getElementById("min").value;
-                var maxValue = document.getElementById("max").value;
-                document.getElementById("domain").value = minValue + ':' + maxValue;
-            }
-        </script>
+        <script type="text/javascript" src="demo.js"></script>
     </head>
-    <body>
+    <body onload="loadDemo();">
         <div>
-            <form action="/plotcreator" onsubmit="setDomain()" method="post" target="plotwindow">
-                <input type="hidden" id="base" name="base" />
+            <form id="plotinput" onsubmit="postData();
+                    return false;">
                 <input type="hidden" id="domain" name="domain" />
                 <table>
                     <tbody>
@@ -84,11 +78,8 @@
                         </tr>
                     </tbody>
                 </table>
-                <script type="text/javascript">
-                    document.getElementById("base").value = window.location.href.slice(0, window.location.href.lastIndexOf('/') + 1);
-                </script>
             </form>
         </div>
-        <div><iframe name="plotwindow" src="demo.svg" /></div>
+        <div><iframe id="plotwindow" /></div>
     </body>
 </html>

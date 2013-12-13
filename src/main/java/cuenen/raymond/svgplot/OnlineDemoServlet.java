@@ -46,7 +46,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class OnlineDemoServlet extends HttpServlet {
 
-    private static final String[] PARAMETERS = {"base", "domain", "samples", "variable", "connected", "function"};
+    private static final String[] PARAMETERS = {"domain", "samples", "variable", "connected", "function"};
     private static final String CONTENT_TYPE = "image/svg+xml";
     private static final String TEMPLATE_FILE = "template.svg";
     private static final String CHARSET = "UTF-8";
@@ -64,7 +64,8 @@ public class OnlineDemoServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         List<String> params = new ArrayList<>();
         for (String name : PARAMETERS) {
-            params.add(req.getParameter(name));
+            String param = req.getParameter(name);
+            params.add(param == null ? "" : param);
         }
         resp.setContentType(CONTENT_TYPE);
         PrintWriter writer = resp.getWriter();
