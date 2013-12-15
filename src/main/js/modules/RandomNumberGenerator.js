@@ -46,7 +46,6 @@ SVGModule.define(
                     return gcd(b, a % b);
                 }
             }
-            ;
 
             /**
              * The multiplier (7^5) of the RNG's recurrence relation.

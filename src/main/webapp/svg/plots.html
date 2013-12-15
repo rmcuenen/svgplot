@@ -934,54 +934,44 @@
             <li>|: separates alternatives</li>
             <li>double quotes surround literals</li>
         </ul>
-        <p>The following is the BNF for SVG plots.</p>
+        <p>The following is the BNF for SVG plot-data.</p>
         <pre class="grammar">
             svg-plot:
                 coordinate-expression
             coordinate-expression:
-                expression ("," expression)?
+                relagtion ("," relation)?
+            relation:
+                expression (RelOp expression)*
             expression:
-                function
-                | "(" expression ")"
-                | expression "!"
-                | expression wsp "r"
-                | "-" expression
-                | "!" expression
-                | expression "^" expression
-                | expression ( "*" | "/" ) expression
-                | expression ( "+" | "-" ) expression
-                | expression ( "<=" | ">=" | ">" | "<" ) expression
-                | expression ( "==" | "!=" ) expression
-                | expression "&amp;&amp;" expression
-                | expression "||" expression
-                | expression "?" expression ":" expression
-                | literal
-                | variable
-            literal
-                "0"
-                | positive-integer
-                | floating-point
+                term (AddSubOrOp term)*
+            term:
+                signed-factor (MultDevAndOp signed-factor)*
+            signed-factor:
+                NegNotOp? factor
+            factor:
+                fragment (PowOp NegOp? signed-fragment)* DegOp?
+            signed-fragment:
+                NegNotOp? fragment
+            fragment:
+                ("(" relation ")" | variable | function | number) FacOp?
             variable:
-                "#" identifier
+                "#" [a-zA-Z] [a-zA-Z0-9_]*
             function:
-                identifier
-                | identifier "(" (expression (| ("," expression)*))? ")"
-            floating-point:
-                (zero | non-zero-integer) "." integer exponent-part?
-                | "." integer exponent-part?
-                | positive-integer exponent-part
-            exponent-part:
-                ("e" | "E") ("+" | "-")? non-zero-integer
-            identifier:
-                [a-zA-Z] [a-zA-Z0-9]*
-            non-zero-integer:
-                digit integer
-            integer:
-               (zero | digit) (zero | digit)*
-            zero:
-                "0"
-            digit:
-                "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+                [a-z] [a-z0-9_]* ("(" relation? | relation ("," relation)* ")")?
+            number:
+                TBS.
+            RelOp:
+                "==" | "!=" | "&lt;" | "&gt;" | "&lt;=" | "&gt;="
+            AddSupOrOp:
+                "+" | "-" | "||"
+            MultDevAndOp:
+                "*" | "/" | "&amp;&amp;"
+            NegNotOp:
+                "-" | "!"
+            PowOp:
+                "^"
+            DegOp:
+                " r"
             wsp:
                 (#x20 | #x9 | #xD | #xA)
                 -> skip
