@@ -13,11 +13,12 @@
  * <number> ::= 
  * 
  * <RelOp> ::= == | < | > | <= | >= | !=
- * <AddSupOrOp> ::= + | - | ||
+ * <AddSubOrOp> ::= + | - | ||
  * <MultDevAndOp> ::= * | / | &&
  * <NegNotOp> ::= - || !
  * <PowOp> ::= ^
  * <DegOp> ::= r
+ * <FacOp> ::= !
  */
 (function() {
     function gcd(a, b) {
@@ -263,6 +264,7 @@
     };
     var Parser = {
         Look: '',
+        RelOp: ['=', '!', '<', '>'],
         Expected: function(s) {
             throw s + " Expected at '" + Input.split() + "'";
         },
@@ -364,6 +366,11 @@
                 this.Match('-');
                 this.Fragment();
                 this._function("neg", 1);
+            } else if (this.Look === '!') {
+                this._move();
+                this.Match('!');
+                this.Fragment();
+                this._function("not", 1);
             } else {
                 this.Fragment();
             }
@@ -387,42 +394,94 @@
                 this.Match('-');
                 this.Factor();
                 this._function("neg", 1);
+            } else if (this.Look === '!') {
+                this._move();
+                this.Match('!');
+                this.Factor();
+                this._function("not", 1);
             } else {
                 this.Factor();
             }
         },
         Term: function() {
             this.SignedFactor();
-            while (this.Look === '*' || this.Look === '/') {
+            while (this.Look === '*' || this.Look === '/'
+                    || this.Look === '&') {
                 this._move();
                 if (this.Look === '*') {
                     this.Match('*');
                     this.SignedFactor();
                     this._function("multiply", 2);
-                } else {
+                } else if (this.Look === '/') {
                     this.Match('/');
                     this.SignedFactor();
                     this._function("divide", 2);
+                } else {
+                    this.Match('&');
+                    this.Match('&');
+                    this.SignedFactor();
+                    this._function("and", 2);
                 }
             }
         },
         Expression: function() {
             this.Term();
-            while (this.Look === '+' || this.Look === '-') {
+            while (this.Look === '+' || this.Look === '-'
+                    || this.Look === '|') {
                 this._move();
                 if (this.Look === '+') {
                     this.Match('+');
                     this.Term();
                     this._function("add", 2);
-                } else {
+                } else if (this.Look === '-') {
                     this.Match('-');
                     this.Term();
                     this._function("subtract", 2);
+                } else {
+                    this.Match('|');
+                    this.Match('|');
+                    this.Term();
+                    this._function("or", 2);
                 }
             }
         },
         Relation: function() {
             this.Expression();
+            var index = this.RelOp.indexOf(this.Look);
+            while (index !== -1) {
+                this._move();
+                var func;
+                switch (index) {
+                    case 0:
+                        this.Match('=');
+                        this.Match('=');
+                        func = "equal";
+                        break;
+                    case 1:
+                        this.Match('!');
+                        this.Match('=');
+                        func = "notequal";
+                        break;
+                    case 2:
+                        this.Match('<');
+                        func = "less";
+                        if (this.Look === '=') {
+                            this.Match('=');
+                            func = "notgreater";
+                        }
+                        break;
+                    case 3:
+                        this.Match('>');
+                        func = "greater";
+                        if (this.Look === '=') {
+                            this.Match('=');
+                            func = "notless";
+                        }
+                }
+                this.Expression();
+                this._function(func, 2);
+                index = this.RelOp.indexOf(this.Look);
+            }
         },
         _literal: function(value) {
             var context = Tree;

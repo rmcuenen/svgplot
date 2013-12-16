@@ -939,7 +939,7 @@
             svg-plot:
                 coordinate-expression
             coordinate-expression:
-                relagtion ("," relation)?
+                relation ("," relation)?
             relation:
                 expression (RelOp expression)*
             expression:
@@ -949,7 +949,7 @@
             signed-factor:
                 NegNotOp? factor
             factor:
-                fragment (PowOp NegOp? signed-fragment)* DegOp?
+                fragment (PowOp signed-fragment)* DegOp?
             signed-fragment:
                 NegNotOp? fragment
             fragment:
@@ -962,7 +962,7 @@
                 TBS.
             RelOp:
                 "==" | "!=" | "&lt;" | "&gt;" | "&lt;=" | "&gt;="
-            AddSupOrOp:
+            AddSubOrOp:
                 "+" | "-" | "||"
             MultDevAndOp:
                 "*" | "/" | "&amp;&amp;"
@@ -972,6 +972,8 @@
                 "^"
             DegOp:
                 " r"
+            FacOp:
+                "!"
             wsp:
                 (#x20 | #x9 | #xD | #xA)
                 -> skip
