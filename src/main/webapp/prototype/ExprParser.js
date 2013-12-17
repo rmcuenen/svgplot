@@ -1,17 +1,20 @@
 /**
  * Grammar:
+ * <special> ::= <relation> [<IfOp> <relation> <ElOp> <relation>]?
  * <relation> ::= <expression> [<RelOp> <expression>]*
  * <expression> ::= <term> [<AddSubOrOp> <term>]*
  * <term> ::= <signed-factor> [<MultDevAndOp> <signed-factor>]*
  * <signed-factor> ::= <NegNotOp>? <factor>
  * <factor> ::= <fragment> [<PowOp> <signed-fragment>]* <DegOp>?
  * <signed-fragment> ::= <NegNotOp>? <fragment>
- * <fragment> ::= [( <relation> ) | <variable> | <function> | <number>] <FacOp>?
+ * <fragment> ::= [( <special> ) | <variable> | <function> | <number>] <FacOp>?
  *
  * <variable> ::= # [a-zA-Z] [a-zA-Z0-9_]*
- * <function> ::= [a-z] [a-z0-9_]* [( <relation>? | <relation> [, <relation>]* )]?
+ * <function> ::= [a-z] [a-z0-9_]* [( <special>? | <special> [, <special>]* )]?
  * <number> ::= 
  * 
+ * <IfOp> ::= ?
+ * <ElOp> ::= :
  * <RelOp> ::= == | < | > | <= | >= | !=
  * <AddSubOrOp> ::= + | - | ||
  * <MultDevAndOp> ::= * | / | &&
@@ -264,7 +267,15 @@
     };
     var Parser = {
         Look: '',
+        IfOp: ['?'],
+        ElOp: [':'],
         RelOp: ['=', '!', '<', '>'],
+        AddSubOrOp: ['+', '-', '|'],
+        MultDevAndOp: ['*', '/', '&'],
+        NegNotOp: ['-', '!'],
+        PowOp: ['^'],
+        DegOp: ['r'],
+        FacOp: ['!'],
         Expected: function(s) {
             throw s + " Expected at '" + Input.split() + "'";
         },
@@ -302,12 +313,12 @@
             if (this.Look === '(') {
                 this.Match('(');
                 if (this.Look !== ')') {
-                    this.Relation();
+                    this.Special();
                     count++;
                     while (this.Look === ',') {
                         this._move();
                         this.Match(',');
-                        this.Relation();
+                        this.Special();
                         count++;
                     }
                 }
@@ -345,7 +356,7 @@
         Fragment: function() {
             if (this.Look === '(') {
                 this.Match('(');
-                this.Relation();
+                this.Special();
                 this.Match(')');
             } else if (this.Look === '#') {
                 this.Match('#');
@@ -355,94 +366,110 @@
             } else {
                 this.Num();
             }
-            if (this.Look === '!') {
-                this.Match('!');
+            if (this.Look === this.FacOp[0]) {
+                this.Match(this.FacOp[0]);
                 this._function("factorial", 1);
             }
         },
         SignedFragment: function() {
-            if (this.Look === '-') {
-                this._move();
-                this.Match('-');
+            var index = this.NegNotOp.indexOf(this.Look);
+            if (index === -1) {
                 this.Fragment();
-                this._function("neg", 1);
-            } else if (this.Look === '!') {
-                this._move();
-                this.Match('!');
-                this.Fragment();
-                this._function("not", 1);
             } else {
+                this._move();
+                this.Match(this.NegNotOp[index]);
+                var func;
+                switch (index) {
+                    case 0:
+                        func = "neg";
+                        break;
+                    case 1:
+                        func = "not";
+                        break;
+                }
                 this.Fragment();
+                this._function(func, 1);
             }
         },
         Factor: function() {
             this.Fragment();
-            while (this.Look === '^') {
+            while (this.Look === this.PowOp[0]) {
                 this._move();
-                this.Match('^');
+                this.Match(this.PowOp[0]);
                 this.SignedFragment();
                 this._function("pow", 2);
             }
-            if (this.Look === 'r') {
-                this.Match('r');
+            if (this.Look === this.DegOp[0]) {
+                this.Match(this.DegOp[0]);
                 this._function("deg", 1);
             }
         },
         SignedFactor: function() {
-            if (this.Look === '-') {
-                this._move();
-                this.Match('-');
+            var index = this.NegNotOp.indexOf(this.Look);
+            if (index === -1) {
                 this.Factor();
-                this._function("neg", 1);
-            } else if (this.Look === '!') {
-                this._move();
-                this.Match('!');
-                this.Factor();
-                this._function("not", 1);
             } else {
+                this._move();
+                this.Match(this.NegNotOp[index]);
+                var func;
+                switch (index) {
+                    case 0:
+                        func = "neg";
+                        break;
+                    case 1:
+                        func = "not";
+                        break;
+                }
                 this.Factor();
+                this._function(func, 1);
             }
         },
         Term: function() {
             this.SignedFactor();
-            while (this.Look === '*' || this.Look === '/'
-                    || this.Look === '&') {
+            var index = this.MultDevAndOp.indexOf(this.Look);
+            while (index !== -1) {
                 this._move();
-                if (this.Look === '*') {
-                    this.Match('*');
-                    this.SignedFactor();
-                    this._function("multiply", 2);
-                } else if (this.Look === '/') {
-                    this.Match('/');
-                    this.SignedFactor();
-                    this._function("divide", 2);
-                } else {
-                    this.Match('&');
-                    this.Match('&');
-                    this.SignedFactor();
-                    this._function("and", 2);
+                this.Match(this.MultDevAndOp[index]);
+                var func;
+                switch (index) {
+                    case 0:
+                        func = "multuply";
+                        break;
+                    case 1:
+                        func = "divide";
+                        break;
+                    case 2:
+                        this.Match('&');
+                        func = "and";
+                        break;
                 }
+                this.SignedFactor();
+                this._function(func, 2);
+                index = this.MultDevAndOp.indexOf(this.Look);
             }
         },
         Expression: function() {
             this.Term();
-            while (this.Look === '+' || this.Look === '-'
-                    || this.Look === '|') {
+            var index = this.AddSubOrOp.indexOf(this.Look);
+            while (index !== -1) {
                 this._move();
-                if (this.Look === '+') {
-                    this.Match('+');
-                    this.Term();
-                    this._function("add", 2);
-                } else if (this.Look === '-') {
-                    this.Match('-');
-                    this.Term();
-                    this._function("subtract", 2);
-                } else {
-                    this.Match('|');
-                    this.Match('|');
-                    this.Term();
-                    this._function("or", 2);
+                this.Match(this.AddSubOrOp[index]);
+                var func;
+                switch (index) {
+                    case 0:
+                        func = "add";
+                        break;
+                    case 1:
+                        func = "subtract";
+                        break;
+                    case 2:
+                        this.Match('|');
+                        func = "or";
+                        break;
                 }
+                this.Term();
+                this._function(func, 2);
+                index = this.AddSubOrOp.indexOf(this.Look);
             }
         },
         Relation: function() {
@@ -450,20 +477,18 @@
             var index = this.RelOp.indexOf(this.Look);
             while (index !== -1) {
                 this._move();
+                this.Match(this.RelOp[index]);
                 var func;
                 switch (index) {
                     case 0:
                         this.Match('=');
-                        this.Match('=');
                         func = "equal";
                         break;
                     case 1:
-                        this.Match('!');
                         this.Match('=');
                         func = "notequal";
                         break;
                     case 2:
-                        this.Match('<');
                         func = "less";
                         if (this.Look === '=') {
                             this.Match('=');
@@ -471,7 +496,6 @@
                         }
                         break;
                     case 3:
-                        this.Match('>');
                         func = "greater";
                         if (this.Look === '=') {
                             this.Match('=');
@@ -481,6 +505,18 @@
                 this.Expression();
                 this._function(func, 2);
                 index = this.RelOp.indexOf(this.Look);
+            }
+        },
+        Special: function() {
+            this.Relation();
+            if (this.Look === this.IfOp[0]) {
+                this._move();
+                this.Match(this.IfOp[0]);
+                this.Relation();
+                this._move();
+                this.Match(this.ElOp[0]);
+                this.Relation();
+                this._function("ifthenelse", 3);
             }
         },
         _literal: function(value) {
@@ -549,7 +585,7 @@
             };
             Parser.GetChar();
             Parser.SkipWhite();
-            Parser.Relation();
+            Parser.Special();
             Input.flush();
             return Tree;
         }

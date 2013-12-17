@@ -939,7 +939,9 @@
             svg-plot:
                 coordinate-expression
             coordinate-expression:
-                relation ("," relation)?
+                special ("," special)?
+            special:
+                relation (IfOp relation ElOp relation)?
             relation:
                 expression (RelOp expression)*
             expression:
@@ -953,13 +955,17 @@
             signed-fragment:
                 NegNotOp? fragment
             fragment:
-                ("(" relation ")" | variable | function | number) FacOp?
+                ("(" special ")" | variable | function | number) FacOp?
             variable:
                 "#" [a-zA-Z] [a-zA-Z0-9_]*
             function:
-                [a-z] [a-z0-9_]* ("(" relation? | relation ("," relation)* ")")?
+                [a-z] [a-z0-9_]* ("(" special? | special ("," special)* ")")?
             number:
                 TBS.
+            IfOp:
+                "?"
+            ElOp:
+                ":"
             RelOp:
                 "==" | "!=" | "&lt;" | "&gt;" | "&lt;=" | "&gt;="
             AddSubOrOp:
