@@ -31,6 +31,13 @@ SVGModule.define(
         "MathematicalEngine",
         ["RandomNumberGenerator"],
         function(RNG) {
+            /**
+             * This mathematical engine consits solely of functions, which either
+             * make use of other internal functions, the JavaScript Math object
+             * or the browser's mathematical engine.
+             * 
+             * @namespace MathematicalEngine
+             */
             return {
                 /**
                  * Evaluates the absolute value of x.

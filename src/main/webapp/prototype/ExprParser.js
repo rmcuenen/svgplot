@@ -1,18 +1,21 @@
 /**
  * Grammar:
- * <special> ::= <relation> [<IfOp> <relation> <ElOp> <relation>]?
- * <relation> ::= <expression> [<RelOp> <expression>]*
- * <expression> ::= <term> [<AddSubOrOp> <term>]*
- * <term> ::= <signed-factor> [<MultDevAndOp> <signed-factor>]*
+ * <special> ::= <relation> {<IfOp> <relation> <ElOp> <relation>}?
+ * <relation> ::= <expression> {<RelOp> <expression>}*
+ * <expression> ::= <term> {<AddSubOrOp> <term>}*
+ * <term> ::= <signed-factor> {<MultDevAndOp> <signed-factor>}*
  * <signed-factor> ::= <NegNotOp>? <factor>
- * <factor> ::= <fragment> [<PowOp> <signed-fragment>]* <DegOp>?
+ * <factor> ::= <fragment> {<PowOp> <signed-fragment>}* <DegOp>?
  * <signed-fragment> ::= <NegNotOp>? <fragment>
- * <fragment> ::= [( <special> ) | <variable> | <function> | <number>] <FacOp>?
- *
+ * <fragment> ::= {( <special> ) | <variable> | <function> | <number>} <FacOp>?
  * <variable> ::= # [a-zA-Z] [a-zA-Z0-9_]*
- * <function> ::= [a-z] [a-z0-9_]* [( <special>? | <special> [, <special>]* )]?
- * <number> ::= 
- * 
+ * <function> ::= [a-z] [a-z0-9_]* {( <special>? | <special> [, <special>]* )}?
+ * <number> ::= <zero> [. <fraction>]? | . <fraction> | <non-zero> <integer>? {. <fraction> | <exponent>}?
+ * <fraction> ::= <integer> <exponent>?
+ * <integer> ::= {<zero> | <non-zero>}*
+ * <exponent> ::= {e | E} {+ | -}? <non-zero> <integer>?
+ * <zero> ::= 0
+ * <non-zero> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
  * <IfOp> ::= ?
  * <ElOp> ::= :
  * <RelOp> ::= == | < | > | <= | >= | !=
@@ -334,34 +337,37 @@
             switch (this.Look) {
                 case '0':
                     this.GetChar();
-                    if (this.Look !== '.') {
-                        this.Expected("'.'");
+                    if (this.Look === '.') {
+                        Value += this.Look;
+                        Value += this.Frac();
                     }
-                    Value += this.Look;
-                    this.GetChar();
-                    Value += this.Int(false);
-                    Value += this.Exp(true);
                     break;
                 case '.':
-                    this.GetChar();
-                    Value += this.Int(false);
-                    Value += this.Exp(true);
+                    Value += this.Frac();
                     break;
                 default:
                     this.GetChar();
                     Value += this.Int(true);
                     if (this.Look === '.') {
                         Value += this.Look;
-                        this.GetChar();
-                        Value += this.Int(false);
-                        Value += this.Exp(true);
+                        Value += this.Frac();
                     } else {
-                        Value += this.Exp(false);
+                        Value += this.Exp();
                     }
                     break;
             }
             this.SkipWhite();
             this._literal(new Number(Value));
+        },
+        Frac: function() {
+            var Value = '';
+            if (this.Look !== '.') {
+                this.Expected("'.'");
+            }
+            this.GetChar();
+            Value += this.Int(false);
+            Value += this.Exp();
+            return Value;
         },
         Int: function(empty) {
             var Value = '';
@@ -374,7 +380,7 @@
             }
             return Value;
         },
-        Exp: function(empty) {
+        Exp: function() {
             var Value = '';
             if (this.Look === 'e' || this.Look === 'E') {
                 Value += this.Look;
@@ -389,9 +395,6 @@
                 Value += this.Look;
                 this.GetChar();
                 Value += this.Int(true);
-            }
-            if (Value.length === 0 && !empty) {
-                this.Expected("Exponent");
             }
             return Value;
         },

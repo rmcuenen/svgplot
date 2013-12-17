@@ -961,18 +961,18 @@
             function:
                 [a-z] [a-z0-9_]* ("(" special? | special ("," special)* ")")?
             number:
-                (zero | non-zero-integer) "." integer exponent-part?
-                | "." integer exponent-part?
-                | non-zero-integer exponent-part
-            exponent-part:
-                ("e" | "E") ("+" | "-")? non-zero-integer
-            non-zero-integer:
-                digit integer?
+                zero ("." fraction)?
+                | "." fraction
+                | non-zero integer? ("." fraction | exponent)?
+            fraction:
+                integer exponent?
             integer:
-               (zero | digit) (zero | digit)*
+                (zero | non-zero)*
+            exponent:
+                ("e" | "E") ("+" | "-")? non-zero integer?
             zero:
                 "0"
-            digit:
+            non-zero:
                 "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
             IfOp:
                 "?"
@@ -999,7 +999,7 @@
         <p>
             Note that all the white spaces (wsp) in the BNF are skipped by the parser
             with the exception of the one needed in combination with the <strong>r</strong>
-            operator. Here a wsp is needed to distinguish between the use of the 
+            operator (DegOp). Here a wsp is needed to distinguish between the use of the 
             <strong>r</strong> operator and a <strong>function</strong>.
         </p>
         <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>

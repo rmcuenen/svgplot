@@ -108,7 +108,7 @@ SVGModule.define(
              * parameters suggested by Stephen K. Park and Keith W. Miller, now
              * known as MINSTD.
              * 
-             * @namespace RamdomGenerator
+             * @namespace RamdomNumberGenerator
              */
             return {
                 /**
