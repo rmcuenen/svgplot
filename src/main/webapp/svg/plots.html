@@ -961,7 +961,19 @@
             function:
                 [a-z] [a-z0-9_]* ("(" special? | special ("," special)* ")")?
             number:
-                TBS.
+                (zero | non-zero-integer) "." integer exponent-part?
+                | "." integer exponent-part?
+                | non-zero-integer exponent-part
+            exponent-part:
+                ("e" | "E") ("+" | "-")? non-zero-integer
+            non-zero-integer:
+                digit integer?
+            integer:
+               (zero | digit) (zero | digit)*
+            zero:
+                "0"
+            digit:
+                "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
             IfOp:
                 "?"
             ElOp:

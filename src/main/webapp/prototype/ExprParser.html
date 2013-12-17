@@ -10,14 +10,14 @@
             }
         </style>
         <!-- Grammar for 'number' 
-            floating-point:
+            number:
                 (zero | non-zero-integer) "." integer exponent-part?
                 | "." integer exponent-part?
-                | positive-integer exponent-part
+                | non-zero-integer exponent-part
             exponent-part:
                 ("e" | "E") ("+" | "-")? non-zero-integer
             non-zero-integer:
-                digit integer
+                digit integer?
             integer:
                (zero | digit) (zero | digit)*
             zero:

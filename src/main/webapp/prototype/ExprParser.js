@@ -256,7 +256,7 @@
         },
         flush: function() {
             if (this.pos <= this.chars.length) {
-                throw "Unrecognized character: " + this.chars.charAt(this.pos - 1);
+                throw "Unrecognized character: " + this.split();
             }
         },
         split: function() {
@@ -327,23 +327,73 @@
             this._function(Name, count);
         },
         Num: function() {
-            var Decimal = false;
-            var Value = '';
+            var Value = this.Look;
             if (!/[0-9\.]/.test(this.Look)) {
                 this.Expected("Number");
             }
-            while (/[0-9\.]/.test(this.Look)) {
-                if (this.Look === '.') {
-                    if (Decimal) {
-                        this.Expected("Number");
+            switch (this.Look) {
+                case '0':
+                    this.GetChar();
+                    if (this.Look !== '.') {
+                        this.Expected("'.'");
                     }
-                    Decimal = true;
-                }
-                Value += this.Look;
-                this.GetChar();
+                    Value += this.Look;
+                    this.GetChar();
+                    Value += this.Int(false);
+                    Value += this.Exp(true);
+                    break;
+                case '.':
+                    this.GetChar();
+                    Value += this.Int(false);
+                    Value += this.Exp(true);
+                    break;
+                default:
+                    this.GetChar();
+                    Value += this.Int(true);
+                    if (this.Look === '.') {
+                        Value += this.Look;
+                        this.GetChar();
+                        Value += this.Int(false);
+                        Value += this.Exp(true);
+                    } else {
+                        Value += this.Exp(false);
+                    }
+                    break;
             }
             this.SkipWhite();
             this._literal(new Number(Value));
+        },
+        Int: function(empty) {
+            var Value = '';
+            while (/[0-9]/.test(this.Look)) {
+                Value += this.Look;
+                this.GetChar();
+            }
+            if (Value.length === 0 && !empty) {
+                this.Expected("Integer");
+            }
+            return Value;
+        },
+        Exp: function(empty) {
+            var Value = '';
+            if (this.Look === 'e' || this.Look === 'E') {
+                Value += this.Look;
+                this.GetChar();
+                if (this.Look === '+' || this.Look === '-') {
+                    Value += this.Look;
+                    this.GetChar();
+                }
+                if (!/[1-9]/.test(this.Look)) {
+                    this.Expected("Non-Zero");
+                }
+                Value += this.Look;
+                this.GetChar();
+                Value += this.Int(true);
+            }
+            if (Value.length === 0 && !empty) {
+                this.Expected("Exponent");
+            }
+            return Value;
         },
         Match: function(x) {
             if (this.Look !== x) {
