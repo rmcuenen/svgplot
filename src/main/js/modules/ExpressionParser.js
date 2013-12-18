@@ -126,8 +126,12 @@ SVGModule.define(
                  *                   with square brackets around the current position.
                  */
                 split: function() {
+                    var char = this.stream.charAt(this.pos - 1);
+                    if (typeof char === 'undefined') {
+                        char = '';
+                    }
                     return this.stream.substring(0, this.pos - 1) +
-                            '[' + this.stream.charAt(this.pos - 1) + ']' +
+                            '[' + char + ']' +
                             this.stream.substring(this.pos);
                 }
             };
@@ -314,13 +318,16 @@ SVGModule.define(
                 },
                 /**
                  * Parses a varibale token (after the '#' character).
+                 * 
+                 * Grammar:
+                 * variable := '#' [a-zA-Z] [a-zA-Z0-9_]*
                  */
                 Var: function() {
                     var Token = '';
-                    if (!/[a-zA-Z]/.test(this.Look)) {
+                    if (!/[a-zA-Z]/.test(this.Look)) { // [a-zA-Z]
                         this.Expected("Variable");
                     }
-                    while (/[a-zA-Z0-9_]/.test(this.Look)) {
+                    while (/[a-zA-Z0-9_]/.test(this.Look)) { // [a-zA-z0-9_]*
                         Token += this.Look;
                         this.GetChar();
                     }
@@ -329,13 +336,16 @@ SVGModule.define(
                 },
                 /**
                  * Parses a function token.
+                 * 
+                 * Grammar:
+                 * function := [a-z] [a-z0-9_]* ('(' special? | special (',' special)* ')')?
                  */
                 Func: function() {
                     var Name = '';
-                    if (!/[a-z]/.test(this.Look)) {
+                    if (!/[a-z]/.test(this.Look)) { // [a-z]
                         this.Expected("Function");
                     }
-                    while (/[a-z0-9_]/.test(this.Look)) {
+                    while (/[a-z0-9_]/.test(this.Look)) { // [a-z0-9_]*
                         Name += this.Look;
                         this.GetChar();
                     }
@@ -346,7 +356,7 @@ SVGModule.define(
                         if (this.Look !== ')') {
                             this.Special();
                             count++;
-                            while (this.Look === ',') {
+                            while (this.Look === ',') { // (',' special)*
                                 this.Tree.move();
                                 this.Match(',');
                                 this.Special();
@@ -359,30 +369,35 @@ SVGModule.define(
                 },
                 /**
                  * Parses a number token.
+                 * 
+                 * Grammar:
+                 * number := zero ('.' fraction)? | '.' fraction | non-zero integer? ('.' fraction | exponent)?
+                 * zero := '0'
+                 * non-zero := '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
                  */
                 Num: function() {
                     var Value = this.Look;
-                    if (!/[0-9\.]/.test(this.Look)) {
+                    if (!/[0-9\.]/.test(this.Look)) { // zero | non-zero | '.'
                         this.Expected("Number");
                     }
                     switch (this.Look) {
-                        case '0':
+                        case '0': // zero
                             this.GetChar();
-                            if (this.Look === '.') {
+                            if (this.Look === '.') { // ('.' fraction)?
                                 Value += this.Look;
                                 Value += this.Frac();
                             }
                             break;
-                        case '.':
+                        case '.': // '.' fraction
                             Value += this.Frac();
                             break;
-                        default:
+                        default: // non-zero
                             this.GetChar();
-                            Value += this.Int(true);
-                            if (this.Look === '.') {
+                            Value += this.Int(false); // integer?
+                            if (this.Look === '.') { // ('.' fraction)?
                                 Value += this.Look;
                                 Value += this.Frac();
-                            } else {
+                            } else { // exponent?
                                 Value += this.Exp();
                             }
                             break;
@@ -390,45 +405,89 @@ SVGModule.define(
                     this.SkipWhite();
                     this.Tree.literal(new Number(Value));
                 },
+                /**
+                 * Parses and returns the fraction fragment of a number token.
+                 * The current character is assumed to be the '.' character but
+                 * is not included into the result.
+                 * 
+                 * Grammar:
+                 * fraction := integer exponent?
+                 * 
+                 * @returns {String} The fraction part of a number or an empty
+                 *                   string when no fraction fragment is present.
+                 */
                 Frac: function() {
                     var Value = '';
                     if (this.Look !== '.') {
                         this.Expected("'.'");
                     }
                     this.GetChar();
-                    Value += this.Int(false);
-                    Value += this.Exp();
+                    Value += this.Int(true); // integer
+                    Value += this.Exp(); // exponent?
                     return Value;
                 },
-                Int: function(empty) {
+                /**
+                 * Parses and returns the integer fragment of a number token
+                 * (required = false) or the interer part of an exponent part
+                 * or a fraction fragment (required = true).
+                 * 
+                 * Grammar:
+                 * integer := (zero | non-zero) (zero | non-zero)*
+                 * zero := '0'
+                 * non-zero := '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+                 * 
+                 * @param {Boolean} required Indicates whether or not the integer
+                 *                           part is required.
+                 * @returns {String} The parsed integer part, or an empty string
+                 *                   when no integer part is present.
+                 */
+                Int: function(required) {
                     var Value = '';
-                    while (/[0-9]/.test(this.Look)) {
+                    while (/[0-9]/.test(this.Look)) { // (zero | non-zero)*
                         Value += this.Look;
                         this.GetChar();
                     }
-                    if (Value.length === 0 && !empty) {
+                    if (Value.length === 0 && required) {
                         this.Expected("Integer");
                     }
                     return Value;
                 },
+                /**
+                 * Parses and returns the exponent fragment of a number token
+                 * or the exponent part of a fraction fragment.
+                 * 
+                 * Grammar:
+                 * exponent := ('e' | 'E') ('+' | '-')? non-zero integer?
+                 * non-zero := '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+                 * 
+                 * @returns {String} The parsed exponent part, or an empty string
+                 *                   when no exponent part is present.
+                 */
                 Exp: function() {
                     var Value = '';
-                    if (this.Look === 'e' || this.Look === 'E') {
+                    if (this.Look === 'e' || this.Look === 'E') { // ('e' | 'E')
                         Value += this.Look;
                         this.GetChar();
-                        if (this.Look === '+' || this.Look === '-') {
+                        if (this.Look === '+' || this.Look === '-') { // ('+' | '-')?
                             Value += this.Look;
                             this.GetChar();
                         }
-                        if (!/[1-9]/.test(this.Look)) {
+                        if (!/[1-9]/.test(this.Look)) { // non-zero
                             this.Expected("Non-Zero");
                         }
                         Value += this.Look;
                         this.GetChar();
-                        Value += this.Int(true);
+                        Value += this.Int(false); // integer?
                     }
                     return Value;
                 },
+                /**
+                 * Match the current character in the input stream to the given
+                 * character and skip to the next (non white space) character.
+                 * 
+                 * @param {String} x The character to match to.
+                 * @throws {Exception} When the characters do not match.
+                 */
                 Match: function(x) {
                     if (this.Look !== x) {
                         this.Expected("'" + x + "'");
@@ -437,29 +496,41 @@ SVGModule.define(
                         this.SkipWhite();
                     }
                 },
+                /**
+                 * Parses a fragment token.
+                 * 
+                 * Grammar:
+                 * fragment := ('(' special ')' | variable | function | number) FacOp?
+                 */
                 Fragment: function() {
-                    if (this.Look === '(') {
+                    if (this.Look === '(') { // '(' special ')'
                         this.Match('(');
                         this.Special();
                         this.Match(')');
-                    } else if (this.Look === '#') {
+                    } else if (this.Look === '#') { // variable
                         this.Match('#');
                         this.Var();
-                    } else if (/[a-z]/.test(this.Look)) {
+                    } else if (/[a-z]/.test(this.Look)) { // function
                         this.Func();
-                    } else {
+                    } else { // number
                         this.Num();
                     }
-                    if (this.Look === this.FacOp[0]) {
+                    if (this.Look === this.FacOp[0]) { // FacOp?
                         this.Match(this.FacOp[0]);
                         this.Tree.function("factorial", 1);
                     }
                 },
+                /**
+                 * Parses a signed-fragment token.
+                 * 
+                 * Grammar:
+                 * signed-fragment := NegNotOp? fragment
+                 */
                 SignedFragment: function() {
                     var index = this.NegNotOp.indexOf(this.Look);
-                    if (index === -1) {
+                    if (index === -1) { // fragment
                         this.Fragment();
-                    } else {
+                    } else { // NegNotOp fragment
                         this.Tree.move();
                         this.Match(this.NegNotOp[index]);
                         var func;
@@ -475,24 +546,36 @@ SVGModule.define(
                         this.Tree.function(func, 1);
                     }
                 },
+                /**
+                 * Parses a factor token.
+                 * 
+                 * Grammar:
+                 * factor := fragment (PowOp signed-fragment)* DegOp?
+                 */
                 Factor: function() {
-                    this.Fragment();
-                    while (this.Look === this.PowOp[0]) {
+                    this.Fragment(); // fragment
+                    while (this.Look === this.PowOp[0]) { // (PowOp signed-fragment)*
                         this.Tree.move();
                         this.Match(this.PowOp[0]);
                         this.SignedFragment();
                         this.Tree.function("pow", 2);
                     }
-                    if (this.Look === this.DegOp[0]) {
+                    if (this.Look === this.DegOp[0]) { // DegOp?
                         this.Match(this.DegOp[0]);
                         this.Tree.function("deg", 1);
                     }
                 },
+                /**
+                 * Parses a signed-factor token.
+                 * 
+                 * Grammar:
+                 * signed-factor := NegNotOp? factor
+                 */
                 SignedFactor: function() {
                     var index = this.NegNotOp.indexOf(this.Look);
-                    if (index === -1) {
+                    if (index === -1) { // factor
                         this.Factor();
-                    } else {
+                    } else { // NegNotOp factor
                         this.Tree.move();
                         this.Match(this.NegNotOp[index]);
                         var func;
@@ -508,10 +591,16 @@ SVGModule.define(
                         this.Tree.function(func, 1);
                     }
                 },
+                /**
+                 * Parses a term token.
+                 * 
+                 * Grammar:
+                 * term := signed-factor (MultDevAndOp signed-factor)*
+                 */
                 Term: function() {
-                    this.SignedFactor();
+                    this.SignedFactor(); // signed-factor
                     var index = this.MultDevAndOp.indexOf(this.Look);
-                    while (index !== -1) {
+                    while (index !== -1) { // (MultDevAndOp signed-factor)*
                         this.Tree.move();
                         this.Match(this.MultDevAndOp[index]);
                         var func;
@@ -532,10 +621,16 @@ SVGModule.define(
                         index = this.MultDevAndOp.indexOf(this.Look);
                     }
                 },
+                /**
+                 * Parses an expression token.
+                 * 
+                 * Grammar:
+                 * expression := term (AddSubOrOp term)*
+                 */
                 Expression: function() {
-                    this.Term();
+                    this.Term(); // term
                     var index = this.AddSubOrOp.indexOf(this.Look);
-                    while (index !== -1) {
+                    while (index !== -1) { // (AddSubOrOp term)*
                         this.Tree.move();
                         this.Match(this.AddSubOrOp[index]);
                         var func;
@@ -556,10 +651,16 @@ SVGModule.define(
                         index = this.AddSubOrOp.indexOf(this.Look);
                     }
                 },
+                /**
+                 * Parses a relation token.
+                 * 
+                 * Grammar:
+                 * relation := expression (RelOp expression)*
+                 */
                 Relation: function() {
-                    this.Expression();
+                    this.Expression(); // expression
                     var index = this.RelOp.indexOf(this.Look);
-                    while (index !== -1) {
+                    while (index !== -1) { // (RelOp expression)*
                         this.Tree.move();
                         this.Match(this.RelOp[index]);
                         var func;
@@ -591,9 +692,15 @@ SVGModule.define(
                         index = this.RelOp.indexOf(this.Look);
                     }
                 },
+                /**
+                 * Parses a special token.
+                 * 
+                 * Grammar:
+                 * special := relation (IfOp relation ElOp relation)?
+                 */
                 Special: function() {
-                    this.Relation();
-                    if (this.Look === this.IfOp[0]) {
+                    this.Relation(); // relation
+                    if (this.Look === this.IfOp[0]) { // (IfOp relation ElOp relation)?
                         this.Tree.move();
                         this.Match(this.IfOp[0]);
                         this.Relation();
@@ -603,6 +710,9 @@ SVGModule.define(
                         this.Tree.function("ifthenelse", 3);
                     }
                 },
+                /**
+                 * Parse the character input stream into the parse tree.
+                 */
                 parse: function() {
                     this.GetChar();
                     this.SkipWhite();

@@ -967,7 +967,7 @@
             fraction:
                 integer exponent?
             integer:
-                (zero | non-zero)*
+                (zero | non-zero) (zero | non-zero)*
             exponent:
                 ("e" | "E") ("+" | "-")? non-zero integer?
             zero:

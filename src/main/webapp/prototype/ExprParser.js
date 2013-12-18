@@ -12,7 +12,7 @@
  * <function> ::= [a-z] [a-z0-9_]* {( <special>? | <special> [, <special>]* )}?
  * <number> ::= <zero> [. <fraction>]? | . <fraction> | <non-zero> <integer>? {. <fraction> | <exponent>}?
  * <fraction> ::= <integer> <exponent>?
- * <integer> ::= {<zero> | <non-zero>}*
+ * <integer> ::= {<zero> | <non-zero>} {<zero> | <non-zero>}*
  * <exponent> ::= {e | E} {+ | -}? <non-zero> <integer>?
  * <zero> ::= 0
  * <non-zero> ::= 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
@@ -263,8 +263,12 @@
             }
         },
         split: function() {
+            var char = this.chars[this.pos - 1];
+            if (typeof char === 'undefined') {
+                char = '';
+            }
             return this.chars.substring(0, this.pos - 1) +
-                    '[' + this.chars[this.pos - 1] + ']' +
+                    '[' + char + ']' +
                     this.chars.substring(this.pos);
         }
     };
