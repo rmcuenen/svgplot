@@ -89,8 +89,11 @@ public abstract class AbstractTestClass {
         return placeholder.getAttribute(RESULT_ATTRIBUTE);
     }
 
-    protected Alert getAlert() {
-        return driver.switchTo().alert();
+    protected String getAlert() {
+        Alert alert = driver.switchTo().alert();
+        String text = alert.getText();
+        alert.accept();
+        return text;
     }
 
     protected WebElement getElementById(String id) {

@@ -67,6 +67,6 @@ public class SVGPlotModuleTest extends AbstractTestClass {
         Wait wait = load(MODULE_LOADER, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
         wait.until(ExpectedConditions.alertIsPresent());
-        assertTrue(getAlert().getText().startsWith(ERROR_MESSAGE));
+        assertTrue(getAlert().startsWith(ERROR_MESSAGE));
     }
 }
