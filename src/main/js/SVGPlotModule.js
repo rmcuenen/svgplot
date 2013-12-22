@@ -54,7 +54,7 @@
             throw "Invalid callback";
         }
         this.dependencies = dependencies;
-        this.callback = callback;
+        this.callback = callback ? callback : function() {};
     }
 
     /**

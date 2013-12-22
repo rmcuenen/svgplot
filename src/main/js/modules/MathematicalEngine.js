@@ -199,7 +199,7 @@ SVGModule.define(
                  * @returns {0|1}
                  */
                 equal: function(x, y) {
-                    return x === y ? 1 : 0;
+                    return x == y ? 1 : 0;
                 },
                 /**
                  * Returns the value of e^x, where e is Euler's number and x is

@@ -257,7 +257,7 @@ SVGModule.define(
                  * 
                  * @type String[]
                  */
-                RelOp: ['=', '!', '<', '>'],
+                RelOp: ['=', '<', '>'],
                 /**
                  * The add- subtract- and or-operators.
                  * 
@@ -606,7 +606,7 @@ SVGModule.define(
                         var func;
                         switch (index) {
                             case 0:
-                                func = "multuply";
+                                func = "multiply";
                                 break;
                             case 1:
                                 func = "divide";
@@ -670,17 +670,16 @@ SVGModule.define(
                                 func = "equal";
                                 break;
                             case 1:
-                                this.Match('=');
-                                func = "notequal";
-                                break;
-                            case 2:
                                 func = "less";
                                 if (this.Look === '=') {
                                     this.Match('=');
                                     func = "notgreater";
+                                } else if (this.Look === '>') {
+                                    this.Match('>');
+                                    func = "notequal";
                                 }
                                 break;
-                            case 3:
+                            case 2:
                                 func = "greater";
                                 if (this.Look === '=') {
                                     this.Match('=');
