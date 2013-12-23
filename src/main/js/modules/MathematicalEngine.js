@@ -30,7 +30,7 @@
 SVGModule.define(
         "MathematicalEngine",
         ["RandomNumberGenerator"],
-        function(RNG) {
+        function(RandomNumberGenerator) {
             /**
              * This mathematical engine consits solely of functions, which either
              * make use of other internal functions, the JavaScript Math object
@@ -323,8 +323,9 @@ SVGModule.define(
                  */
                 max: function() {
                     var m = Number.NEGATIVE_INFINITY;
-                    for (var i = 0; i < arguments.length; i++)
+                    for (var i = 0; i < arguments.length; i++) {
                         m = Math.max(m, arguments[i]);
+                    }
                     return m;
                 },
                 /**
@@ -334,8 +335,9 @@ SVGModule.define(
                  */
                 min: function() {
                     var m = Number.POSITIVE_INFINITY;
-                    for (var i = 0; i < arguments.length; i++)
+                    for (var i = 0; i < arguments.length; i++) {
                         m = Math.min(m, arguments[i]);
+                    }
                     return m;
                 },
                 /**
@@ -463,7 +465,7 @@ SVGModule.define(
                  * @returns {Number}
                  */
                 rand: function() {
-                    return RNG.random(-1, 1);
+                    return RandomNumberGenerator.random(-1, 1);
                 },
                 /**
                  * This function takes zero, one or two arguments.
@@ -484,7 +486,7 @@ SVGModule.define(
                         a = b;
                         b = arguments[1];
                     }
-                    return RNG.random(a, b);
+                    return RandomNumberGenerator.random(a, b);
                 },
                 /**
                  * Ensures x contains a decimal point.
@@ -501,7 +503,7 @@ SVGModule.define(
                  * @returns {Number}
                  */
                 rnd: function() {
-                    return RNG.random();
+                    return RandomNumberGenerator.random();
                 },
                 /**
                  * Rounds x to the nearest integer. It uses "asymmetric half-up"

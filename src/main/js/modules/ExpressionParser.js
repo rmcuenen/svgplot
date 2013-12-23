@@ -30,7 +30,7 @@
 SVGModule.define(
         "ExpressionParser",
         ["MathematicalEngine"],
-        function(ME) {
+        function(MathematicalEngine) {
             /**
              * @class This object represents the parse tree. It implements the
              *        visitor pattern where the nodes are stored as 'actions'
@@ -113,6 +113,9 @@ SVGModule.define(
                  * Flush the stream.
                  * If there are still characters in the stream
                  * an exception is thrown.
+                 * 
+                 * @throws {Exception} When the current position is not at the
+                 *                     end of the stream.
                  */
                 flush: function() {
                     if (this.pos <= this.stream.length) {
@@ -199,7 +202,7 @@ SVGModule.define(
                  * @param {Integer} paramCount The number of function parameters.
                  */
                 function: function(name, paramCount) {
-                    if (typeof ME[name] === 'undefined') {
+                    if (typeof MathematicalEngine[name] === 'undefined') {
                         throw "Unknown function '" + name + "'";
                     }
                     var context = this.ParseTree;
@@ -210,7 +213,7 @@ SVGModule.define(
                             for (var i = 1; i < count; ++i) {
                                 parameters.unshift(context.Stack.shift());
                             }
-                            context.Result = ME[name].apply(ME, parameters);
+                            context.Result = MathematicalEngine[name].apply(MathematicalEngine, parameters);
                         }
                     });
                 }

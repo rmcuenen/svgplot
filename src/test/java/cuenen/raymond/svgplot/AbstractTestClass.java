@@ -31,6 +31,8 @@ package cuenen.raymond.svgplot;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoAlertPresentException;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -72,12 +74,27 @@ public abstract class AbstractTestClass {
         driver.quit();
     }
 
+    /**
+     * Load the given resource into the browser. This also sets the document's
+     * title to the implementing class name.
+     *
+     * @param resource The resource to be loaded.
+     * @param timeout The timeout in seconds of the returned {@code Wait}
+     * object.
+     * @return The {@code Wait} object obtained from the WebDriver.
+     */
     protected Wait load(String resource, int timeout) {
         driver.get(BASE_URL + CONTEXT + resource);
         js.executeScript(TITLE_SCRIPT, getClass().getSimpleName());
         return new WebDriverWait(driver, timeout);
     }
 
+    /**
+     * Require the given modules.
+     *
+     * @param callback The callback function to be called after loading.
+     * @param modules The modules that will be required.
+     */
     protected void require(String callback, String... modules) {
         StringBuilder script = new StringBuilder();
         script.append("SVGModule.require(");
@@ -86,22 +103,47 @@ public abstract class AbstractTestClass {
         js.executeScript(script.toString());
     }
 
+    /**
+     * Retrieve the result as stored in the place holders result attribute.
+     *
+     * @return The stored result.
+     */
     protected String getResult() {
         WebElement placeholder = getElementById(PLACEHOLDER_ID);
         return placeholder.getAttribute(RESULT_ATTRIBUTE);
     }
 
-    protected String getAlert() {
+    /**
+     * Retrieve the text of an alert window. This method also accepts the alert
+     * (pressing OK).
+     *
+     * @throws NoAlertPresentException If the dialog cannot be found
+     * @return The message text.
+     */
+    protected String getAlert() throws NoAlertPresentException {
         Alert alert = driver.switchTo().alert();
         String text = alert.getText();
         alert.accept();
         return text;
     }
 
-    protected WebElement getElementById(String id) {
+    /**
+     * Retrieve a WebElement by its ID.
+     *
+     * @param id The element's identifier.
+     * @throws NoSuchElementException If no matching elements are found
+     * @return The corresponding WebElement.
+     */
+    protected WebElement getElementById(String id) throws NoSuchElementException {
         return driver.findElement(By.id(id));
     }
 
+    /**
+     * Converts an array of module identifiers to the request string.
+     *
+     * @param a The array of module identifier.
+     * @return The string representation of the request array.
+     */
     private static String toString(String[] a) {
         int iMax = a.length - 1;
         if (iMax == -1) {
