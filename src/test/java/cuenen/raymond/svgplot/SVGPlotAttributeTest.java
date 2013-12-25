@@ -28,6 +28,9 @@
  */
 package cuenen.raymond.svgplot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
@@ -44,6 +47,7 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
     private static final String ALREADY_SET = "The attribute '%s' is already defined";
     private static final String ATTR_FUNCTION_FORMAT = "function(Attr){var a=Attr.create(\"%s\");for(var i=0;i<%d;i++){a.parse(\"%s\");}setResult(a.value);}";
     private static final String SET_FUNCTION_FORMAT = "function(Attr){Attr.setAttribute(\"%1$s\", %2$s, %3$s);var a=Attr.create(\"%1$s\");a.parse(\"%4$s\");setResult(a.value);}";
+    private static final String NAMES_FUNCTION = "function(Attr){setResult(Attr.names());}";
     private static final String[][] VALID_ATTRIBUTES = {
         {"domain", "0:2*pi", "-5,5", "0,6.283185307179586"},
         {"samples", "101", "25", "101"},
@@ -115,6 +119,20 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
                 NEW_ATTRIUTE[1], NEW_ATTRIUTE[2], UNKNOWN_ATTRIBUTE[1]);
         require(callback, MODULE_NAME);
         assertEquals(getResult(), String.valueOf(v));
+    }
+
+    @Test
+    public void namesTest() {
+        load(MODULE_LOADER, 10);
+        require(NAMES_FUNCTION, MODULE_NAME);
+        String result = getResult();
+        assertNotNull(result);
+        List<String> names = new ArrayList<>(Arrays.asList(result.split(",")));
+        for (String[] attr : VALID_ATTRIBUTES) {
+            assertTrue(names.contains(attr[0]), attr[0]);
+            names.remove(attr[0]);
+        }
+        assertTrue(names.isEmpty());
     }
 
     /**

@@ -203,6 +203,20 @@ SVGModule.define(
                     return new Attribute(name);
                 },
                 /**
+                 * Returns the array of attribute names currently in the repository.
+                 * 
+                 * @returns {String[]} The attribute names in the repository.
+                 */
+                names: function() {
+                    var result = [];
+                    for (var name in PARSERS) {
+                        if (PARSERS.hasOwnProperty(name)) {
+                            result.push(name);
+                        }
+                    }
+                    return result;
+                },
+                /**
                  * Sets the given mapping in the SVGPlotAttribute repositories.
                  * 
                  * @param {String} name The attribute name.
