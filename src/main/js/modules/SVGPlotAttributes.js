@@ -28,39 +28,41 @@
  */
 
 SVGModule.define(
-        "SVGPlotAttribute",
+        "SVGPlotAttributes",
         ["ExpressionParser"],
         function(ExpressionParser) {
             /**
              * @class This object represents a SVGPlotAttribute.
-             * @name Attribute
+             * @name SVGPlotAttribute
              * @property {String} name The name of the attribute.
              * @property {Object} value The (parsed) value of the attribute.
              * @property {Boolean} set Indicates whether or not the value is
              *                         already set (parsed).
              * @param {String} name The name of the attribute.
              */
-            function Attribute(name) {
+            function SVGPlotAttribute(name) {
                 this.name = name;
                 this.value = DEFAULTS[name];
                 this.set = false;
             }
 
             /**
-             * @lends Attribute
+             * @lends SVGPlotAttribute
              */
-            Attribute.prototype = {
+            SVGPlotAttribute.prototype = {
                 /**
                  * Parses the given string by means of the parse function.
                  * The parse function is determined by name from the {@link PARSERS}
                  * repository.
                  * 
                  * @param {String} attr The string to be parsed in a value.
-                 * @throws {Exception} When the value is already set (parsed) before.
+                 * @throws {ParseError} When the value is already set (parsed) before.
                  */
                 parse: function(attr) {
                     if (this.set) {
-                        throw "The attribute '" + this.name + "' is already defined";
+                        var error = new Error("The attribute '" + this.name + "' is already defined");
+                        error.name = "ParseError";
+                        throw error;
                     }
                     this.value = PARSERS[this.name](attr);
                     this.set = true;
@@ -82,7 +84,7 @@ SVGModule.define(
                  * @param {String} attr The sting value to be parsed.
                  * @throws {Exception} When the lower bound range value is higher
                  *                     then the upper bound range value.
-                 * @throws {Exception} When the string has not the 'domain' format.
+                 * @throws {ParseError} When the string has not the 'domain' format.
                  */
                 domain: function(attr) {
                     var target = attr.split(':');
@@ -90,56 +92,66 @@ SVGModule.define(
                         var pTree0 = ExpressionParser.parse(target[0]).visit();
                         var pTree1 = ExpressionParser.parse(target[1]).visit();
                         if (pTree0 > pTree1) {
-                            throw "Invalid domain: " + pTree0 + " > " + pTree1;
+                            var error = new Error("Invalid domain: " + pTree0 + " > " + pTree1);
+                            error.name = "ParseError";
+                            throw error;
                         }
                         return [pTree0, pTree1];
                     } else {
-                        throw "Unknown domain format: " + attr;
+                        var error = new Error("Unknown domain format: " + attr);
+                        error.name = "ParseError";
+                        throw error;
                     }
                 },
                 /**
                  * Parses a 'samples' attribute value.
                  * 
                  * @param {String} attr The sting value to be parsed.
-                 * @throws {Exception} When the parsed value is not a positive integer.
+                 * @throws {ParseError} When the parsed value is not a positive integer.
                  */
                 samples: function(attr) {
                     var target = 0 | Number(attr);
                     if (target > 0) {
                         return target;
                     }
-                    throw "Invalid samples: " + attr;
+                    var error = new Error("Invalid samples: " + attr);
+                    error.name = "ParseError";
+                    throw error;
                 },
                 /**
                  * Parses a 'variable' attribute value.
                  * 
                  * @param {String} attr The sting value to be parsed.
-                 * @throws {Exception} When the string has not the 'variable' format.
+                 * @throws {ParseError} When the string has not the 'variable' format.
                  */
                 variable: function(attr) {
                     var match = /#?[a-zA-Z][a-zA-Z0-9_]*/.exec(attr);
                     if (match !== null && match[0] === attr) {
                         return attr.charAt(0) === '#' ? attr : ('#' + attr);
                     }
-                    throw "Invalid variable: " + attr;
+                    var error = new Error("Invalid variable: " + attr);
+                    error.name = "ParseError";
+                    throw error;
                 },
                 /**
                  * Parses a 'connected' attribute value.
                  * 
                  * @param {String} attr The sting value to be parsed.
-                 * @throws {Exception} When the string is not one of 'sharp' or 'smooth'.
+                 * @throws {ParseError} When the string is not one of 'sharp' or 'smooth'.
                  */
                 connected: function(attr) {
                     if (/(sharp|smooth)/.test(attr)) {
                         return attr;
                     }
-                    throw "Invalid connection type: " + attr;
+                    var error = new Error("Invalid connection type: " + attr);
+                    error.name = "ParseError";
+                    throw error;
                 },
                 /**
                  * Parses a 'function' attribute value.
                  * 
                  * @param {String} attr The sting value to be parsed.
-                 * @throws {Exception} When the string has not the 'function' format.
+                 * @throws {ParseError} When the string has not the 'function' format.
                  */
                 function: function(attr) {
                     var pTree = [];
@@ -152,7 +164,9 @@ SVGModule.define(
                             pTree[1] = ExpressionParser.parse(target[index]);
                             break;
                         default:
-                            throw "Invalid function: " + attr;
+                            var error = new Error("Invalid function: " + attr);
+                            error.name = "ParseError";
+                            throw error;
                     }
                     return pTree;
                 }
@@ -193,14 +207,16 @@ SVGModule.define(
                  * Creates a new SVGPlotAttribute implementation for the given attribute.
                  * 
                  * @param {type} name The attribute name.
-                 * @throws {Exception} When the requested attribute has no parse function.
-                 * @returns {Attribute} The SVGPlotAttribute implementation.
+                 * @throws {NotFoundError} When the requested attribute has no parse function.
+                 * @returns {SVGPlotAttribute} The SVGPlotAttribute implementation.
                  */
                 create: function(name) {
                     if (typeof PARSERS[name] === 'undefined') {
-                        throw "Unknown attribute: " + name;
+                        var error = new Error("Unknown attribute: " + name);
+                        error.name = "NotFoundError";
+                        throw error;
                     }
-                    return new Attribute(name);
+                    return new SVGPlotAttribute(name);
                 },
                 /**
                  * Returns the array of attribute names currently in the repository.
@@ -222,11 +238,13 @@ SVGModule.define(
                  * @param {String} name The attribute name.
                  * @param {Object} defaultValue The default value (can be null).
                  * @param {Function} parseFunction The parse function.
-                 * @throws {Exception} When the parse function is invalid.
+                 * @throws {TypeError} When the parse function is invalid.
                  */
                 setAttribute: function(name, defaultValue, parseFunction) {
                     if (!(Object.prototype.toString.call(parseFunction) === '[object Function]')) {
-                        throw "Invalid parse function";
+                        var error = new Error("Invalid parse function");
+                        error.name = "TypeError";
+                        throw error;
                     }
                     PARSERS[name] = parseFunction;
                     DEFAULTS[name] = defaultValue;

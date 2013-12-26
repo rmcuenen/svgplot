@@ -29,8 +29,8 @@
 
 SVGModule.define(
         "SVGPlotHandler",
-        ["SVGPlotAttribute", "ExpressionParser"],
-        function(SVGPlotAttribute, ExpressionParser) {
+        ["SVGPlotAttributes", "ExpressionParser"],
+        function(SVGPlotAttributes, ExpressionParser) {
             /**
              * @class The PathCreator is responsible for converting an SVGPlotElement
              *        into an SVGPathElement.
@@ -43,8 +43,8 @@ SVGModule.define(
              */
             function PathCreator() {
                 this.pathElement = document.createElementNS(SVGModule.SVG_NS, "path");
-                for (var attr in SVGPlotAttribute.names()) {
-                    this[attr] = SVGPlotAttribute.create(attr);
+                for (var attr in SVGPlotAttributes.names()) {
+                    this[attr] = SVGPlotAttributes.create(attr);
                 }
             }
 
@@ -95,7 +95,6 @@ SVGModule.define(
                     while (value < end) {
                         value += step;
                         path += token;
-                        var prev = point;
                         point = [scale * x.visit(value), -scale * y.visit(value)];
                         if (token === 'S') {
                             var mid = [scale * x.visit(value - step / 2), -scale * y.visit(value - step / 2)];
@@ -140,14 +139,16 @@ SVGModule.define(
                  * The SVGPlotHandler's handle method.
                  * 
                  * @param {Element} plotElement The SVGPlotElement being handled.
-                 * @throws {Exception} When the 'function' attribute is not set.
+                 * @throws {NotFoundError} When the 'function' attribute is not set.
                  * @returns {Element} The converted SVGPathElement
                  */
                 handle: function(plotElement) {
                     var creator = new PathCreator();
                     creator.parseSVGPlotElement(plotElement);
                     if (!creator["function"].set) {
-                        throw "Function not set: " + toString(plotElement);
+                        var error = new Error("Function not set: " + toString(plotElement));
+                        error.name = "NotFoundError";
+                        throw error;
                     }
                     creator.createPath();
                     if (plotElement.parentNode) {

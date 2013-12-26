@@ -37,14 +37,14 @@ import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
 /**
- * Test class for testing {@code SVGPlotAttribute.js}.
+ * Test class for testing {@code SVGPlotAttributes.js}.
  *
  * @author R. M. Cuenen
  */
-public class SVGPlotAttributeTest extends AbstractTestClass {
+public class SVGPlotAttributesTest extends AbstractTestClass {
 
-    private static final String MODULE_NAME = "SVGPlotAttribute";
-    private static final String ALREADY_SET = "The attribute '%s' is already defined";
+    private static final String MODULE_NAME = "SVGPlotAttributes";
+    private static final String ALREADY_SET = "ParseError: The attribute '%s' is already defined";
     private static final String ATTR_FUNCTION_FORMAT = "function(Attr){var a=Attr.create(\"%s\");for(var i=0;i<%d;i++){a.parse(\"%s\");}setResult(a.value);}";
     private static final String SET_FUNCTION_FORMAT = "function(Attr){Attr.setAttribute(\"%1$s\", %2$s, %3$s);var a=Attr.create(\"%1$s\");a.parse(\"%4$s\");setResult(a.value);}";
     private static final String NAMES_FUNCTION = "function(Attr){setResult(Attr.names());}";
@@ -56,15 +56,15 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
         {"function", "#x^2", "null", ",[object Object]"}
     };
     private static final String[][] INVALID_ATTRIBUTES = {
-        {"domain", "0:-1", "Invalid domain: 0 > -1"},
-        {"domain", "-5,5", "Unknown domain format: -5,5"},
-        {"samples", "pi", "Invalid samples: pi"},
-        {"samples", "0", "Invalid samples: 0"},
-        {"variable", "_t", "Invalid variable: _t"},
-        {"connected", "normal", "Invalid connection type: normal"},
-        {"function", "#x,#^2,0", "Invalid function: #x,#^2,0"}
+        {"domain", "0:-1", "ParseError: Invalid domain: 0 > -1"},
+        {"domain", "-5,5", "ParseError: Unknown domain format: -5,5"},
+        {"samples", "pi", "ParseError: Invalid samples: pi"},
+        {"samples", "0", "ParseError: Invalid samples: 0"},
+        {"variable", "_t", "ParseError: Invalid variable: _t"},
+        {"connected", "normal", "ParseError: Invalid connection type: normal"},
+        {"function", "#x,#^2,0", "ParseError: Invalid function: #x,#^2,0"}
     };
-    private static final String[] UNKNOWN_ATTRIBUTE = {"Bogus", "six", "Unknown attribute: Bogus"};
+    private static final String[] UNKNOWN_ATTRIBUTE = {"Bogus", "six", "NotFoundError: Unknown attribute: Bogus"};
     private static final String[] NEW_ATTRIUTE = {UNKNOWN_ATTRIBUTE[0], "0", "function(a){var v=0;for(var i=0;i<a.length;i++){v+=a.charCodeAt(i);}return v;}"};
 
     /**
@@ -85,7 +85,8 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
         for (String[] attribute : INVALID_ATTRIBUTES) {
             Wait wait = parseAttribute(attribute[0], attribute[1], 1);
             wait.until(ExpectedConditions.alertIsPresent());
-            assertTrue(getAlert().startsWith(attribute[2]), attribute[0]);
+            String alert = getAlert();
+            assertTrue(alert.startsWith(attribute[2]), attribute[0] + ": " + alert);
         }
     }
 
@@ -96,7 +97,8 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
     public void unknownAttributeTest() {
         Wait wait = parseAttribute(UNKNOWN_ATTRIBUTE[0], UNKNOWN_ATTRIBUTE[1], 0);
         wait.until(ExpectedConditions.alertIsPresent());
-        assertTrue(getAlert().startsWith(UNKNOWN_ATTRIBUTE[2]), UNKNOWN_ATTRIBUTE[0]);
+        String alert = getAlert();
+        assertTrue(alert.startsWith(UNKNOWN_ATTRIBUTE[2]), UNKNOWN_ATTRIBUTE[0] + ": " + alert);
     }
 
     /**
@@ -109,7 +111,7 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
                 NEW_ATTRIUTE[1], "{parse: function(a){return a;}}", UNKNOWN_ATTRIBUTE[1]);
         require(callback, MODULE_NAME);
         wait.until(ExpectedConditions.alertIsPresent());
-        assertTrue(getAlert().startsWith("Invalid parse function"));
+        assertTrue(getAlert().startsWith("TypeError: Invalid parse function"));
         int v = 0;
         for (int i = 0; i < UNKNOWN_ATTRIBUTE[1].length(); i++) {
             v += UNKNOWN_ATTRIBUTE[1].codePointAt(i);
@@ -158,7 +160,8 @@ public class SVGPlotAttributeTest extends AbstractTestClass {
                     break;
                 case 2:
                     wait.until(ExpectedConditions.alertIsPresent());
-                    assertTrue(getAlert().startsWith(String.format(ALREADY_SET, attribute[0])));
+                    String alert = getAlert();
+                    assertTrue(alert.startsWith(String.format(ALREADY_SET, attribute[0])), attribute[0] + ": " + alert);
                     break;
             }
         }
