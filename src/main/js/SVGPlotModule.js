@@ -39,6 +39,8 @@
      * @param {String[]} dependencies The module identifiers the target module depends on.
      * @param {function(...[Object])} callback Callback method. This method is invoked
      *        when therequested modules (and their dependencies) are resolved.
+     * @throws {TypeError} When the given dependencies is not an array.
+     * @throws {TypeError} When an ivalid callback function is given.
      * @property {String[]} dependencies Module identifiers the target module depends on.
      * @property {function(...[Object])} callback Creation method. This method is
      *           invoked when the module dependencies (and their dependencies) are
@@ -47,14 +49,19 @@
      */
     function ModuleFactory(dependencies, callback) {
         if (!(Object.prototype.toString.call(dependencies) === '[object Array]')) {
-            throw "Invalid dependencies";
+            var error = new Error("Invalid dependencies");
+            error.name = "TypeError";
+            throw error;
         }
         if (typeof callback !== 'undefined' &&
                 !(Object.prototype.toString.call(callback) === '[object Function]')) {
-            throw "Invalid callback";
+            var error = new Error("Invalid callback");
+            error.name = "TypeError";
+            throw error;
         }
         this.dependencies = dependencies;
-        this.callback = callback ? callback : function() {};
+        this.callback = callback ? callback : function() {
+        };
     }
 
     /**
@@ -243,7 +250,9 @@
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
             moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.base + module.file);
             moduleClass.onerror = function() {
-                throw 'Error while loading ' + module.file;
+                var error = new Error("Error while loading " + module.file);
+                error.name = "ModuleError";
+                throw error;
             };
             this.waiting[module.name] = module;
             var base = document.getElementsByTagName("script");

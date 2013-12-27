@@ -119,7 +119,9 @@ SVGModule.define(
                  */
                 flush: function() {
                     if (this.pos <= this.stream.length) {
-                        throw "Unrecognized character: " + this.split();
+                        var error = new Error("Unrecognized character: " + this.split());
+                        error.name = "ParseError";
+                        throw error;
                     }
                 },
                 /**
@@ -189,7 +191,9 @@ SVGModule.define(
                     this.ParseTree.ActionList.push({
                         visit: function(value) {
                             if (variable !== context.Variable) {
-                                throw "Unknown variable '#" + variable + "'";
+                                var error = new Error("Unknown variable '#" + variable + "'");
+                                error.name = "NotFoundError";
+                                throw error;
                             }
                             context.Result = value;
                         }
@@ -200,10 +204,14 @@ SVGModule.define(
                  * 
                  * @param {String} name The name of the function to be evaluated.
                  * @param {Integer} paramCount The number of function parameters.
+                 * @throws {NotFoundError} When the MathematicalEngine does not
+                 *                         have a function with the given name.
                  */
                 function: function(name, paramCount) {
                     if (typeof MathematicalEngine[name] === 'undefined') {
-                        throw "Unknown function '" + name + "'";
+                        var error = new Error("Unknown function '" + name + "'");
+                        error.name = "NotFoundError";
+                        throw error;
                     }
                     var context = this.ParseTree;
                     this.ParseTree.ActionList.push({
@@ -301,9 +309,12 @@ SVGModule.define(
                  * Throws an exception idicating that something was expected.
                  * 
                  * @param {String} s The string describing what was expected.
+                 * @throws {ParseError}
                  */
                 Expected: function(s) {
-                    throw s + " Expected at '" + this.Input.split() + "'";
+                    var error = new Error(s + " Expected at '" + this.Input.split() + "'");
+                    error.name = "ParseError";
+                    throw error;
                 },
                 /**
                  * Retrieve the next character from the input stream.

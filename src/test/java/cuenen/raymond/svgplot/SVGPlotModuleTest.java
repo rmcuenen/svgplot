@@ -46,7 +46,7 @@ public class SVGPlotModuleTest extends AbstractTestClass {
     private static final String TEST_MODULE_NAME = "TestModule";
     private static final String TEST_MODULE_CALLBACK = "function(element) { document.documentElement.appendChild(element); }";
     private static final String TEST_MODULE_ID = "loaded-text";
-    private static final String ERROR_MESSAGE = "Error while loading TestModule2.js";
+    private static final String ERROR_MESSAGE = "ModuleError: Error while loading TestModule2.js";
 
     @Test
     public void testSVGPlotModuleLoaderWithBase() {
@@ -67,6 +67,7 @@ public class SVGPlotModuleTest extends AbstractTestClass {
         Wait wait = load(MODULE_LOADER, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
         wait.until(ExpectedConditions.alertIsPresent());
-        assertTrue(getAlert().startsWith(ERROR_MESSAGE));
+        String alert = getAlert();
+        assertTrue(alert.startsWith(ERROR_MESSAGE), alert);
     }
 }

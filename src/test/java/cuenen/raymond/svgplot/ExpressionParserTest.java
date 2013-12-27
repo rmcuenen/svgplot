@@ -49,16 +49,16 @@ public class ExpressionParserTest extends AbstractTestClass {
     @Test
     public void numberTest() {
         assertEquals(evaluateExpression("0", 0, false), 0);
-        assertStartsWith(evaluateExpression("0.", 0, true), "Integer Expected at '0.[]'");
+        assertStartsWith(evaluateExpression("0.", 0, true), "ParseError: Integer Expected at '0.[]'");
         assertEquals(evaluateExpression("0.01", 0, false), 0.01);
-        assertStartsWith(evaluateExpression(".", 0, true), "Integer Expected at '.[]'");
+        assertStartsWith(evaluateExpression(".", 0, true), "ParseError: Integer Expected at '.[]'");
         assertEquals(evaluateExpression(".00", 0, false), 0);
-        assertStartsWith(evaluateExpression("1e0", 0, true), "Non-Zero Expected at '1e[0]'");
+        assertStartsWith(evaluateExpression("1e0", 0, true), "ParseError: Non-Zero Expected at '1e[0]'");
         assertEquals(evaluateExpression("1e2", 0, false), 100);
         assertEquals(evaluateExpression("2e-3", 0, false), 0.002);
-        assertStartsWith(evaluateExpression("1e2.5", 0, true), "Unrecognized character: 1e2[.]5");
+        assertStartsWith(evaluateExpression("1e2.5", 0, true), "ParseError: Unrecognized character: 1e2[.]5");
         assertEquals(evaluateExpression("0.01e+4", 0, false), 100);
-        assertStartsWith(evaluateExpression("0e2", 0, true), "Unrecognized character: 0[e]2");
+        assertStartsWith(evaluateExpression("0e2", 0, true), "ParseError: Unrecognized character: 0[e]2");
         assertEquals(evaluateExpression("124", 0, false), 124);
     }
 
@@ -67,10 +67,10 @@ public class ExpressionParserTest extends AbstractTestClass {
      */
     @Test
     public void variableTest() {
-        assertStartsWith(evaluateExpression("#x", Math.PI, true), "Unknown variable '#x'");
+        assertStartsWith(evaluateExpression("#x", Math.PI, true), "NotFoundError: Unknown variable '#x'");
         assertEquals(evaluateExpression("#x\"); tree.setVariable(\"#x", Math.PI, false), Math.PI);
-        assertStartsWith(evaluateExpression("#0", 0, true), "Variable Expected at '#[0]'");
-        assertStartsWith(evaluateExpression("#_Wrong", 0, true), "Variable Expected at '#[_]Wrong'");
+        assertStartsWith(evaluateExpression("#0", 0, true), "ParseError: Variable Expected at '#[0]'");
+        assertStartsWith(evaluateExpression("#_Wrong", 0, true), "ParseError: Variable Expected at '#[_]Wrong'");
         assertEquals(evaluateExpression("#This_is_Valid_2\"); tree.setVariable(\"#This_is_Valid_2", 2.5, false), 2.5);
     }
 
@@ -82,7 +82,7 @@ public class ExpressionParserTest extends AbstractTestClass {
         assertEquals(evaluateExpression("e", 0, false), Math.E);
         assertBetween(evaluateExpression("sin(180)", 0, false), 0, 1E-15);
         assertEquals(evaluateExpression("max(1,2.5,50,-3)", 0, false), 50);
-        assertStartsWith(evaluateExpression("ajax", 0, true), "Unknown function 'ajax'");
+        assertStartsWith(evaluateExpression("ajax", 0, true), "NotFoundError: Unknown function 'ajax'");
         assertBetween(evaluateExpression("random()", 0, false), 0, 1);
     }
 
@@ -116,7 +116,7 @@ public class ExpressionParserTest extends AbstractTestClass {
         assertEquals(evaluateExpression("2*2*2*2", 0, false), 16);
         assertEquals(evaluateExpression("-1/2*1/2", 0, false), -0.25);
         assertEquals(evaluateExpression("#x/#x^2\"); tree.setVariable(\"#x", 2, false), 0.5);
-        assertStartsWith(evaluateExpression("2**2", 0, true), "Number Expected at '2*[*]2'");
+        assertStartsWith(evaluateExpression("2**2", 0, true), "ParseError: Number Expected at '2*[*]2'");
         assertEquals(evaluateExpression("#x&&(#x-1)\"); tree.setVariable(\"#x", 1, false), 0);
     }
 
@@ -149,9 +149,9 @@ public class ExpressionParserTest extends AbstractTestClass {
     @Test
     public void specialTest() {
         assertEquals(evaluateExpression("true() ? #x : pi\"); tree.setVariable(\"#x", Math.E, false), Math.E);
-        assertStartsWith(evaluateExpression("1 ? true", 0, true), "':' Expected at '1 ? true[]'");
+        assertStartsWith(evaluateExpression("1 ? true", 0, true), "ParseError: ':' Expected at '1 ? true[]'");
         assertEquals(evaluateExpression("cos(pi r)+1?acos(1):1.2", 0, false), 1.2);
-        assertStartsWith(evaluateExpression("0?:true", 0, true), "Number Expected at '0?[:]true'");
+        assertStartsWith(evaluateExpression("0?:true", 0, true), "ParseError: Number Expected at '0?[:]true'");
     }
 
     /**
