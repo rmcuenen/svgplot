@@ -171,6 +171,7 @@ public class ExpressionParserTest extends AbstractTestClass {
             wait.until(ExpectedConditions.alertIsPresent());
             return getAlert();
         } else {
+            wait.until(RESULT_SET);
             return getResult();
         }
     }

@@ -28,6 +28,7 @@
  */
 package cuenen.raymond.svgplot;
 
+import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -189,9 +190,10 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * @return The result from the placeholder WebElement.
      */
     private String executeTest(Object... testDescription) {
-        load(MODULE_LOADER, 1);
+        Wait wait = load(MODULE_LOADER, 1);
         String callback = String.format(FUNCTION_FORMAT, testDescription);
         require(callback, MODULE_NAME);
+        wait.until(RESULT_SET);
         String result = getResult();
         assertNotNull(result);
         return result;

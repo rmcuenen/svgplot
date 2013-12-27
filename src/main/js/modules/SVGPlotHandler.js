@@ -43,7 +43,9 @@ SVGModule.define(
              */
             function PathCreator() {
                 this.pathElement = document.createElementNS(SVGModule.SVG_NS, "path");
-                for (var attr in SVGPlotAttributes.names()) {
+                var names = SVGPlotAttributes.names();
+                for (var i = 0; i < names.length; i++) {
+                    var attr = names[i];
                     this[attr] = SVGPlotAttributes.create(attr);
                 }
             }
@@ -77,7 +79,7 @@ SVGModule.define(
                  * This method assumes that the 'function' attribute it set.
                  */
                 createPath: function() {
-                    var scale = 1;
+                    var scale = 1; // May be useful later.
                     var token = this["connected"].value === "smooth" ? 'S' : 'L';
                     var start = this["domain"].value[0];
                     var end = this["domain"].value[1];

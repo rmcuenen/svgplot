@@ -33,11 +33,13 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterClass;
@@ -50,6 +52,22 @@ import org.testng.annotations.BeforeClass;
  */
 public abstract class AbstractTestClass {
 
+    public static final ExpectedCondition<Boolean> RESULT_SET = new ExpectedCondition<Boolean>() {
+
+        @Override
+        public Boolean apply(WebDriver driver) {
+            try {
+                WebElement placeholder = driver.findElement(By.id(PLACEHOLDER_ID));
+                if (placeholder != null) {
+                    return placeholder.getAttribute(RESULT_ATTRIBUTE) != null;
+                } else {
+                    return false;
+                }
+            } catch (StaleElementReferenceException ex) {
+                return null;
+            }
+        }
+    };
     public static final String MODULE_LOADER = "/ModuleLoader.svg";
     private static final String TITLE_SCRIPT = "document.getElementsByTagName('title')[0].textContent = arguments[0];";
     private static final String PLACEHOLDER_ID = "placeholder";

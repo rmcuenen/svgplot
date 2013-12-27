@@ -30,6 +30,7 @@ package cuenen.raymond.svgplot;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -213,10 +214,11 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * @param range The expected range of the result.
      */
     private void performRangeTest(String function, double... range) {
-        load(MODULE_LOADER, 1);
+        Wait wait = load(MODULE_LOADER, 1);
         String functionCall = createRangeFunctionCall(function);
         String callback = String.format(FUNCTION_FORMAT, functionCall);
         require(callback, MODULE_NAME);
+        wait.until(RESULT_SET);
         String result = getResult();
         assertNotNull(result);
         checkRange(result, range, function);
@@ -229,10 +231,11 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * @param functions The array of functions to test.
      */
     private void executeTest(Object[] results, String... functions) {
-        load(MODULE_LOADER, 1);
+        Wait wait = load(MODULE_LOADER, 1);
         String functionCall = createFunctionCall(functions);
         String callback = String.format(FUNCTION_FORMAT, functionCall);
         require(callback, MODULE_NAME);
+        wait.until(RESULT_SET);
         String result = getResult();
         assertNotNull(result);
         checkResult(result, results, functions);

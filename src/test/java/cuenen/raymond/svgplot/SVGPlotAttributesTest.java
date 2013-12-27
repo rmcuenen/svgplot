@@ -116,17 +116,19 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
         for (int i = 0; i < UNKNOWN_ATTRIBUTE[1].length(); i++) {
             v += UNKNOWN_ATTRIBUTE[1].codePointAt(i);
         }
-        load(MODULE_LOADER, 10);
+        wait = load(MODULE_LOADER, 10);
         callback = String.format(SET_FUNCTION_FORMAT, NEW_ATTRIUTE[0],
                 NEW_ATTRIUTE[1], NEW_ATTRIUTE[2], UNKNOWN_ATTRIBUTE[1]);
         require(callback, MODULE_NAME);
+        wait.until(RESULT_SET);
         assertEquals(getResult(), String.valueOf(v));
     }
 
     @Test
     public void namesTest() {
-        load(MODULE_LOADER, 10);
+        Wait wait = load(MODULE_LOADER, 10);
         require(NAMES_FUNCTION, MODULE_NAME);
+        wait.until(RESULT_SET);
         String result = getResult();
         assertNotNull(result);
         List<String> names = new ArrayList<>(Arrays.asList(result.split(",")));
@@ -153,9 +155,11 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
             Wait wait = parseAttribute(attribute[0], attribute[1], i);
             switch (i) {
                 case 0:
+                    wait.until(RESULT_SET);
                     assertEquals(getResult(), attribute[2], attribute[0]);
                     break;
                 case 1:
+                    wait.until(RESULT_SET);
                     assertEquals(getResult(), attribute[3], attribute[0]);
                     break;
                 case 2:
