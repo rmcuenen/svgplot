@@ -61,7 +61,7 @@ SVGModule.define(
                 parse: function(attr) {
                     if (this.set) {
                         var error = new Error("The attribute '" + this.name + "' is already defined");
-                        error.name = "ParseError";
+                        error.name = "StateError";
                         throw error;
                     }
                     this.value = PARSERS[this.name](attr);

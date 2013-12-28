@@ -25,94 +25,63 @@
  * your own identifying information:
  * "Portions Copyrighted [year] [name of copyright owner]"
  *
- */package cuenen.raymond.svgplot;
+ */
+package cuenen.raymond.svgplot;
 
-import java.io.IOException;
-import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
+import static cuenen.raymond.svgplot.PathValidator.*;
 
 /**
- * Test class for testing {@code SVGPlotAttribute.js}.
+ * Test class for testing {@code SVGPlotHandler.js}.
  *
  * @author R. M. Cuenen
  */
 public class SVGPlotHandlerTest extends AbstractTestClass {
 
     private static final String MODULE_NAME = "SVGPlotHandler";
-    private static final String CREATE_ELEMENT = "var el=document.createElementNS(SVGModule.SVG_NS, 'plot');";
-    private static final String CALLBACK = "function(Handler){%s setResult(Handler.handle(el));}";
+    private static final String MODULE_LOADER_PLOT = "/ModuleLoaderPlot.svg";
+    private static final String CALLBACK_FORMAT = "function() { %s }";
+    private static final String DONE_SCRIPT = createDoneScript();
+    private static final String DONE_ID = "done";
+    private static final String APPEND_SCRIPT = "setTimeout(appendPlot, 500);";
+    private static final String APPEND_ID = "added-plot";
 
-    @Test(expectedExceptions = NoSuchElementException.class)
-    public void handlePlotElementTest() {
-        Wait wait = load(MODULE_LOADER, 10);
-        StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
-        addAttribute(plot, "stroke", "blue");
-        addAttribute(plot, "domain", "-1:1");
-        addAttribute(plot, "samples", "10");
-        addAttribute(plot, "function", "#t^2,atan(#t)");
-        addAttribute(plot, "variable", "t");
-        addAttribute(plot, "id", "plot-element");
-        addAttribute(plot, "transform", "scale(4)");
-        String callback = String.format(CALLBACK, plot.toString());
-        require(callback, MODULE_NAME);
-        wait.until(RESULT_SET);
-        assertEquals(getResult(), "[object SVGPathElement]");
-        getElementById("plot-element");
+    private static String createDoneScript() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("var d = document.createElementNS(SVGModule.SVG_NS, \"text\");");
+        sb.append("d.setAttribute(\"id\",\"done\");");
+        sb.append("document.documentElement.appendChild(d);");
+        return sb.toString();
     }
 
     @Test
-    public void handleAndReplaceTest() {
-        Wait wait = load(MODULE_LOADER, 10);
-        StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
-        addAttribute(plot, "domain", "0:2");
-        addAttribute(plot, "samples", "10");
-        addAttribute(plot, "function", "#x^2");
-        addAttribute(plot, "id", "plot-element");
-        addAttribute(plot, "transform", "scale(10)");
-        plot.append("document.documentElement.appendChild(el);");
-        String callback = String.format(CALLBACK, plot.toString());
+    public void handlerTest() {
+        Wait wait = load(MODULE_LOADER_PLOT, 10);
+        String callback = String.format(CALLBACK_FORMAT, DONE_SCRIPT);
         require(callback, MODULE_NAME);
-        wait.until(RESULT_SET);
-        WebElement path = getElementById("plot-element");
-        validatePath(path.getAttribute("d"), 0, 2, 0.2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(DONE_ID)));
+        validateResult();
     }
 
     @Test
-    public void handleNoFunctionTest() {
-        Wait wait = load(MODULE_LOADER, 10);
-        StringBuilder elem = new StringBuilder(CREATE_ELEMENT);
-        addAttribute(elem, "samples", "100");
-        String callback = String.format(CALLBACK, elem.toString());
+    public void changeTest() {
+        Wait wait = load(MODULE_LOADER_PLOT, 10);
+        String callback = String.format(CALLBACK_FORMAT, APPEND_SCRIPT);
         require(callback, MODULE_NAME);
-        wait.until(ExpectedConditions.alertIsPresent());
-        String alert = getAlert();
-        assertTrue(alert.startsWith("NotFoundError: Function not set: <plot samples=\"100\" />"), alert);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id(APPEND_ID)));
+        validateResult();
+        WebElement path = getElementById(APPEND_ID);
+        validatePath(path.getAttribute("d"), X_SIN, -Math.PI, Math.PI, (2D * Math.PI) / 25D);
     }
 
-    private void addAttribute(Appendable sb, String name, String value) {
-        try {
-            sb.append("el.setAttribute(\"").append(name);
-            sb.append("\",\"").append(value).append("\");");
-        } catch (IOException ex) {
-        }
-    }
-
-    private void validatePath(String path, double start, double end, double step) {
-        assertEquals(path.charAt(0), 'M');
-        int index = 1;
-        double x = start;
-        do {
-            double y = x * x;
-            int next = path.indexOf('L', index);
-            String coords[] = path.substring(index, next).split(",");
-            assertEquals(Double.parseDouble(coords[0]), x);
-            assertEquals(Double.parseDouble(coords[1]), y != 0 ? -y : y);
-            x += step;
-            index = next + 1;
-        } while (x <= end);
+    private void validateResult() {
+        WebElement path = getElementById("svg-plot-1");
+        validatePath(path.getAttribute("d"), SQUARED_ATAN, -1, 1, 0.2);
+        path = getElementById("svg-plot-2");
+        validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 0.2);
     }
 }

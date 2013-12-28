@@ -68,10 +68,10 @@
             <li><a href="#LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</a></li>
             <li><a href="#SVGPlotModuleInterfaces">1.5 SVG Plot Module Interfaces</a>
                 <ul class="toc">
-                    <li><a href="#InterfaceSVGPlotAttribute">1.5.1 Interface SVGPlotAttribbute</a></li>
-                    <li><a href="#InterfaceSVGPlotAttributes">1.5.2 Interface SVGPlotAttributes</a></li>
-                    <li><a href="#InterfaceSVGPlotHandler">1.5.3 Interface SVGPlotHandler</a></li>
-                    <li><a href="#InterfaceSVGPlotElement">1.5.? Interface SVGPlotElement</a></li>
+                    <li><a href="#InterfaceSVGPlotAttributeRepository">1.5.1 Interface SVGPlotAttributeRepository</a></li>
+                    <li><a href="#InterfaceSVGPlotAttribute">1.5.2 Interface SVGPlotAttribbute</a></li>
+                    <li><a href="#InterfaceSVGPlotter">1.5.3 Interface SVGPlotter</a></li>
+                    <li><a href="#InterfaceSVGPlotElement">1.5.4 Interface SVGPlotElement</a></li>
                 </ul>
             </li>
         </ul>
@@ -97,7 +97,7 @@
             different values for <em>#x</em> and the resulting coordinates are plotted.
         </p>
         <p>
-            The SVG Plot Module Extension (conceptually) uses a two-stage process
+            The SVG Plotter module (conceptually) uses a two-stage process
             for generating plots. <br/>
             First, a <i>plot stream</i> must be produced. This stream consists
             (more or less) of a large number of coordinates. <br/>
@@ -1013,7 +1013,94 @@
         <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>
         <p>TBS.</p>
         <h2 id="SVGPlotModuleInterfaces">1.5 SVG Plot Module Interfaces</h2>
-        <h3 id="InterfaceSVGPlotAttribute">1.5.1 Interface SVGPlotAttribute</h3>
+        <h3 id="InterfaceSVGPlotAttributeRepository">1.5.1 Interface SVGPlotAttributeRepository</h3>
+        The <a class="idlinterface" href="#InterfaceSVGPlotAttrubutes">SVGPlotAttributeRepository</a>
+        interface provides the functionality to create and manage the
+        <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> implementations.
+        <pre class="idl">interface <b>SVGPlotAttributeRepository</b> {
+  <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> <a href="#__svg__SVGPlotAttributeRepository__create">create</a>(in DOMString name) raises(Error);
+  DOMString[] <a href="#__svg__SVGPlotAttributeRepository__names">names</a>();
+  void <a href="#__svg__SVGPlotAttributeRepository_setAttribute">setAttribute</a>(in DOMString name, in any defaultValue, in callback parseFunction = any (DOMString attr)) raises(Error);
+};</pre>
+        <dl class="interface">
+            <dt class="operations-header">Operations:</dt>
+            <dd>
+                <dl class="attributes">
+                    <dt id="__svg__SVGPlotAttributeRepository__create" class="operation first-child">
+                        <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> <b>create</b>(in DOMString <var>name</var>)
+                    </dt>
+                    <dd class="operation">
+                        <div>
+                            Creates and returns a new <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a>
+                            implementation for the attribute identified by the given name.
+                        </div>
+                        <dl class="operation">
+                            <dt class="parameters-header">Parameters</dt>
+                            <dd>
+                                <ol class="parameters">
+                                    <li class="parameter first-child"><div>DOMString <var>name</var></div>
+                                        <div>The attribute name.</div>
+                                    </li>
+                                </ol>
+                            </dd>
+                            <dt class="returns-header">Returns</dt>
+                            <dd><div>The <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> implementation.</div></dd>
+                            <dt class="exceptions-header">Exceptions</dt>
+                            <dd>
+                                <dl class="exceptions">
+                                    <dt class="exception first-child">NotFoundError</dt>
+                                    <dd class="exception">Raised when there is no parse function registered for the requested attribute.</dd>
+                                </dl>
+                            </dd>
+                        </dl>
+                    </dd>
+                    <dt id="__svg__SVGPlotAttributeRepository__names" class="operation">
+                        DOMString[] <b>names</b>()
+                    </dt>
+                    <dd class="operation">
+                        <div>
+                            Returns the array of attribute names that are registered within the <a class="idlinterface" href="#InterfaceSVGPlotAttributeRepository">SVGPlotAttributeRepository</a>.
+                        </div>
+                        <dl class="operation">
+                            <dt class="returns-header">Returns</dt>
+                            <dd><div>The array of attribute names for which <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttributes</a> can be created.</div></dd>
+                        </dl>
+                    </dd>
+                    <dt id="__svg__SVGPlotAttributeRepository__setAttribute" class="operation">
+                        void <b>setAttribute</b>(in DOMString <var>name</var>, in any <var>defaultValue</var>, in callback <var>parseFunction</var> = any (DOMString attr))
+                    </dt>
+                    <dd class="operation">
+                        <div>
+                            Registers a new <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a>.
+                        </div>
+                        <dl class="operation">
+                            <dt class="parameters-header">Parameters</dt>
+                            <dd>
+                                <ol class="parameters">
+                                    <li class="parameter first-child"><div>DOMString <var>name</var></div>
+                                        <div>The attribute name</div>
+                                    </li>
+                                    <li class="parameter"><div>any <var>defaultValue</var></div>
+                                        <div>The default value of the attribute. This can be null.</div>
+                                    </li>
+                                    <li class="parameter"><div>callback <var>parseFunction</var> = any (DOMString attr)</div>
+                                        <div>The function being called to parse a DOMString into the attribute's value.</div>
+                                    </li>
+                                </ol>
+                            </dd>
+                            <dt class="exceptions-header">Exceptions</dt>
+                            <dd>
+                                <dl class="exceptions">
+                                    <dt class="exception first-child">TypeError</dt>
+                                    <dd class="exception">Raised when the parse function is not a callable function.</dd>
+                                </dl>
+                            </dd>
+                        </dl>
+                    </dd>
+                </dl>
+            </dd>
+        </dl>
+        <h3 id="InterfaceSVGPlotAttribute">1.5.2 Interface SVGPlotAttribute</h3>
         The <a class="idlinterface" href="#InterfaceSVGPlotAttrubute">SVGPlotAttribute</a>
         interface corresponds to an "attribute" of the <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
         element.
@@ -1074,7 +1161,7 @@
                             <dt class="exceptions-header">Exceptions</dt>
                             <dd>
                                 <dl class="exceptions">
-                                    <dt class="exception first-child">ParseError</dt>
+                                    <dt class="exception first-child">StateError</dt>
                                     <dd class="exception">Raised when the the parse method is called when the 'set' attribute has the value true.</dd>
                                     <dt class="exception first-child">ParseError</dt>
                                     <dd class="exception">Raised when paring of the string value fails.</dd>
@@ -1085,106 +1172,19 @@
                 </dl>
             </dd>
         </dl>
-        <h3 id="InterfaceSVGPlotAttributes">1.5.2 Interface SVGPlotAttributes</h3>
-        The <a class="idlinterface" href="#InterfaceSVGPlotAttrubutes">SVGPlotAttributes</a>
-        interface provides the functionality to create and manage the
-        <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> implementations.
-        <pre class="idl">interface <b>SVGPlotAttributes</b> {
-  <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> <a href="#__svg__SVGPlotAttributes__create">create</a>(in DOMString name) raises(Error);
-  DOMString[] <a href="#__svg__SVGPlotAttributes__names">names</a>();
-  void <a href="#__svg__SVGPlotAttributes_setAttribute">setAttribute</a>(in DOMString name, in any defaultValue, in callback parseFunction = any (DOMString attr)) raises(Error);
-};</pre>
-        <dl class="interface">
-            <dt class="operations-header">Operations:</dt>
-            <dd>
-                <dl class="attributes">
-                    <dt id="__svg__SVGPlotAttributes__create" class="operation first-child">
-                        <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> <b>create</b>(in DOMString <var>name</var>)
-                    </dt>
-                    <dd class="operation">
-                        <div>
-                            Creates and returns a new <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a>
-                            implementation for the attribute identified by the given name.
-                        </div>
-                        <dl class="operation">
-                            <dt class="parameters-header">Parameters</dt>
-                            <dd>
-                                <ol class="parameters">
-                                    <li class="parameter first-child"><div>DOMString <var>name</var></div>
-                                        <div>The attribute name.</div>
-                                    </li>
-                                </ol>
-                            </dd>
-                            <dt class="returns-header">Returns</dt>
-                            <dd><div>The <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a> implementation.</div></dd>
-                            <dt class="exceptions-header">Exceptions</dt>
-                            <dd>
-                                <dl class="exceptions">
-                                    <dt class="exception first-child">NotFoundError</dt>
-                                    <dd class="exception">Raised when there is no parse function registered for the requested attribute.</dd>
-                                </dl>
-                            </dd>
-                        </dl>
-                    </dd>
-                    <dt id="__svg__SVGPlotAttributes__names" class="operation">
-                        DOMString[] <b>names</b>()
-                    </dt>
-                    <dd class="operation">
-                        <div>
-                            Returns the array of attribute names that are registered within the <a class="idlinterface" href="#InterfaceSVGPlotAttributes">SVGPlotAttributes</a>.
-                        </div>
-                        <dl class="operation">
-                            <dt class="returns-header">Returns</dt>
-                            <dd><div>The array of attribute names for which <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a>s can be created.</div></dd>
-                        </dl>
-                    </dd>
-                    <dt id="__svg__SVGPlotAttributes__setAttribute" class="operation">
-                        void <b>setAttribute</b>(in DOMString <var>name</var>, in any <var>defaultValue</var>, in callback <var>parseFunction</var> = any (DOMString attr))
-                    </dt>
-                    <dd class="operation">
-                        <div>
-                            Registers a new <a class="idlinterface" href="#InterfaceSVGPlotAttribute">SVGPlotAttribute</a>.
-                        </div>
-                        <dl class="operation">
-                            <dt class="parameters-header">Parameters</dt>
-                            <dd>
-                                <ol class="parameters">
-                                    <li class="parameter first-child"><div>DOMString <var>name</var></div>
-                                        <div>The attribute name</div>
-                                    </li>
-                                    <li class="parameter"><div>any <var>defaultValue</var></div>
-                                        <div>The default value of the attribute. This can be null.</div>
-                                    </li>
-                                    <li class="parameter"><div>callback <var>parseFunction</var> = any (DOMString attr)</div>
-                                        <div>The function being called to parse a DOMString into the attribute's value.</div>
-                                    </li>
-                                </ol>
-                            </dd>
-                            <dt class="exceptions-header">Exceptions</dt>
-                            <dd>
-                                <dl class="exceptions">
-                                    <dt class="exception first-child">TypeError</dt>
-                                    <dd class="exception">Raised when the parse function is not a callable function.</dd>
-                                </dl>
-                            </dd>
-                        </dl>
-                    </dd>
-                </dl>
-            </dd>
-        </dl>
-        <h3 id="InterfaceSVGPlotHandler">1.5.3 Interface SVGPlotHandler</h3>
-        The <a class="idlinterface" href="#InterfaceSVGPlotHandler">SVGPlotHandler</a>
+        <h3 id="InterfaceSVGPlotter">1.5.3 Interface SVGPlotter</h3>
+        The <a class="idlinterface" href="#InterfaceSVGPlotter">SVGPlotter</a>
         interface is the interface used to handle the <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
         elements.
-        <pre class="idl">interface <b>SVGPlotHandler</b> {
+        <pre class="idl">interface <b>SVGPlotter</b> {
 
-  <a class="idlinterface" href="http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathElement">SVGPathElement</a> <a href="#__svg__SVGPlotHandler__handle">handle</a>(in <a class="idlinterface" href="#InterfaceSVGPlotElement">SVGPlotElement</a> plotElement) raises(Error);
+  <a class="idlinterface" href="http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathElement">SVGPathElement</a> <a href="#__svg__SVGPlotter__handle">handle</a>(in <a class="idlinterface" href="#InterfaceSVGPlotElement">SVGPlotElement</a> plotElement) raises(Error);
 };</pre>
         <dl class="interface">
             <dt class="operations-header">Operations:</dt>
             <dd>
                 <dl class="attributes">
-                    <dt id="__svg__SVGPlotHandler__handle" class="operation first-child">
+                    <dt id="__svg__SVGPlotter__handle" class="operation first-child">
                         <a class="idlinterface" href="http://www.w3.org/TR/SVG/paths.html#InterfaceSVGPathElement">SVGPathElement</a> <b>handle</b>(in <a class="idlinterface" href="#InterfaceSVGPlotElement">SVGPlotElement</a> <var>plotElement</var>)
                     </dt>
                     <dd class="operation">
@@ -1220,7 +1220,7 @@
             </dd>
         </dl>
 
-        <h3 id="InterfaceSVGPlotElement">1.5.? Interface SVGPlotElement</h3>
+        <h3 id="InterfaceSVGPlotElement">1.5.4 Interface SVGPlotElement</h3>
         The <a class="idlinterface" href="#InterfaceSVGPlotElement">SVGPlotElement</a>
         interface corresponds to the <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
         element.

@@ -44,7 +44,7 @@ import static org.testng.Assert.*;
 public class SVGPlotAttributesTest extends AbstractTestClass {
 
     private static final String MODULE_NAME = "SVGPlotAttributes";
-    private static final String ALREADY_SET = "ParseError: The attribute '%s' is already defined";
+    private static final String ALREADY_SET = "StateError: The attribute '%s' is already defined";
     private static final String ATTR_FUNCTION_FORMAT = "function(Attr){var a=Attr.create(\"%s\");for(var i=0;i<%d;i++){a.parse(\"%s\");}setResult(a.value);}";
     private static final String SET_FUNCTION_FORMAT = "function(Attr){Attr.setAttribute(\"%1$s\", %2$s, %3$s);var a=Attr.create(\"%1$s\");a.parse(\"%4$s\");setResult(a.value);}";
     private static final String NAMES_FUNCTION = "function(Attr){setResult(Attr.names());}";
