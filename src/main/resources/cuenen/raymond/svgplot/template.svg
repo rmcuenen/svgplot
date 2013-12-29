@@ -34,11 +34,12 @@
     <script>
     <![CDATA[
         SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
-            function(DocumentScaler) {
+            function(DocumentScaler) '{'
                 DocumentScaler.scaleTo(document.getElementById("demo-svg-plot"));
-            }
+            '}'
         );
     ]]>
     </script>
-    <plot id="demo-svg-plot" domain="{1}" samples="{2}" variable="{3}" connected="{4}" function="{5}" />
+    <plot id="demo-svg-plot" stroke="maroon" fill="none"
+          domain="{1}" samples="{2}" variable="{3}" connected="{4}" function="{5}" />
 </svg>

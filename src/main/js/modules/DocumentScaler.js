@@ -32,33 +32,32 @@ SVGModule.define(
         [],
         function() {
             /**
-             * Reference to the SVGDocument element.
+             * Find the SVGDocument the element belongs to.
              * 
-             * @type Element
+             * @param {Element} el The target element.
+             * @returns {SVGDocument} The SVGDocument.
              */
-            var doc = document.documentElement;
+            function findDocument(el) {
+                var doc = el;
+                while (doc.parentElement &&
+                        doc.nodeName.toLowerCase() !== "svg") {
+                    doc = doc.parentElement;
+                }
+                return doc;
+            }
 
             /**
              * Sets the ViewBox of the SVGDocument to the given rectangle.
              * 
-             * @param {SVGRect} rect
+             * @param {SVGDocument} doc Reference to the SVGDocument.
+             * @param {SVGRect} rect The view box rectangle.
              */
-            function setViewBox(rect) {
+            function setViewBox(doc, rect) {
                 var viewBox = doc.viewBox.baseVal;
                 viewBox.x = rect.x;
                 viewBox.y = rect.y;
                 viewBox.width = rect.width;
                 viewBox.height = rect.height;
-            }
-
-            /**
-             * Sets the 'stroke-width' property of the SVGDocument to the 
-             * given value.
-             * 
-             * @param {Number|String} width
-             */
-            function setStrokeWidth(width) {
-                doc.style.strokeWidth = width;
             }
 
             /**
@@ -78,16 +77,16 @@ SVGModule.define(
                  *                          the entire document.
                  */
                 scaleTo: function(element) {
+                    var doc = findDocument(element);
                     var box = element.getBBox();
                     var viewport = doc.createSVGRect();
                     viewport.x = Math.floor(box.x);
                     viewport.y = Math.floor(box.y);
                     viewport.width = box.width + 2 * (box.x - viewport.x);
                     viewport.height = box.height + 2 * (box.y - viewport.y);
-                    setViewBox(viewport);
-                    var stroke = Math.max(viewport.width / doc.clientWidth,
+                    setViewBox(doc, viewport);
+                    doc.style.strokeWidth = Math.max(viewport.width / doc.clientWidth,
                             viewport.height / doc.clientHeight);
-                    setStrokeWidth(stroke);
                 }
             };
         }
