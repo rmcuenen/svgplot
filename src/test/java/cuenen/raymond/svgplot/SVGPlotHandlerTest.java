@@ -75,13 +75,13 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(APPEND_ID)));
         validateResult();
         WebElement path = getElementById(APPEND_ID);
-        validatePath(path.getAttribute("d"), X_SIN, -Math.PI, Math.PI, (2D * Math.PI) / 25D);
+        validatePath(path.getAttribute("d"), X_SIN, -Math.PI, Math.PI, 25);
     }
 
     private void validateResult() {
         WebElement path = getElementById("svg-plot-1");
-        validatePath(path.getAttribute("d"), SQUARED_ATAN, -1, 1, 0.2);
+        validatePath(path.getAttribute("d"), SQUARED_ATAN, -1, 1, 10);
         path = getElementById("svg-plot-2");
-        validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 0.2);
+        validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 10);
     }
 }

@@ -82,7 +82,7 @@ public class SVGPlotterTest extends AbstractTestClass {
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
         WebElement path = getElementById("plot-element");
-        validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 0.2);
+        validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 10);
     }
 
     @Test

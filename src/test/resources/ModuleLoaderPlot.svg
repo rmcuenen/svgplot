@@ -55,9 +55,8 @@
             a.setAttribute("attributeType", "XML");
             a.setAttribute("type", "scale");
             a.setAttribute("from", "1");
-            a.setAttribute("to", "3");
-            a.setAttribute("additive", "sum");
-            a.setAttribute("dur", "0.5s");
+            a.setAttribute("to", "1.5");
+            a.setAttribute("dur", "0.25s");
             a.setAttribute("fill", "freeze");
             p.appendChild(a);
             g.appendChild(p);

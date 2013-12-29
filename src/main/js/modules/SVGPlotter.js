@@ -83,7 +83,8 @@ SVGModule.define(
                     var token = this["connected"].value === "smooth" ? 'S' : 'L';
                     var start = this["domain"].value[0];
                     var end = this["domain"].value[1];
-                    var step = (end - start) / this["samples"].value;
+                    var count = this["samples"].value;
+                    var step = (end - start) / count;
                     if (typeof this["function"].value[0] === 'undefined') {
                         this["function"].value[0] = ExpressionParser.parse(this["variable"].value);
                     }
@@ -94,7 +95,7 @@ SVGModule.define(
                     var value = start;
                     var point = [scale * x.visit(value), -scale * y.visit(value)];
                     var path = 'M' + point[0] + ',' + point[1];
-                    while (value < end) {
+                    for (var i = 0; i < count; i++) {
                         value += step;
                         path += token;
                         point = [scale * x.visit(value), -scale * y.visit(value)];

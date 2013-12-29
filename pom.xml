@@ -32,8 +32,8 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cuenen.raymond.svg</groupId>
     <artifactId>svgplot</artifactId>
-    <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
     <name>SVG Plot Module Extension</name>
     <url>http://rmcuenen.github.io/svgplot/plots.html</url>
     <licenses>

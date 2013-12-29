@@ -38,7 +38,9 @@ SVGModule.define(
                 handle(document.documentElement);
                 /* Listen for document changes. */
                 document.addEventListener("DOMSubtreeModified", function(event) {
-                    handle(event.target);
+                    if (event.target.nodeName.toLowerCase() !== "plot") {
+                        handle(event.target);
+                    }
                 }, false);
             }
 

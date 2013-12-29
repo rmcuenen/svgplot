@@ -70,7 +70,7 @@ public abstract class AbstractTestClass {
     };
     public static final String MODULE_LOADER = "/ModuleLoader.svg";
     private static final String TITLE_SCRIPT = "document.getElementsByTagName('title')[0].textContent = arguments[0];";
-    private static final String PLACEHOLDER_ID = "placeholder";
+    protected static final String PLACEHOLDER_ID = "placeholder";
     private static final String RESULT_ATTRIBUTE = "result";
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";

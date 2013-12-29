@@ -71,18 +71,22 @@ public final class PathValidator {
         // Utility class.
     }
 
-    public static void validatePath(String path, Function func, double start, double end, double step) {
+    public static void validatePath(String path, Function func, double start, double end, int count) {
         assertEquals(path.charAt(0), 'M');
         int index = 1;
         double x = start;
-        do {
+        double step = (end - start) / count;
+        for (int i = 0; i <= count; i++) {
             Point2D p = func.eval(x);
             int next = path.indexOf('L', index);
+            if (next == -1) {
+                next = path.length();
+            }
             String coords[] = path.substring(index, next).split(",");
             assertEquals(Double.parseDouble(coords[0]), p.getX(), 1E-6);
             assertEquals(Double.parseDouble(coords[1]), p.getY() != 0 ? -p.getY() : p.getY(), 1E-6);
             x += step;
             index = next + 1;
-        } while (x < end);
+        }
     }
 }
