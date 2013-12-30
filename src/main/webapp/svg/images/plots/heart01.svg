@@ -1,7 +1,4 @@
-<!DOCTYPE web-app PUBLIC 
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd">
-
+<?xml version="1.0" encoding="utf-8"?>
 <!--/*
 * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 *
@@ -30,23 +27,14 @@
 * "Portions Copyrighted [year] [name of copyright owner]"
 *
 */-->
-
-<web-app>
-    <icon>
-        <small-icon>icons/small-icon.gif</small-icon>
-        <large-icon>icons/large-icon.gif</large-icon>
-    </icon>
-    <display-name>SVG Plot Module Extension</display-name>
-    <servlet>
-        <servlet-name>online-demo</servlet-name>
-        <servlet-class>cuenen.raymond.svgplot.OnlineDemoServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>online-demo</servlet-name>
-        <url-pattern>/plotcreator</url-pattern>
-    </servlet-mapping>
-    <welcome-file-list>
-        <welcome-file>demo.html</welcome-file>
-        <welcome-file>plots.html</welcome-file>
-    </welcome-file-list>
-</web-app>
+<svg width="3.75cm" height="3.75cm" viewBox="-5.5 -5.5 11 11"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Example heart01- simple example of a 'plot'</title>
+    <desc>Two plots that draws a heart</desc>
+    <script id="svgplot-loader" xlink:href="../../../SVGPlotModule.js" base="../../../modules" />
+    <g fill="none" stroke="red" stroke-width="0.15" transform="scale(1,3)">
+        <plot function="0.75*(#x^2/25)^(1/3)+sqrt(1-#x^2/25)" />
+        <plot function="0.75*(#x^2/25)^(1/3)-sqrt(1-#x^2/25)" />
+    </g>
+    <script><![CDATA[SVGModule.require(["SVGPlotHandler"]);]]></script>
+</svg>

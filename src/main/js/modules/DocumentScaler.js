@@ -85,7 +85,7 @@ SVGModule.define(
                     viewport.width = box.width + 2 * (box.x - viewport.x);
                     viewport.height = box.height + 2 * (box.y - viewport.y);
                     setViewBox(doc, viewport);
-                    doc.style.strokeWidth = Math.max(viewport.width / doc.clientWidth,
+                    doc.style.strokeWidth = 2 * Math.max(viewport.width / doc.clientWidth,
                             viewport.height / doc.clientHeight);
                 }
             };

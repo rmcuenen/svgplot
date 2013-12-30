@@ -314,7 +314,52 @@
         </div>
         <h2 id="PlotData">1.3 Plot data</h2>
         <h3 id="PlotDataGeneralInformation">1.3.1 General information about plot data</h3>
-        <p>TBS.</p>
+        <p>
+            A plot is defined by including a <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            element which contains a <span class="attr-value">function="(plot data)"</span>
+            attribute, where the <a href="#FunctionAttribute"><span class="attr-name">‘function’</span></a>
+            attribute contains the mathematical expression to be plotted.
+        </p>
+        <p>
+            <span class="example-ref">Example heart01</span> specifies two plots
+            that form the shape of a heart.
+        </p>
+        <pre class="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;svg width="3.75cm" height="3.75cm" viewBox="-5.5 -5.5 11 11"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+  &lt;title&gt;Example heart01- simple example of a 'plot'&lt;/title&gt;
+  &lt;desc&gt;Two plots that draws a heart&lt;/desc&gt;
+  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" base="../modules" /&gt;
+  &lt;g fill="none" stroke="red" stroke-width="0.15" transform="scale(1,3)"&gt;
+    &lt;plot function="0.75*(#x^2/25)^(1/3)+sqrt(1-#x^2/25)" /&gt;
+    &lt;plot function="0.75*(#x^2/25)^(1/3)-sqrt(1-#x^2/25)" /&gt;
+  &lt;/g&gt;
+  &lt;script&gt;&lt;![CDATA[SVGModule.require(["SVGPlotHandler"]);]]&gt;&lt;/script&gt;
+&lt;/svg&gt;</pre>
+        <table summary="Example ">
+            <caption align="bottom">Example heart01</caption>
+            <tr>
+                <td><img alt="Example heart01 — simple example of a 'plot'" src="images/plots/heart01.png"/></td>
+            </tr>
+        </table>
+        <p class="view-as-svg"><a href="images/plots/heart01.svg">View this example as SVG (SVG-enabled browsers only)</a></p>
+        <p>
+            Plot data can contain newline characters and thus can be broken up into
+            multiple lines to improve readability. Because of line length limitations
+            with certain related tools, it is recommended that SVG Plot generators
+            split long plot data strings across multiple lines, with each line not
+            exceeding 255 characters. Also note that newline characters are only
+            allowed at certain places within plot data.
+        </p>
+        <p>
+            The syntax of plot data is basically any mathematical expression
+            (including boolean type expressions) that are common to all of us.
+            That is a finite, well-formed, combination of symbols.  Symbols can
+            designate numbers (constants), variables, operations, functions,
+            symbols of grouping, and other syntactic symbols. The use of expressions
+            can range from the simple to complex.
+        </p>
+        <p>The following sections list the possible operations and functions.</p>
         <h3 id="PlotDataMathematicalOperators">1.3.2 The mathematical operators</h3>
         <p>The following operators (presented in the context in which they are used) are recognized:</p>
         <table summary="mathematical operators" class="vert" border="1" cellspacing="2" cellpadding="5">
