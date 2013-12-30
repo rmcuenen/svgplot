@@ -38,7 +38,7 @@
         <script type="text/javascript" src="demo.js"></script>
     </head>
     <body onload="loadDemo();">
-        <div>
+        <div class="frame">
             <form id="plotinput" onsubmit="postData();
                     return false;">
                 <input type="hidden" id="base" name="base" />
@@ -81,11 +81,16 @@
                 </table>
                 <script type="text/javascript">
                     var base = window.location.href;
-                    document.getElementById("base").value = 
+                    document.getElementById("base").value =
                             base.slice(0, base.lastIndexOf('/'));
                 </script>
             </form>
+            <div class="info-frame">
+                <a href="svg/plots.html">
+                    <span class="info-name">Plots</span>
+                </a>
+            </div>
         </div>
-        <div><iframe id="plotwindow" /></div>
+        <div class="frame"><iframe id="plotwindow" /></div>
     </body>
 </html>

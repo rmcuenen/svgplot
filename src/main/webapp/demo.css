@@ -31,17 +31,49 @@
     width: 70px;
 }
 
-body {
-    background: wheat;
+.info-name {
+    color: #2A2AA5;
+    font-weight: bold;
+    font-size: 90%
 }
 
-div {
+.info-frame {
+    position: relative;
+    top: -25px;
+    left: 330px;
+    height: 0px;
+}
+
+.frame {
     width: 395px;
     background: white;
     border: 2px solid steelblue;
     border-radius: 15px;
     -moz-border-radius: 15px;
     margin: 5px auto;
+}
+
+body {
+    background: wheat;
+}
+
+:link {
+    color: #0000CC;
+    background: transparent;
+}
+
+:visited {
+    color: #660099;
+    background: transparent;
+}
+
+a:active {
+    color: #CC0000;
+    background: transparent;
+}
+
+a:hover {
+    background: #FFFFAA;
 }
 
 iframe {
@@ -75,7 +107,6 @@ select {
     width: 75px;
     float: right;
 }
-
 
 #buttons {
     text-align: center;
