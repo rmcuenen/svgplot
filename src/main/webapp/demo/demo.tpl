@@ -30,16 +30,17 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>SVG Plot Module Extension Demo</title>
-    <script id="svgplot-loader" xlink:href="{0}/SVGPlotModule.js" base="{0}/modules"></script>
+    <script id="svgplot-loader" xlink:href="{$base}/SVGPlotModule.js" base="{$base}/modules"></script>
     <script>
-    <![CDATA[
-        SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
-            function(DocumentScaler) '{'
-                DocumentScaler.scaleTo(document.getElementById("demo-svg-plot"));
-            '}'
-        );
-    ]]>
+        <![CDATA[
+                SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
+                        function(DocumentScaler) {
+                            DocumentScaler.scaleTo(document.getElementById("demo-svg-plot"));
+                        }
+                );
+        ]]>
     </script>
     <plot id="demo-svg-plot" stroke="maroon" fill="none"
-          domain="{1}" samples="{2}" variable="{3}" connected="{4}" function="{5}" />
+          domain="{$domain}" samples="{$samples}" variable="{$variable}"
+          connected="{$connected}" function="{$function}" />
 </svg>

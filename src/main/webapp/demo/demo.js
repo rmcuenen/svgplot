@@ -28,18 +28,29 @@
  */
 
 /**
- * Posts the plot-data to the servlet.
+ * The template text used for generating the plot svg.
+ *  
+ * @type String
+ */
+var template;
+
+/**
+ * Posts the plot-data to the template and loads it.
  */
 function postData() {
-    var request = new XMLHttpRequest();
-    request.onreadystatechange = function() {
-        if (request.readyState === 4) {
-            loadData(request.responseText);
-        }
-    };
-    request.open("POST", "plotcreator", true);
-    request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    request.send(getPlotData());
+    if (typeof template === 'undefined') {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (request.readyState === 4) {
+                template = request.responseText;
+                loadPlotData();
+            }
+        };
+        request.open("GET", "demo.tpl", true);
+        request.send(null);
+    } else {
+        loadPlotData();
+    }
 }
 
 /**
@@ -60,7 +71,7 @@ function loadDemo() {
 /**
  * Writes the given data to the document of the target iframe.
  * 
- * @param {String} data The response from the server.
+ * @param {String} data The data to write.
  */
 function loadData(data) {
     var target = document.getElementById("plotwindow");
@@ -73,16 +84,14 @@ function loadData(data) {
 }
 
 /**
- * Reads and serializes the form data.
- * 
- * @returns {String} The serialized form data.
+ * Reads and serializes the form data into the template.
  */
-function getPlotData() {
+function loadPlotData() {
+    var params = {};
     var minValue = document.getElementById("min").value;
     var maxValue = document.getElementById("max").value;
     document.getElementById("domain").value = minValue + ':' + maxValue;
     var form = document.getElementById("plotinput");
-    var data = "";
     for (var i = 0; i < form.elements.length; i++) {
         var element = form.elements[i];
         var elementType = element.type.toUpperCase();
@@ -90,20 +99,23 @@ function getPlotData() {
             if (elementType === "TEXT"
                     || elementType === "NUMBER"
                     || elementType === "HIDDEN") {
-                data += (data.length > 0 ? '&' : '')
-                        + encodeURIComponent(element.name) + '='
-                        + encodeURIComponent(element.value);
+                params[element.name] = element.value;
             } else if (elementType.indexOf("SELECT") === 0) {
                 for (var j = 0; j < element.options.length; j++) {
                     var option = element.options[j];
                     if (option.selected) {
-                        data += (data.length > 0 ? '&' : '')
-                                + encodeURIComponent(element.name) + '='
-                                + encodeURIComponent(option.value ? option.value : option.text);
+                        params[element.name] = option.value ? option.value : option.text;
                     }
                 }
             }
         }
     }
-    return data;
+    var data = template;
+    for (var name in params) {
+        if (params.hasOwnProperty(name)) {
+            var re = new RegExp('{\\$' + name + '}', 'g');
+            data = data.replace(re, params[name]);
+        }
+    }
+    loadData(data);
 }
