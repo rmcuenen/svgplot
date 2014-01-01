@@ -65,7 +65,7 @@
                     <li><a href="#PlotDataBNF">1.3.4 The grammar for plot data</a></li>
                 </ul>
             </li>
-            <li><a href="#LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</a></li>
+            <li><a href="#LoadingSVGPlotModules">1.4 Loading the SVG Plot Modules</a></li>
             <li><a href="#SVGPlotModuleInterfaces">1.5 SVG Plot Module Interfaces</a>
                 <ul class="toc">
                     <li><a href="#InterfaceSVGPlotAttributeRepository">1.5.1 Interface SVGPlotAttributeRepository</a></li>
@@ -1055,8 +1055,104 @@
             operator (DegOp). Here a wsp is needed to distinguish between the use of the 
             <strong>r</strong> operator and a <strong>function</strong>.
         </p>
-        <h2 id="LoadingSVGPlotModule">1.4 Loading the SVG Plot Module</h2>
-        <p>TBS.</p>
+        <h2 id="LoadingSVGPlotModules">1.4 Loading the SVG Plot Modules</h2>
+        <p>
+            The SVG Plot Module Extension consists of multiple modules, each of
+            which performs a specific task within the parsing of <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            elements. So in order for the SVG document to be able to handle these
+            elements the SVG Plot modules need to be loaded into the document.
+        </p>
+        <p>
+            The SVG Plot modules are loaded through the SVGModule object. This object,
+            when created, provides an interface which is loosely derived from the
+            CommonJS Modules 1.0 specification.<br/>
+            Ths SVGModule object is created by the <code class="xml">SVGPlotModule.js</code>
+            file. So this file needs to be loaded into the SVG document with the
+            <a href="http://www.w3.org/TR/SVG/script.html#ScriptElement"><span class="element-name">‘script’</span></a>
+            element:
+        </p>
+        <pre class="xml">&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" …&gt;
+  &lt;script xlink:href="SVGPlotModule.js" /&gt;
+  &lt;plot …&gt;
+&lt;/svg&gt;</pre>
+        <p>
+            Remember that this will only create the SVGModule object. The required
+            modules still need to be loaded. However the base URL for finding the module
+            files is also set by this script.
+        </p>
+        <ul>
+            <li>
+                By default the module files are assumed to be relative to the SVG document.
+            </li>
+            <li>
+                When the <a href="http://www.w3.org/TR/SVG/script.html#ScriptElement"><span class="element-name">‘script’</span></a>
+                element has the <span class="attr-name">‘id’</span> attribute set
+                to <code class="xml">"svgplot-loader"</code> the module files are
+                assumed to be relative to the <code class="xml">SVGPlotModule.js</code>
+                file.
+            </li>
+            <li>
+                If the <code class="xml">"svgplot-loader"</code> element also has
+                a <span class="attr-name">‘base’</span> attribute set. The module
+                files are assumed to be relative to that attribute's value.
+            </li>
+        </ul>
+        <p>
+            Next the <code class="xml">SVGPlotHandler</code> module can be loaded.
+            This module will inspect the SVG document for <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            elements and parse them. To load this module (trought the SVGModule
+            object) add the following <a href="http://www.w3.org/TR/SVG/script.html#ScriptElement"><span class="element-name">‘script’</span></a>
+            element:
+        </p>
+        <pre class="xml">&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" …&gt;
+  &lt;script xlink:href="SVGPlotModule.js" /&gt;
+  &lt;script&gt;&lt;![CDATA[SVGModule.require(["SVGPlotHandler"]);]]&gt;&lt;/script&gt;
+  &lt;plot …&gt;
+&lt;/svg&gt;</pre>
+        <p>
+            Optionally the <code class="xml">DocumentScaler</code> module can also
+            be loaded. This module will scale the SVG document so that a referred
+            <a href="#PlotElement"><span class="element-name">‘plot’</span></a>
+            element is maximized within the viewport.
+        </p>
+        <pre class="xml">&lt;svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" …&gt;
+  &lt;script xlink:href="SVGPlotModule.js" /&gt;
+  &lt;script&gt;&lt;![CDATA[
+    SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
+      function(DocumentScaler) {
+        DocumentScaler.scaleTo(…);
+      }
+    );
+  ]]&gt;&lt;/script&gt;
+  &lt;plot …&gt;
+&lt;/svg&gt;</pre>
+        <p>
+            <span class="example-ref">Example scaled01</span> specifies a document
+            scaled to the parametric plot of a circle.
+        </p>
+        <pre class="xml">&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;svg width="3.75cm" height="3.75cm"
+     xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
+  &lt;title&gt;Example scaled01- example of a scaled parametric 'plot'&lt;/title&gt;
+  &lt;desc&gt;Parametric plot of a circle&lt;/desc&gt;
+  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" base="../modules" /&gt;
+  &lt;script&gt;&lt;![CDATA[
+    SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
+      function(DocumentScaler) {
+        DocumentScaler.scaleTo(document.getElementById("circle"));
+      }
+    );
+  ]]&gt;&lt;/script&gt;
+  &lt;plot id="circle" fill="none" stroke="magenta"
+    function="cos(#phi r),sin(#phi r)" variable="phi" domain="-pi:pi" /&gt;
+&lt;/svg&gt;</pre>
+        <table summary="Example ">
+            <caption align="bottom">Example scaled01</caption>
+            <tr>
+                <td><img alt="Example scaled01 — example of a scaled parametric 'plot'" src="images/plots/scaled01.png"/></td>
+            </tr>
+        </table>
+        <p class="view-as-svg"><a href="images/plots/scaled01.svg">View this example as SVG (SVG-enabled browsers only)</a></p>
         <h2 id="SVGPlotModuleInterfaces">1.5 SVG Plot Module Interfaces</h2>
         <h3 id="InterfaceSVGPlotAttributeRepository">1.5.1 Interface SVGPlotAttributeRepository</h3>
         The <a class="idlinterface" href="#InterfaceSVGPlotAttrubutes">SVGPlotAttributeRepository</a>
