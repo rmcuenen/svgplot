@@ -35,6 +35,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static cuenen.raymond.svgplot.PathValidator.*;
+import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.*;
 
 /**
@@ -48,9 +49,14 @@ public class SVGPlotterTest extends AbstractTestClass {
     private static final String CREATE_ELEMENT = "var el=document.createElementNS(SVGModule.SVG_NS, 'plot');";
     private static final String CALLBACK = "function(p){%s setResult(p.handle(el));}";
 
-    @Test(expectedExceptions = NoSuchElementException.class)
-    public void handlePlotElementTest() {
-        Wait wait = load(MODULE_LOADER, 10);
+    /**
+     * Test the handling of plot elements.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", expectedExceptions = NoSuchElementException.class)
+    public void handlePlotElementTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER, 10);
         StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
         addAttribute(plot, "stroke", "black");
         addAttribute(plot, "domain", "-1:1");
@@ -59,15 +65,20 @@ public class SVGPlotterTest extends AbstractTestClass {
         addAttribute(plot, "variable", "t");
         addAttribute(plot, "id", "plot-element");
         String callback = String.format(CALLBACK, plot.toString());
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        assertEquals(getResult(), "[object SVGPathElement]", getMessage());
-        getElementById("plot-element");
+        assertEquals(getResult(driver), "[object SVGPathElement]", getMessage(driver));
+        getElementById(driver, "plot-element");
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void handleAndReplaceTest() {
-        Wait wait = load(MODULE_LOADER, 10);
+    /**
+     * Test the replacement of plot elements in the SVGDocument.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void handleAndReplaceTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER, 10);
         StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
         addAttribute(plot, "stroke", "blue");
         addAttribute(plot, "stroke-width", "0.05");
@@ -79,23 +90,29 @@ public class SVGPlotterTest extends AbstractTestClass {
         addAttribute(plot, "transform", "translate(100, 250) scale(100)");
         plot.append("document.documentElement.appendChild(el);");
         String callback = String.format(CALLBACK, plot.toString());
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        WebElement path = getElementById("plot-element");
+        WebElement path = getElementById(driver, "plot-element");
         validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 10);
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void handleNoFunctionTest() {
-        Wait wait = load(MODULE_LOADER, 10);
+    /**
+     * Test for an error when there is no 'function' attribute specified.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void handleNoFunctionTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER, 10);
         StringBuilder elem = new StringBuilder(CREATE_ELEMENT);
         addAttribute(elem, "samples", "100");
         String callback = String.format(CALLBACK, elem.toString());
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(ExpectedConditions.alertIsPresent());
-        String alert = getAlert();
+        String alert = getAlert(driver);
+        String msg = getMessage(driver);
         assertTrue(alert.startsWith("NotFoundError: Function not set: <plot samples=\"100\" />"),
-                getMessage() + ": " + alert);
+                msg + " --> " + alert);
     }
 
     private void addAttribute(Appendable sb, String name, String value) {

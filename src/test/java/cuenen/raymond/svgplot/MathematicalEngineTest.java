@@ -30,6 +30,7 @@ package cuenen.raymond.svgplot;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -108,10 +109,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>mod
      * <li>Mod
      * </ul>
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void basicArithmeticFunctionsTest() {
-        executeTest(BASIC_ARITHMETIC_RESULTS, BASIC_ARITHMETIC_FUNCTIONS);
+    @Test(dataProvider = "driver")
+    public void basicArithmeticFunctionsTest(WebDriver driver) {
+        executeTest(driver, BASIC_ARITHMETIC_RESULTS, BASIC_ARITHMETIC_FUNCTIONS);
     }
 
     /**
@@ -124,10 +127,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>frac
      * <li>real
      * </ul>
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void roundingFunctionsTest() {
-        executeTest(ROUNDING_RESULTS, ROUNDING_FUNCTIONS);
+    @Test(dataProvider = "driver")
+    public void roundingFunctionsTest(WebDriver driver) {
+        executeTest(driver, ROUNDING_RESULTS, ROUNDING_FUNCTIONS);
     }
 
     /**
@@ -145,10 +150,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>atan
      * <li>atan2
      * </ul>
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void trigonometricFunctionsTest() {
-        executeTest(TRIGONOMETRIC_RESULTS, TRIGONOMETRIC_FUNCTIONS);
+    @Test(dataProvider = "driver")
+    public void trigonometricFunctionsTest(WebDriver driver) {
+        executeTest(driver, TRIGONOMETRIC_RESULTS, TRIGONOMETRIC_FUNCTIONS);
     }
 
     /**
@@ -167,10 +174,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>true
      * <li>false
      * </ul>
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void comparisonAndLogicalFunctionsTest() {
-        executeTest(COMPARISON_AND_LOGICAL_RESULTS, COMPARISON_AND_LOGICAL_FUNCTIONS);
+    @Test(dataProvider = "driver")
+    public void comparisonAndLogicalFunctionsTest(WebDriver driver) {
+        executeTest(driver, COMPARISON_AND_LOGICAL_RESULTS, COMPARISON_AND_LOGICAL_FUNCTIONS);
     }
 
     /**
@@ -181,14 +190,16 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>random
      * </ul>
      * These functions use the {@code RandomNumberGenerator} module.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void pseudoRandomFunctionsTest() {
-        performRangeTest("rnd()", 0D, 1D);
-        performRangeTest("rand()", -1D, 1D);
-        performRangeTest("random()", 0D, 1D);
-        performRangeTest("random(100)", 1D, 100D);
-        performRangeTest("random(232,762)", 232D, 762D);
+    @Test(dataProvider = "driver")
+    public void pseudoRandomFunctionsTest(WebDriver driver) {
+        performRangeTest(driver, "rnd()", 0D, 1D);
+        performRangeTest(driver, "rand()", -1D, 1D);
+        performRangeTest(driver, "random()", 0D, 1D);
+        performRangeTest(driver, "random(100)", 1D, 100D);
+        performRangeTest(driver, "random(232,762)", 232D, 762D);
     }
 
     /**
@@ -201,44 +212,50 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>cosh
      * <li>tanh
      * </ul>
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void miscellaneousFunctionsTest() {
-        executeTest(MISCELLANEOUS_RESULTS, MISCELLANEOUS_FUNCTIONS);
+    @Test(dataProvider = "driver")
+    public void miscellaneousFunctionsTest(WebDriver driver) {
+        executeTest(driver, MISCELLANEOUS_RESULTS, MISCELLANEOUS_FUNCTIONS);
     }
 
     /**
      * Convenience function for performing the range tests.
      *
+     * @param driver The WebDriver executing the test.
      * @param function The pseudo-random function to test.
      * @param range The expected range of the result.
      */
-    private void performRangeTest(String function, double... range) {
-        Wait wait = load(MODULE_LOADER, 1);
+    private void performRangeTest(WebDriver driver, String function, double... range) {
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String functionCall = createRangeFunctionCall(function);
         String callback = String.format(FUNCTION_FORMAT, functionCall);
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        String result = getResult();
-        assertNotNull(result, getMessage());
-        checkRange(result, range, function);
+        String result = getResult(driver);
+        String msg = getMessage(driver);
+        assertNotNull(result, msg);
+        checkRange(result, range, msg + ": " + function);
     }
 
     /**
      * Convenience function for executing the tests.
      *
+     * @param driver The WebDriver executing the test.
      * @param results The array of expected result values.
      * @param functions The array of functions to test.
      */
-    private void executeTest(Object[] results, String... functions) {
-        Wait wait = load(MODULE_LOADER, 1);
+    private void executeTest(WebDriver driver, Object[] results, String... functions) {
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String functionCall = createFunctionCall(functions);
         String callback = String.format(FUNCTION_FORMAT, functionCall);
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        String result = getResult();
-        assertNotNull(result, getMessage());
-        checkResult(result, results, functions);
+        String result = getResult(driver);
+        String msg = getMessage(driver);
+        assertNotNull(result, msg);
+        checkResult(result, results, functions, msg);
     }
 
     /**
@@ -284,15 +301,14 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param result The result obtained from the test.
      * @param expected The expected range.
-     * @param function The pseudo-random function being tested.
+     * @param msg The error message with the pseudo-random function being
+     * tested.
      */
-    private void checkRange(String result, double[] expected, String function) {
+    private void checkRange(String result, double[] expected, String msg) {
         String[] range = result.split(",");
         double delta = Math.max(expected[0], expected[1]) * 1E-5;
-        assertEquals(Double.parseDouble(range[0]), expected[0], Math.abs(delta),
-                getMessage() + ": " + function);
-        assertEquals(Double.parseDouble(range[1]), expected[1], Math.abs(delta),
-                getMessage() + ": " + function);
+        assertEquals(Double.parseDouble(range[0]), expected[0], Math.abs(delta), msg);
+        assertEquals(Double.parseDouble(range[1]), expected[1], Math.abs(delta), msg);
     }
 
     /**
@@ -301,17 +317,18 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * @param result The result obtained from the test.
      * @param expected The expected result values.
      * @param functions The functions being tested.
+     * @param msg The error message to use.
      */
-    private void checkResult(String result, Object[] expected, String[] functions) {
+    private void checkResult(String result, Object[] expected, String[] functions, String msg) {
         String[] results = result.split(",");
-        assertEquals(results.length, expected.length, getMessage());
+        assertEquals(results.length, expected.length, msg);
         for (int i = 0; i < expected.length; i++) {
             Object actual = convertValue(results[i], expected[i].getClass());
             if (actual instanceof Double) {
                 assertEquals(((Double) actual).doubleValue(), ((Double) expected[i]).doubleValue(),
-                        1E-6, getMessage() + ": " + functions[i]);
+                        1E-6, msg + ": " + functions[i]);
             } else {
-                assertEquals(actual, expected[i], getMessage() + ": " + functions[i]);
+                assertEquals(actual, expected[i], msg + ": " + functions[i]);
             }
         }
     }

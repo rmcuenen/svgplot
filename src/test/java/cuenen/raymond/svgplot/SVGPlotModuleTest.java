@@ -29,6 +29,7 @@
 package cuenen.raymond.svgplot;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
@@ -46,28 +47,44 @@ public class SVGPlotModuleTest extends AbstractTestClass {
     private static final String TEST_MODULE_NAME = "TestModule";
     private static final String TEST_MODULE_CALLBACK = "function(element) { document.documentElement.appendChild(element); }";
     private static final String TEST_MODULE_ID = "loaded-text";
-    private static final String ERROR_MESSAGE = "ModuleError: Error while loading TestModule2.js";
+    private static final String ERROR_MESSAGE = "ModuleError: Error while loading /modules/TestModule2.js";
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void testSVGPlotModuleLoaderWithBase() {
-        Wait wait = load(MODULE_LOADER_WITH_BASE, 10);
-        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
+    /**
+     * Test the SVGModule loader with 'moduleBase' attribute.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void testSVGPlotModuleLoaderWithBase(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER_WITH_BASE, 10);
+        require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void testSVGPlotModuleRelative() {
-        Wait wait = load(MODULE_LOADER_RELATIVE, 10);
-        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
+    /**
+     * Test the SVGModule loader when modules are relative to the document.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void testSVGPlotModuleRelative(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER_RELATIVE, 10);
+        require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void testSVGPlotModuleWithError() {
-        Wait wait = load(MODULE_LOADER, 10);
-        require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
+    /**
+     * Test for an error when the SVGModule loader cannot load a module.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void testSVGPlotModuleWithError(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER, 10);
+        require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
         wait.until(ExpectedConditions.alertIsPresent());
-        String alert = getAlert();
-        assertTrue(alert.startsWith(ERROR_MESSAGE), getMessage() + ":" + alert);
+        String alert = getAlert(driver);
+        String msg = getMessage(driver);
+        assertTrue(alert.startsWith(ERROR_MESSAGE), msg + " --> " + alert);
     }
 }

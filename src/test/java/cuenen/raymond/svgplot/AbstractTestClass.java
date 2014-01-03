@@ -42,7 +42,6 @@ import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.DataProvider;
-import org.testng.annotations.Test;
 
 /**
  * Abstract class that loads and stops the Selenium {@code WebDriver}.
@@ -74,39 +73,33 @@ public abstract class AbstractTestClass {
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";
 
-    private WebDriver driver;
-    private JavascriptExecutor js;
-
-    @Test(dataProvider = "driver")
-    public void initializeDriver(WebDriver driver) {
-        this.driver = driver;
-        this.js = (JavascriptExecutor) driver;
-        System.out.println(String.format("Running %s on %s", getClass().getSimpleName(),
-                ((HasCapabilities) driver).getCapabilities().getBrowserName()));
-    }
-
     /**
      * Load the given resource into the browser. This also sets the document's
      * title to the implementing class name.
      *
+     * @param driver The WebDriver executing the test.
      * @param resource The resource to be loaded.
      * @param timeout The timeout in seconds of the returned {@code Wait}
      * object.
      * @return The {@code Wait} object obtained from the WebDriver.
      */
-    protected Wait load(String resource, int timeout) {
+    protected Wait load(WebDriver driver, String resource, int timeout) {
         driver.get(BASE_URL + CONTEXT + resource);
-        js.executeScript(TITLE_SCRIPT, getClass().getSimpleName());
+        if (driver instanceof JavascriptExecutor) {
+            ((JavascriptExecutor) driver).executeScript(TITLE_SCRIPT, getClass().getSimpleName());
+        }
         return new WebDriverWait(driver, timeout);
     }
 
     /**
      * Require the given modules.
      *
+     * @param driver The WebDriver executing the test.
      * @param callback The callback function to be called after loading.
      * @param modules The modules that will be required.
      */
-    protected void require(String callback, String... modules) {
+    protected void require(WebDriver driver, String callback, String... modules) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         StringBuilder script = new StringBuilder();
         script.append("SVGModule.require(");
         script.append(toString(modules)).append(',');
@@ -117,10 +110,11 @@ public abstract class AbstractTestClass {
     /**
      * Retrieve the result as stored in the place holders result attribute.
      *
+     * @param driver The WebDriver executing the test.
      * @return The stored result.
      */
-    protected String getResult() {
-        WebElement placeholder = getElementById(PLACEHOLDER_ID);
+    protected String getResult(WebDriver driver) {
+        WebElement placeholder = getElementById(driver, PLACEHOLDER_ID);
         return placeholder.getAttribute(RESULT_ATTRIBUTE);
     }
 
@@ -128,10 +122,11 @@ public abstract class AbstractTestClass {
      * Retrieve the text of an alert window. This method also accepts the alert
      * (pressing OK).
      *
+     * @param driver The WebDriver executing the test.
      * @throws NoAlertPresentException If the dialog cannot be found
      * @return The message text.
      */
-    protected String getAlert() throws NoAlertPresentException {
+    protected String getAlert(WebDriver driver) throws NoAlertPresentException {
         Alert alert = driver.switchTo().alert();
         String text = alert.getText();
         alert.accept();
@@ -141,16 +136,31 @@ public abstract class AbstractTestClass {
     /**
      * Retrieve a WebElement by its ID.
      *
+     * @param driver The WebDriver executing the test.
      * @param id The element's identifier.
      * @throws NoSuchElementException If no matching elements are found
      * @return The corresponding WebElement.
      */
-    protected WebElement getElementById(String id) throws NoSuchElementException {
+    protected WebElement getElementById(WebDriver driver, String id) throws NoSuchElementException {
         return driver.findElement(By.id(id));
     }
 
-    protected String getMessage() {
-        return "Failed on " + ((HasCapabilities) driver).getCapabilities().getBrowserName();
+    /**
+     * Retrieve the message to use within assert statements.
+     *
+     * @param driver The WebDriver executing the test.
+     * @return An error message.
+     */
+    protected String getMessage(WebDriver driver) {
+        StringBuilder msg = new StringBuilder("Failed ");
+        if (driver instanceof HasCapabilities) {
+            msg.append("on ");
+            msg.append(((HasCapabilities) driver).getCapabilities().getBrowserName());
+        } else {
+            msg.append("with ");
+            msg.append(driver);
+        }
+        return msg.toString();
     }
 
     /**

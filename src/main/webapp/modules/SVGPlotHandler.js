@@ -32,6 +32,13 @@ SVGModule.define(
         ["SVGPlotter"],
         function(SVGPlotter) {
             /**
+             * Reference to the (last) plot element being handled.
+             * 
+             * @type Element
+             */
+            var plotElement;
+
+            /**
              * Callback method for when the whole SVGDocument is loaded.
              */
             function DOMParser() {
@@ -52,7 +59,9 @@ SVGModule.define(
              * @param {Node} element The element being inspected.
              */
             function handle(element) {
-                if (element.nodeName.toLowerCase() === "plot") {
+                if (element.nodeName.toLowerCase() === "plot" &&
+                        element !== plotElement) {
+                    plotElement = element;
                     SVGPlotter.handle(element);
                 } else {
                     for (var i = 0; i < element.childElementCount; i++) {

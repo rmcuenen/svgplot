@@ -33,14 +33,24 @@
     <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" moduleBase="/modules" />
     <script>
     <![CDATA[
+        function stringify(rect) {
+            var obj = {};
+            for (attr in rect) {
+                if (attr) {
+                    obj[attr] = rect[attr];
+                }
+            }
+            return JSON.stringify(obj);
+        }
+        
         SVGModule.require(["DocumentScaler"],
             function(scaler) {
                 var placeholder = document.getElementById("placeholder");
-                placeholder.setAttribute("before", JSON.stringify(placeholder.getBoundingClientRect()));
+                placeholder.setAttribute("before", stringify(placeholder.getBoundingClientRect()));
                 scaler.scaleTo(placeholder);
-                placeholder.setAttribute("after", JSON.stringify(placeholder.getBoundingClientRect()));
-                var doc = document.documentElement;
-                placeholder.setAttribute("result", doc.clientWidth + "," + doc.clientHeight);
+                placeholder.setAttribute("after", stringify(placeholder.getBoundingClientRect()));
+                var docRect = document.documentElement.getBoundingClientRect();
+                placeholder.setAttribute("result", docRect.width + "," + docRect.height);
             }
         );
     ]]>

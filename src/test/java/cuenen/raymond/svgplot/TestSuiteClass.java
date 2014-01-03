@@ -60,9 +60,13 @@ public final class TestSuiteClass {
     @AfterSuite(alwaysRun = true)
     public static void stopSelenium() {
         for (WebDriver driver : DRIVERS) {
-            Capabilities caps = ((HasCapabilities) driver).getCapabilities();
-            System.out.println(String.format("Tested with %s %s on %s", caps.getBrowserName(),
-                    caps.getVersion(), caps.getPlatform()));
+            if (driver instanceof HasCapabilities) {
+                Capabilities caps = ((HasCapabilities) driver).getCapabilities();
+                System.out.println(String.format("Tested with %s %s on %s", caps.getBrowserName(),
+                        caps.getVersion(), caps.getPlatform()));
+            } else {
+                System.out.println("Tested with " + driver);
+            }
             driver.quit();
         }
     }

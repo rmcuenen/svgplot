@@ -34,6 +34,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static cuenen.raymond.svgplot.PathValidator.*;
+import org.openqa.selenium.WebDriver;
 
 /**
  * Test class for testing {@code SVGPlotHandler.js}.
@@ -50,6 +51,12 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
     private static final String APPEND_SCRIPT = "setTimeout(appendPlot, 500);";
     private static final String APPEND_ID = "added-plot";
 
+    /**
+     * Creates the JavaScript adding an element to the document. This is used to
+     * determine when the test is done.
+     *
+     * @return The JavaScript string.
+     */
     private static String createDoneScript() {
         StringBuilder sb = new StringBuilder();
         sb.append("var d = document.createElementNS(SVGModule.SVG_NS, \"text\");");
@@ -58,30 +65,46 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
         return sb.toString();
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void handlerTest() {
-        Wait wait = load(MODULE_LOADER_PLOT, 10);
+    /**
+     * Test the SVGPlothandler. Note that this module has no interface.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void handlerTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER_PLOT, 10);
         String callback = String.format(CALLBACK_FORMAT, DONE_SCRIPT);
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(DONE_ID)));
-        validateResult();
+        validateResult(driver);
     }
 
-    @Test(dependsOnMethods = "initializeDriver")
-    public void changeTest() {
-        Wait wait = load(MODULE_LOADER_PLOT, 10);
+    /**
+     * Test that the SVGPlotHandler also handles plot elements when added after
+     * loading.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver")
+    public void changeTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER_PLOT, 10);
         String callback = String.format(CALLBACK_FORMAT, APPEND_SCRIPT);
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(APPEND_ID)));
-        validateResult();
-        WebElement path = getElementById(APPEND_ID);
+        validateResult(driver);
+        WebElement path = getElementById(driver, APPEND_ID);
         validatePath(path.getAttribute("d"), X_SIN, -Math.PI, Math.PI, 25);
     }
 
-    private void validateResult() {
-        WebElement path = getElementById("svg-plot-1");
+    /**
+     * Validate the two generated paths.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    private void validateResult(WebDriver driver) {
+        WebElement path = getElementById(driver, "svg-plot-1");
         validatePath(path.getAttribute("d"), SQUARED_ATAN, -1, 1, 10);
-        path = getElementById("svg-plot-2");
+        path = getElementById(driver, "svg-plot-2");
         validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 10);
     }
 }

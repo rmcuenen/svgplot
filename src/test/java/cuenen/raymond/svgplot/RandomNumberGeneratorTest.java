@@ -28,6 +28,7 @@
  */
 package cuenen.raymond.svgplot;
 
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -59,14 +60,17 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * of output ranges that cannot be tested effectively by black-box testing:
      * boundary values. It may be impractical to test whether the endpoints of
      * intervals are included.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void rangeTest() {
-        String result = executeTest(RANGE_TEST);
+    @Test(dataProvider = "driver")
+    public void rangeTest(WebDriver driver) {
+        String result = executeTest(driver, RANGE_TEST);
+        String msg = getMessage(driver);
         String[] range = result.split(",");
         /* Verify the range [0, 1). */
-        assertEquals(Double.parseDouble(range[0]), 0D, 1E-5, getMessage());
-        assertEquals(Double.parseDouble(range[1]), 1D, 1E-5, getMessage());
+        assertEquals(Double.parseDouble(range[0]), 0D, 1E-5, msg);
+        assertEquals(Double.parseDouble(range[1]), 1D, 1E-5, msg);
     }
 
     /**
@@ -84,14 +88,17 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * 2&sigma;/&radic;n and &mu; + 2&sigma;/&radic;n around 95% of the time, or
      * between &mu; − 3&sigma;/&radic;n and &mu; + 3&sigma;/&radic;n around
      * 99.7% of the time.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void meanTest() {
-        String result = executeTest(MEAN_TEST);
+    @Test(dataProvider = "driver")
+    public void meanTest(WebDriver driver) {
+        String result = executeTest(driver, MEAN_TEST);
+        String msg = getMessage(driver);
         /* The standard uniform distribution has mean 1/2 and variance 1/12. */
         double expectedAVG = 0.5;
         double expectedSTD = Math.sqrt(1D / 12D) / 1000D;
-        assertEquals(Double.parseDouble(result), expectedAVG, 2D * expectedSTD, getMessage());
+        assertEquals(Double.parseDouble(result), expectedAVG, 2D * expectedSTD, msg);
     }
 
     /**
@@ -107,14 +114,17 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * random. Let S&sup2; be the sample variance based on n values from the
      * RNG. If n is very large, then S&sup2; approximately has a normal
      * distribution with mean &sigma;&sup2; and variance 2&sigma;&#x2074;/(n−1).
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void varianceTest() {
-        String result = executeTest(VARIANCE_TEST);
+    @Test(dataProvider = "driver")
+    public void varianceTest(WebDriver driver) {
+        String result = executeTest(driver, VARIANCE_TEST);
+        String msg = getMessage(driver);
         /* The standard uniform distribution has variance 1/12. */
         double expectedVAR = 1D / 12D;
         double expectedSTD = Math.sqrt(2D * expectedVAR * expectedVAR / (1E6 - 1D));
-        assertEquals(Double.parseDouble(result), expectedVAR, 2D * expectedSTD, getMessage());
+        assertEquals(Double.parseDouble(result), expectedVAR, 2D * expectedSTD, msg);
     }
 
     /**
@@ -140,14 +150,17 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * distribution as a normal distribution with mean b−1 and variance 2b−2.
      * Then we can use the same rules as before regarding how often a normal
      * random variable is within two or three standard deviations of its mean.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void bucketTest() {
-        String result = executeTest(BUCKET_TEST);
+    @Test(dataProvider = "driver")
+    public void bucketTest(WebDriver driver) {
+        String result = executeTest(driver, BUCKET_TEST);
+        String msg = getMessage(driver);
         /* We test with 10^4 buckets. */
         double expectedMEAN = 1E4 - 1D;
         double expectedSTD = Math.sqrt(2E4 - 2D);
-        assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD, getMessage());
+        assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD, msg);
     }
 
     /**
@@ -172,30 +185,32 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * without saying where they came from. For large n, we expect the maximum
      * absolute difference to be between 0.07089 and 1.5174 around 98% of the
      * time.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void ksTest() {
-        String result = executeTest(KS_TEST);
+    @Test(dataProvider = "driver")
+    public void ksTest(WebDriver driver) {
+        String result = executeTest(driver, KS_TEST);
+        String msg = getMessage(driver);
         /* Midpoint and delta of the range [0.07089, 1.5174]. */
         double expected = 0.794145;
         double delta = 0.723255;
-        assertEquals(Double.parseDouble(result), expected, delta, getMessage());
+        assertEquals(Double.parseDouble(result), expected, delta, msg);
     }
 
     /**
      * Convenience function for executing the tests.
      *
+     * @param driver The WebDriver executing the test.
      * @param testDescription The array of objects to be used with the
      * {@link #FUNCTION_FORMAT}.
      * @return The result from the placeholder WebElement.
      */
-    private String executeTest(Object... testDescription) {
-        Wait wait = load(MODULE_LOADER, 1);
+    private String executeTest(WebDriver driver, Object... testDescription) {
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String callback = String.format(FUNCTION_FORMAT, testDescription);
-        require(callback, MODULE_NAME);
+        require(driver, callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        String result = getResult();
-        assertNotNull(result, getMessage());
-        return result;
+        return getResult(driver);
     }
 }

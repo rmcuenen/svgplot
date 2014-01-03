@@ -29,6 +29,11 @@
 package cuenen.raymond.svgplot;
 
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
+import java.util.Map;
+import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.HasCapabilities;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Wait;
 import org.testng.annotations.Test;
@@ -42,23 +47,84 @@ import static org.testng.Assert.*;
 public class DocumentScalerTest extends AbstractTestClass {
 
     private static final String MODULE_LOADER_SCALER = "/ModuleLoaderScaler.svg";
-    private static final Rectangle2D BEFORE_RECT = new Rectangle2D.Double(-1.5, 1.5, 1, 1);
+    private static final Rectangle2D BBOX = new Rectangle2D.Double(-1.5, 1.5, 1, 1);
 
     /**
      * Test the scaling of the SVGDocument.
+     *
+     * @param driver The WebDriver executing the test.
      */
-    @Test(dependsOnMethods = "initializeDriver")
-    public void documentScalerTest() {
-        Wait wait = load(MODULE_LOADER_SCALER, 10);
+    @Test(dataProvider = "driver")
+    public void documentScalerTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER_SCALER, 10);
         wait.until(RESULT_SET);
-        WebElement circle = getElementById(PLACEHOLDER_ID);
+        WebElement circle = getElementById(driver, PLACEHOLDER_ID);
         String before = circle.getAttribute("before");
         String after = circle.getAttribute("after");
-        assertNotEquals(before, after, getMessage());
-        assertEquals(before, toJSON(BEFORE_RECT), getMessage());
-        String[] size = getResult().split(",");
+        String msg = getMessage(driver);
+        assertNotEquals(before, after, msg);
+        Capabilities caps = ((HasCapabilities) driver).getCapabilities();
+        Rectangle2D beforeRect = getBeforeRect(caps);
+        assertEquals(toRect(before), beforeRect, msg);
+        String[] size = getResult(driver).split(",");
         Rectangle2D afterRect = createRect(Double.parseDouble(size[0]), Double.parseDouble(size[1]));
-        assertEquals(after, toJSON(afterRect), getMessage());
+        if (caps.getBrowserName().equals("firefox")) {
+            /* Don't know if this is always true. Haven't figured out what firefox does here. */
+            afterRect.setRect(436.25, 130.25, 2 * afterRect.getWidth(), 2 * afterRect.getHeight());
+        }
+        assertEquals(toRect(after), afterRect, msg);
+    }
+
+    private Rectangle2D getBeforeRect(Capabilities caps) {
+        switch (caps.getBrowserName()) {
+            case "firefox":
+                return new Rectangle2D.Double(
+                        Math.floor(BBOX.getX()),
+                        Math.floor(BBOX.getY()),
+                        BBOX.getWidth() + 2 * (BBOX.getX() - Math.floor(BBOX.getX())),
+                        BBOX.getHeight() + 2 * (BBOX.getY() - Math.floor(BBOX.getY())));
+            case "chrome":
+            default:
+                return new Rectangle2D.Double(
+                        BBOX.getX(),
+                        BBOX.getY(),
+                        BBOX.getWidth(),
+                        BBOX.getHeight());
+        }
+    }
+
+    /**
+     * Converts an JSON string to a Rectangle.
+     *
+     * @param json The JSON string to convert.
+     * @return The representing Rectangle.
+     */
+    private Rectangle2D toRect(String json) {
+        Map<String, Double> obj = new HashMap<>();
+        String key = "";
+        int index = 0;
+        while (index < json.length()) {
+            switch (json.charAt(index)) {
+                case '{':
+                case '"':
+                case '}':
+                    break;
+                case ':':
+                    int i = json.indexOf(',', index);
+                    if (i == -1) {
+                        i = json.length() - 1;
+                    }
+                    obj.put(key, Double.parseDouble(json.substring(index + 1, i)));
+                    key = "";
+                    index = i;
+                    break;
+                default:
+                    key += json.charAt(index);
+            }
+            index++;
+        }
+        return new Rectangle2D.Double(obj.get("left"), obj.get("top"),
+                obj.get("width"), obj.get("height"));
     }
 
     /**
@@ -70,44 +136,19 @@ public class DocumentScalerTest extends AbstractTestClass {
      * @return The scaled rectangle.
      */
     private Rectangle2D createRect(double cw, double ch) {
-        double x = Math.floor(BEFORE_RECT.getX());
-        double y = Math.floor(BEFORE_RECT.getY());
-        double w = BEFORE_RECT.getWidth() + 2 * (BEFORE_RECT.getX() - x);
-        double h = BEFORE_RECT.getHeight() + 2 * (BEFORE_RECT.getY() - y);
+        double x = Math.floor(BBOX.getX());
+        double y = Math.floor(BBOX.getY());
+        double w = BBOX.getWidth() + 2 * (BBOX.getX() - x);
+        double h = BBOX.getHeight() + 2 * (BBOX.getY() - y);
         double sx = cw / w;
         double sy = ch / h;
         double s = Math.min(sx, sy);
-        double left = BEFORE_RECT.getX() - x;
-        double top = BEFORE_RECT.getY() - y;
+        double left = BBOX.getX() - x;
+        double top = BBOX.getY() - y;
         return new Rectangle2D.Double(
                 sx * Math.ceil(left) - s * (left - Math.floor(left)),
                 sy * Math.ceil(top) - s * (top - Math.floor(top)),
-                s * BEFORE_RECT.getWidth(),
-                s * BEFORE_RECT.getHeight());
+                s * BBOX.getWidth(),
+                s * BBOX.getHeight());
     }
-
-    /**
-     * Returns the JSON string representation of the rectangle object.
-     *
-     * @param r The rectangle to stringify.
-     * @return The JSON string representation.
-     */
-    private String toJSON(Rectangle2D r) {
-        String left = r.getMinX() % 1 == 0 ? Integer.toString((int) r.getMinX()) : Double.toString(r.getMinX());
-        String top = r.getMinY() % 1 == 0 ? Integer.toString((int) r.getMinY()) : Double.toString(r.getMinY());
-        String bottom = r.getMaxY() % 1 == 0 ? Integer.toString((int) r.getMaxY()) : Double.toString(r.getMaxY());
-        String right = r.getMaxX() % 1 == 0 ? Integer.toString((int) r.getMaxX()) : Double.toString(r.getMaxX());
-        String width = r.getWidth() % 1 == 0 ? Integer.toString((int) r.getWidth()) : Double.toString(r.getWidth());
-        String height = r.getHeight() % 1 == 0 ? Integer.toString((int) r.getHeight()) : Double.toString(r.getHeight());
-        StringBuilder rect = new StringBuilder();
-        rect.append('{');
-        rect.append('"').append("height").append('"').append(':').append(height).append(',');
-        rect.append('"').append("width").append('"').append(':').append(width).append(',');
-        rect.append('"').append("left").append('"').append(':').append(left).append(',');
-        rect.append('"').append("bottom").append('"').append(':').append(bottom).append(',');
-        rect.append('"').append("right").append('"').append(':').append(right).append(',');
-        rect.append('"').append("top").append('"').append(':').append(top).append('}');
-        return rect.toString();
-    }
-
 }

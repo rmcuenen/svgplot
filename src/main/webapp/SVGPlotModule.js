@@ -249,9 +249,10 @@
             }
             module.injected = Status.REQUESTED;
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
-            moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.moduleBase + module.file);
+            var moduleUrl = this.moduleBase + module.file;
+            moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", moduleUrl);
             moduleClass.onerror = function() {
-                var error = new Error("Error while loading " + module.file);
+                var error = new Error("Error while loading " + moduleUrl);
                 error.name = "ModuleError";
                 throw error;
             };

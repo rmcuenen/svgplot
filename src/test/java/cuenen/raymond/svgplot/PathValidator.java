@@ -38,6 +38,9 @@ import static org.testng.Assert.assertEquals;
  */
 public final class PathValidator {
 
+    /**
+     * Implementation of (x, &frac12;x&sup2;-1).
+     */
     public static final Function X_HALFSQUAREDMINUS1 = new Function() {
 
         @Override
@@ -46,6 +49,9 @@ public final class PathValidator {
         }
     };
 
+    /**
+     * Implementation of (x&sup2;, atan(x)). Here the result is in radians.
+     */
     public static final Function SQUARED_ATAN = new Function() {
 
         @Override
@@ -54,6 +60,9 @@ public final class PathValidator {
         }
     };
 
+    /**
+     * Implementation of (x, sin(x)). Here x is assumed to be in radians.
+     */
     public static final Function X_SIN = new Function() {
 
         @Override
@@ -62,8 +71,18 @@ public final class PathValidator {
         }
     };
 
+    /**
+     * The function interface. Implementations of this interface are use when
+     * evaluating its functions for different values.
+     */
     public static interface Function {
 
+        /**
+         * Evaluate the function for the given value.
+         *
+         * @param x The value to evaluate at.
+         * @return The evaluated point (x,y).
+         */
         public Point2D eval(double x);
     }
 
@@ -71,6 +90,15 @@ public final class PathValidator {
         // Utility class.
     }
 
+    /**
+     * Validate an SVGPath with a given function.
+     *
+     * @param path The SVGPath 'd' attribute string.
+     * @param func The function to validate against.
+     * @param start The begin value.
+     * @param end The end value.
+     * @param count The number of samples.
+     */
     public static void validatePath(String path, Function func, double start, double end, int count) {
         assertEquals(path.charAt(0), 'M');
         int index = 1;
