@@ -31,7 +31,7 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Example scaled01- example of a scaled parametric 'plot'</title>
     <desc>Parametric plot of a circle</desc>
-    <script id="svgplot-loader" xlink:href="../../../SVGPlotModule.js" base="../../../modules" />
+    <script id="svgplot-loader" xlink:href="../../../SVGPlotModule.js" moduleBase="../../../modules" />
     <script><![CDATA[
         SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
             function(DocumentScaler) {
@@ -39,6 +39,6 @@
             }
         );
     ]]></script>
-    <plot id="circle" fill="none" stroke="magenta"
+    <plot id="circle" fill="magenta" stroke="blue" stroke-width="0.02"
           function="cos(#phi r),sin(#phi r)" variable="phi" domain="-pi:pi" />
 </svg>

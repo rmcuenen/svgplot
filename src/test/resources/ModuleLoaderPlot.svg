@@ -31,7 +31,7 @@
      xmlns:xlink="http://www.w3.org/1999/xlink"
      viewBox="-4 -1.5 8 3">
     <title>SVG Plot Module Extension Test</title>
-    <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" base="/modules" />
+    <script id="svgplot-loader" xlink:href="/SVGPlotModule.js" moduleBase="/modules" />
     <script>
     <![CDATA[
         function appendPlot() {

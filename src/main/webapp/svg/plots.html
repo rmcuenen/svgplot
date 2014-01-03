@@ -330,7 +330,7 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
   &lt;title&gt;Example heart01- simple example of a 'plot'&lt;/title&gt;
   &lt;desc&gt;Two plots that draws a heart&lt;/desc&gt;
-  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" base="../modules" /&gt;
+  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" moduleBase="../modules" /&gt;
   &lt;g fill="none" stroke="red" stroke-width="0.15" transform="scale(1,3)"&gt;
     &lt;plot function="0.75*(#x^2/25)^(1/3)+sqrt(1-#x^2/25)" /&gt;
     &lt;plot function="0.75*(#x^2/25)^(1/3)-sqrt(1-#x^2/25)" /&gt;
@@ -1094,7 +1094,7 @@
             </li>
             <li>
                 If the <code class="xml">"svgplot-loader"</code> element also has
-                a <span class="attr-name">‘base’</span> attribute set. The module
+                a <span class="attr-name">‘moduleBase’</span> attribute set. The module
                 files are assumed to be relative to that attribute's value.
             </li>
         </ul>
@@ -1136,7 +1136,7 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"&gt;
   &lt;title&gt;Example scaled01- example of a scaled parametric 'plot'&lt;/title&gt;
   &lt;desc&gt;Parametric plot of a circle&lt;/desc&gt;
-  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" base="../modules" /&gt;
+  &lt;script id="svgplot-loader" xlink:href="../SVGPlotModule.js" moduleBase="../modules" /&gt;
   &lt;script&gt;&lt;![CDATA[
     SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
       function(DocumentScaler) {

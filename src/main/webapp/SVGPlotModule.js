@@ -180,12 +180,13 @@
      *        ModuleLoader at one time. Therefore the module store can be used
      *        globally so no module needs to be loaded twice.
      * @name ModuleLoader
-     * @property {String} base The base URL for loading modules.
+     * @property {String} moduleBase The base URL for loading modules.
      * @property {Object.<String, Module>} waiting Map containing modules for which
      *           the module resource is being loaded.
      * @property {Object.<String, Module>} modules Map containing the created modules.
      */
     function ModuleLoader() {
+        this.moduleBase = "";
         this.waiting = {};
         this.modules = {};
     }
@@ -248,15 +249,15 @@
             }
             module.injected = Status.REQUESTED;
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
-            moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.base + module.file);
+            moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", this.moduleBase + module.file);
             moduleClass.onerror = function() {
                 var error = new Error("Error while loading " + module.file);
                 error.name = "ModuleError";
                 throw error;
             };
             this.waiting[module.name] = module;
-            var base = document.getElementsByTagName("script");
-            document.documentElement.insertBefore(moduleClass, base[base.length - 1].nextSibling);
+            var scripts = document.getElementsByTagName("script");
+            document.documentElement.insertBefore(moduleClass, scripts[scripts.length - 1].nextSibling);
         },
         /**
          * Get a {@link Module} from the store, or create one if it does not exists.
@@ -450,18 +451,18 @@
         }
     };
 
-    if (node === null) {
-        LOADER.base = "";
-    } else {
-        var base = node.getAttribute("base");
-        if (base === null) {
-            base = node.getAttributeNS(SVGModule.XLINK_NS, "href");
-            base = base.slice(0, base.lastIndexOf('/') + 1);
+    if (node !== null && node.nodeName.toLowerCase() === "script") {
+        var scriptBase = node.getAttributeNS(SVGModule.XLINK_NS, "href");
+        if (scriptBase.indexOf("SVGPlotModule.js") > -1) {
+            var moduleBase = node.getAttribute("moduleBase");
+            if (moduleBase === null) {
+                moduleBase = scriptBase.slice(0, scriptBase.lastIndexOf('/') + 1);
+            }
+            if (moduleBase.length > 0 && moduleBase.charAt(moduleBase.length - 1) !== '/') {
+                moduleBase += '/';
+            }
+            LOADER.moduleBase = moduleBase;
         }
-        if (base.length > 0 && base.charAt(base.length - 1) !== '/') {
-            base += '/';
-        }
-        LOADER.base = base;
     }
 
     window.onerror = function(msg, url, line) {
