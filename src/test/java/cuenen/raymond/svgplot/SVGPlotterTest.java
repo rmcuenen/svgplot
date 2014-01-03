@@ -61,11 +61,11 @@ public class SVGPlotterTest extends AbstractTestClass {
         String callback = String.format(CALLBACK, plot.toString());
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        assertEquals(getResult(), "[object SVGPathElement]");
+        assertEquals(getResult(), "[object SVGPathElement]", getMessage());
         getElementById("plot-element");
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void handleAndReplaceTest() {
         Wait wait = load(MODULE_LOADER, 10);
         StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
@@ -85,7 +85,7 @@ public class SVGPlotterTest extends AbstractTestClass {
         validatePath(path.getAttribute("d"), X_HALFSQUAREDMINUS1, 0, 2, 10);
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void handleNoFunctionTest() {
         Wait wait = load(MODULE_LOADER, 10);
         StringBuilder elem = new StringBuilder(CREATE_ELEMENT);
@@ -94,7 +94,8 @@ public class SVGPlotterTest extends AbstractTestClass {
         require(callback, MODULE_NAME);
         wait.until(ExpectedConditions.alertIsPresent());
         String alert = getAlert();
-        assertTrue(alert.startsWith("NotFoundError: Function not set: <plot samples=\"100\" />"), alert);
+        assertTrue(alert.startsWith("NotFoundError: Function not set: <plot samples=\"100\" />"),
+                getMessage() + ": " + alert);
     }
 
     private void addAttribute(Appendable sb, String name, String value) {

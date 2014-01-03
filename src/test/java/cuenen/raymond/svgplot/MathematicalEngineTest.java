@@ -109,7 +109,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>Mod
      * </ul>
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void basicArithmeticFunctionsTest() {
         executeTest(BASIC_ARITHMETIC_RESULTS, BASIC_ARITHMETIC_FUNCTIONS);
     }
@@ -125,7 +125,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>real
      * </ul>
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void roundingFunctionsTest() {
         executeTest(ROUNDING_RESULTS, ROUNDING_FUNCTIONS);
     }
@@ -146,7 +146,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>atan2
      * </ul>
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void trigonometricFunctionsTest() {
         executeTest(TRIGONOMETRIC_RESULTS, TRIGONOMETRIC_FUNCTIONS);
     }
@@ -168,7 +168,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>false
      * </ul>
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void comparisonAndLogicalFunctionsTest() {
         executeTest(COMPARISON_AND_LOGICAL_RESULTS, COMPARISON_AND_LOGICAL_FUNCTIONS);
     }
@@ -182,7 +182,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * </ul>
      * These functions use the {@code RandomNumberGenerator} module.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void pseudoRandomFunctionsTest() {
         performRangeTest("rnd()", 0D, 1D);
         performRangeTest("rand()", -1D, 1D);
@@ -202,7 +202,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      * <li>tanh
      * </ul>
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void miscellaneousFunctionsTest() {
         executeTest(MISCELLANEOUS_RESULTS, MISCELLANEOUS_FUNCTIONS);
     }
@@ -220,7 +220,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
         String result = getResult();
-        assertNotNull(result);
+        assertNotNull(result, getMessage());
         checkRange(result, range, function);
     }
 
@@ -237,7 +237,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
         String result = getResult();
-        assertNotNull(result);
+        assertNotNull(result, getMessage());
         checkResult(result, results, functions);
     }
 
@@ -289,8 +289,10 @@ public class MathematicalEngineTest extends AbstractTestClass {
     private void checkRange(String result, double[] expected, String function) {
         String[] range = result.split(",");
         double delta = Math.max(expected[0], expected[1]) * 1E-5;
-        assertEquals(Double.parseDouble(range[0]), expected[0], Math.abs(delta), function);
-        assertEquals(Double.parseDouble(range[1]), expected[1], Math.abs(delta), function);
+        assertEquals(Double.parseDouble(range[0]), expected[0], Math.abs(delta),
+                getMessage() + ": " + function);
+        assertEquals(Double.parseDouble(range[1]), expected[1], Math.abs(delta),
+                getMessage() + ": " + function);
     }
 
     /**
@@ -302,13 +304,14 @@ public class MathematicalEngineTest extends AbstractTestClass {
      */
     private void checkResult(String result, Object[] expected, String[] functions) {
         String[] results = result.split(",");
-        assertEquals(results.length, expected.length);
+        assertEquals(results.length, expected.length, getMessage());
         for (int i = 0; i < expected.length; i++) {
             Object actual = convertValue(results[i], expected[i].getClass());
             if (actual instanceof Double) {
-                assertEquals(((Double) actual).doubleValue(), ((Double) expected[i]).doubleValue(), 1E-6, functions[i]);
+                assertEquals(((Double) actual).doubleValue(), ((Double) expected[i]).doubleValue(),
+                        1E-6, getMessage() + ": " + functions[i]);
             } else {
-                assertEquals(actual, expected[i], functions[i]);
+                assertEquals(actual, expected[i], getMessage() + ": " + functions[i]);
             }
         }
     }

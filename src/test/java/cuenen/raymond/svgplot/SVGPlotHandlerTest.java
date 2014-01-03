@@ -58,7 +58,7 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
         return sb.toString();
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void handlerTest() {
         Wait wait = load(MODULE_LOADER_PLOT, 10);
         String callback = String.format(CALLBACK_FORMAT, DONE_SCRIPT);
@@ -67,7 +67,7 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
         validateResult();
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void changeTest() {
         Wait wait = load(MODULE_LOADER_PLOT, 10);
         String callback = String.format(CALLBACK_FORMAT, APPEND_SCRIPT);

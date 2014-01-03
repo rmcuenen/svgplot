@@ -60,13 +60,13 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * boundary values. It may be impractical to test whether the endpoints of
      * intervals are included.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void rangeTest() {
         String result = executeTest(RANGE_TEST);
         String[] range = result.split(",");
         /* Verify the range [0, 1). */
-        assertEquals(Double.parseDouble(range[0]), 0D, 1E-5);
-        assertEquals(Double.parseDouble(range[1]), 1D, 1E-5);
+        assertEquals(Double.parseDouble(range[0]), 0D, 1E-5, getMessage());
+        assertEquals(Double.parseDouble(range[1]), 1D, 1E-5, getMessage());
     }
 
     /**
@@ -85,13 +85,13 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * between &mu; − 3&sigma;/&radic;n and &mu; + 3&sigma;/&radic;n around
      * 99.7% of the time.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void meanTest() {
         String result = executeTest(MEAN_TEST);
         /* The standard uniform distribution has mean 1/2 and variance 1/12. */
         double expectedAVG = 0.5;
         double expectedSTD = Math.sqrt(1D / 12D) / 1000D;
-        assertEquals(Double.parseDouble(result), expectedAVG, 2D * expectedSTD);
+        assertEquals(Double.parseDouble(result), expectedAVG, 2D * expectedSTD, getMessage());
     }
 
     /**
@@ -108,13 +108,13 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * RNG. If n is very large, then S&sup2; approximately has a normal
      * distribution with mean &sigma;&sup2; and variance 2&sigma;&#x2074;/(n−1).
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void varianceTest() {
         String result = executeTest(VARIANCE_TEST);
         /* The standard uniform distribution has variance 1/12. */
         double expectedVAR = 1D / 12D;
         double expectedSTD = Math.sqrt(2D * expectedVAR * expectedVAR / (1E6 - 1D));
-        assertEquals(Double.parseDouble(result), expectedVAR, 2D * expectedSTD);
+        assertEquals(Double.parseDouble(result), expectedVAR, 2D * expectedSTD, getMessage());
     }
 
     /**
@@ -141,13 +141,13 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * Then we can use the same rules as before regarding how often a normal
      * random variable is within two or three standard deviations of its mean.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void bucketTest() {
         String result = executeTest(BUCKET_TEST);
         /* We test with 10^4 buckets. */
         double expectedMEAN = 1E4 - 1D;
         double expectedSTD = Math.sqrt(2E4 - 2D);
-        assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD);
+        assertEquals(Double.parseDouble(result), expectedMEAN, 2D * expectedSTD, getMessage());
     }
 
     /**
@@ -173,13 +173,13 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      * absolute difference to be between 0.07089 and 1.5174 around 98% of the
      * time.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void ksTest() {
         String result = executeTest(KS_TEST);
         /* Midpoint and delta of the range [0.07089, 1.5174]. */
         double expected = 0.794145;
         double delta = 0.723255;
-        assertEquals(Double.parseDouble(result), expected, delta);
+        assertEquals(Double.parseDouble(result), expected, delta, getMessage());
     }
 
     /**
@@ -195,7 +195,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
         String result = getResult();
-        assertNotNull(result);
+        assertNotNull(result, getMessage());
         return result;
     }
 }

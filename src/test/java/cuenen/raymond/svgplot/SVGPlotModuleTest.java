@@ -48,26 +48,26 @@ public class SVGPlotModuleTest extends AbstractTestClass {
     private static final String TEST_MODULE_ID = "loaded-text";
     private static final String ERROR_MESSAGE = "ModuleError: Error while loading TestModule2.js";
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void testSVGPlotModuleLoaderWithBase() {
         Wait wait = load(MODULE_LOADER_WITH_BASE, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void testSVGPlotModuleRelative() {
         Wait wait = load(MODULE_LOADER_RELATIVE, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void testSVGPlotModuleWithError() {
         Wait wait = load(MODULE_LOADER, 10);
         require(TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
         wait.until(ExpectedConditions.alertIsPresent());
         String alert = getAlert();
-        assertTrue(alert.startsWith(ERROR_MESSAGE), alert);
+        assertTrue(alert.startsWith(ERROR_MESSAGE), getMessage() + ":" + alert);
     }
 }

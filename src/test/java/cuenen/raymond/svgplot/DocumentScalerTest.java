@@ -47,18 +47,18 @@ public class DocumentScalerTest extends AbstractTestClass {
     /**
      * Test the scaling of the SVGDocument.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void documentScalerTest() {
         Wait wait = load(MODULE_LOADER_SCALER, 10);
         wait.until(RESULT_SET);
         WebElement circle = getElementById(PLACEHOLDER_ID);
         String before = circle.getAttribute("before");
         String after = circle.getAttribute("after");
-        assertNotEquals(before, after);
-        assertEquals(before, toJSON(BEFORE_RECT));
+        assertNotEquals(before, after, getMessage());
+        assertEquals(before, toJSON(BEFORE_RECT), getMessage());
         String[] size = getResult().split(",");
         Rectangle2D afterRect = createRect(Double.parseDouble(size[0]), Double.parseDouble(size[1]));
-        assertEquals(after, toJSON(afterRect));
+        assertEquals(after, toJSON(afterRect), getMessage());
     }
 
     /**

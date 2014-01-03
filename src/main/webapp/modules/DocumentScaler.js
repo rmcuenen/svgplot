@@ -47,20 +47,6 @@ SVGModule.define(
             }
 
             /**
-             * Sets the ViewBox of the SVGDocument to the given rectangle.
-             * 
-             * @param {SVGDocument} doc Reference to the SVGDocument.
-             * @param {SVGRect} rect The view box rectangle.
-             */
-            function setViewBox(doc, rect) {
-                var viewBox = doc.viewBox.baseVal;
-                viewBox.x = rect.x;
-                viewBox.y = rect.y;
-                viewBox.width = rect.width;
-                viewBox.height = rect.height;
-            }
-
-            /**
              * This interface can be used to scale the entire SVGDocument
              * to the dimensions of an SVGElement.
              * This is done by creating a viewport width the desired dimensions
@@ -84,10 +70,12 @@ SVGModule.define(
                     viewport.y = Math.floor(box.y);
                     viewport.width = box.width + 2 * (box.x - viewport.x);
                     viewport.height = box.height + 2 * (box.y - viewport.y);
-                    setViewBox(doc, viewport);
+                    doc.setAttribute("viewBox", [viewport.x, viewport.y,
+                        viewport.width, viewport.height].join(' '));
+                    var clientRect = doc.getBoundingClientRect();
                     doc.setAttribute("stroke-width",
-                            2 * Math.max(viewport.width / doc.clientWidth,
-                                    viewport.height / doc.clientHeight));
+                            2 * Math.max(viewport.width / clientRect.width,
+                                    viewport.height / clientRect.height));
                 }
             };
         }

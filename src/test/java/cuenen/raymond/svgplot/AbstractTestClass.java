@@ -28,22 +28,21 @@
  */
 package cuenen.raymond.svgplot;
 
+import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Test;
 
 /**
  * Abstract class that loads and stops the Selenium {@code WebDriver}.
@@ -78,18 +77,12 @@ public abstract class AbstractTestClass {
     private WebDriver driver;
     private JavascriptExecutor js;
 
-    @BeforeClass
-    public void startSelenium() throws Exception {
-        ChromeOptions options = new ChromeOptions();
-        DesiredCapabilities dc = DesiredCapabilities.chrome();
-        dc.setCapability(ChromeOptions.CAPABILITY, options);
-        driver = new ChromeDriver(dc);
-        js = (JavascriptExecutor) driver;
-    }
-
-    @AfterClass(alwaysRun = true)
-    public void stopSelenium() throws Exception {
-        driver.quit();
+    @Test(dataProvider = "driver")
+    public void initializeDriver(WebDriver driver) {
+        this.driver = driver;
+        this.js = (JavascriptExecutor) driver;
+        System.out.println(String.format("Running %s on %s", getClass().getSimpleName(),
+                ((HasCapabilities) driver).getCapabilities().getBrowserName()));
     }
 
     /**
@@ -156,6 +149,10 @@ public abstract class AbstractTestClass {
         return driver.findElement(By.id(id));
     }
 
+    protected String getMessage() {
+        return "Failed on " + ((HasCapabilities) driver).getCapabilities().getBrowserName();
+    }
+
     /**
      * Converts an array of module identifiers to the request string.
      *
@@ -176,5 +173,15 @@ public abstract class AbstractTestClass {
             }
             b.append(", ");
         }
+    }
+
+    @DataProvider(name = "driver")
+    public Object[][] driverProdiver() {
+        List<WebDriver> drivers = TestSuiteClass.getWebDrivers();
+        Object[][] result = new Object[drivers.size()][1];
+        for (int i = 0; i < result.length; i++) {
+            result[i][0] = drivers.get(i);
+        }
+        return result;
     }
 }

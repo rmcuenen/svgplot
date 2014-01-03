@@ -76,6 +76,12 @@
             <version>${selenium.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.opera</groupId>
+            <artifactId>operadriver</artifactId>
+            <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <finalName>svgplot</finalName>
@@ -104,6 +110,9 @@
                         </goals>
                         <configuration>
                             <skip>false</skip>
+                            <suiteXmlFiles>
+                                <suiteXmlFile>testng.xml</suiteXmlFile>
+                            </suiteXmlFiles>
                         </configuration>
                     </execution>
                 </executions>

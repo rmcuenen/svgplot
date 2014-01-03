@@ -46,7 +46,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code number}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void numberTest() {
         assertEquals(evaluateExpression("0", 0, false), 0);
         assertStartsWith(evaluateExpression("0.", 0, true), "ParseError: Integer Expected at '0.[]'");
@@ -65,7 +65,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code variable}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void variableTest() {
         assertStartsWith(evaluateExpression("#x", Math.PI, true), "NotFoundError: Unknown variable '#x'");
         assertEquals(evaluateExpression("#x\"); tree.setVariable(\"#x", Math.PI, false), Math.PI);
@@ -77,7 +77,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code function}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void functionTest() {
         assertEquals(evaluateExpression("e", 0, false), Math.E);
         assertBetween(evaluateExpression("sin(180)", 0, false), 0, 1E-15);
@@ -89,7 +89,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code (signed-)fragment}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void fragmentTest() {
         assertEquals(evaluateExpression("#x!\"); tree.setVariable(\"#x", 5, false), 120);
         assertEquals(evaluateExpression("max(-1,0,5)!", 0, false), 120);
@@ -100,7 +100,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code (signed-)factor}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void factorTest() {
         assertEquals(evaluateExpression("#x^2\"); tree.setVariable(\"#x", 12, false), 144);
         assertEquals(evaluateExpression("32400^(0.5)", 0, false), 180);
@@ -111,7 +111,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code term)s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void termTest() {
         assertEquals(evaluateExpression("2*2*2*2", 0, false), 16);
         assertEquals(evaluateExpression("-1/2*1/2", 0, false), -0.25);
@@ -123,7 +123,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code expression}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void expressionTest() {
         assertEquals(evaluateExpression("-1+2-3+4", 0, false), 2);
         assertEquals(evaluateExpression("#x||(#x-1)\"); tree.setVariable(\"#x", 2, false), 1);
@@ -133,7 +133,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code relation}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void relationTest() {
         assertEquals(evaluateExpression("-5<0", 0, false), 1);
         assertEquals(evaluateExpression("5>0", 0, false), 1);
@@ -146,7 +146,7 @@ public class ExpressionParserTest extends AbstractTestClass {
     /**
      * Test the parsing of {@code special}s.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void specialTest() {
         assertEquals(evaluateExpression("true() ? #x : pi\"); tree.setVariable(\"#x", Math.E, false), Math.E);
         assertStartsWith(evaluateExpression("1 ? true", 0, true), "ParseError: ':' Expected at '1 ? true[]'");
@@ -182,9 +182,9 @@ public class ExpressionParserTest extends AbstractTestClass {
      * @param actual The actual string to compare.
      * @param expected The expected beginning.
      */
-    private static void assertStartsWith(String actual, String expected) {
-        StringBuilder msg = new StringBuilder();
-        msg.append(actual).append(" does not start with ").append(expected);
+    private void assertStartsWith(String actual, String expected) {
+        StringBuilder msg = new StringBuilder(getMessage());
+        msg.append(": ").append(actual).append(" does not start with ").append(expected);
         Assert.assertTrue(actual.startsWith(expected), msg.toString());
     }
 
@@ -195,8 +195,8 @@ public class ExpressionParserTest extends AbstractTestClass {
      * @param actual The actual string to compare.
      * @param expected The expected number.
      */
-    private static void assertEquals(String actual, double expected) {
-        Assert.assertEquals(Double.valueOf(actual), Double.valueOf(expected));
+    private void assertEquals(String actual, double expected) {
+        Assert.assertEquals(Double.valueOf(actual), Double.valueOf(expected), getMessage());
     }
 
     /**
@@ -207,11 +207,11 @@ public class ExpressionParserTest extends AbstractTestClass {
      * @param min The minimal value.
      * @param max The maximal value.
      */
-    private static void assertBetween(String actual, double min, double max) {
+    private void assertBetween(String actual, double min, double max) {
         double mid = (min + max) / 2.0;
         double dist = (max - min) / 2.0;
-        StringBuilder msg = new StringBuilder();
-        msg.append(actual).append(" not between ").append(min).append(" and ").append(max);
+        StringBuilder msg = new StringBuilder(getMessage());
+        msg.append(": ").append(actual).append(" not between ").append(min).append(" and ").append(max);
         Assert.assertEquals(Double.parseDouble(actual), mid, dist, msg.toString());
     }
 }

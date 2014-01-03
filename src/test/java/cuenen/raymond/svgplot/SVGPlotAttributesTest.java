@@ -70,7 +70,7 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
     /**
      * Test the parsing of the plot-element attributes.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void validAttributesTest() {
         for (String[] attribute : VALID_ATTRIBUTES) {
             run(attribute);
@@ -80,38 +80,40 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
     /**
      * Verify the exceptions when an invalid attribute value is supplied.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void invalidAttributesTest() {
         for (String[] attribute : INVALID_ATTRIBUTES) {
             Wait wait = parseAttribute(attribute[0], attribute[1], 1);
             wait.until(ExpectedConditions.alertIsPresent());
             String alert = getAlert();
-            assertTrue(alert.startsWith(attribute[2]), attribute[0] + ": " + alert);
+            assertTrue(alert.startsWith(attribute[2]),
+                    getMessage() + ": " + attribute[0] + " --> " + alert);
         }
     }
 
     /**
      * Verify the exception of creating an unknown attribute.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void unknownAttributeTest() {
         Wait wait = parseAttribute(UNKNOWN_ATTRIBUTE[0], UNKNOWN_ATTRIBUTE[1], 0);
         wait.until(ExpectedConditions.alertIsPresent());
         String alert = getAlert();
-        assertTrue(alert.startsWith(UNKNOWN_ATTRIBUTE[2]), UNKNOWN_ATTRIBUTE[0] + ": " + alert);
+        assertTrue(alert.startsWith(UNKNOWN_ATTRIBUTE[2]),
+                getMessage() + ": " + UNKNOWN_ATTRIBUTE[0] + " --> " + alert);
     }
 
     /**
      * Create and test a newly defined attribute.
      */
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void newAttributeTest() {
         Wait wait = load(MODULE_LOADER, 10);
         String callback = String.format(SET_FUNCTION_FORMAT, NEW_ATTRIUTE[0],
                 NEW_ATTRIUTE[1], "{parse: function(a){return a;}}", UNKNOWN_ATTRIBUTE[1]);
         require(callback, MODULE_NAME);
         wait.until(ExpectedConditions.alertIsPresent());
-        assertTrue(getAlert().startsWith("TypeError: Invalid parse function"));
+        assertTrue(getAlert().startsWith("TypeError: Invalid parse function"), getMessage());
         int v = 0;
         for (int i = 0; i < UNKNOWN_ATTRIBUTE[1].length(); i++) {
             v += UNKNOWN_ATTRIBUTE[1].codePointAt(i);
@@ -121,22 +123,22 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
                 NEW_ATTRIUTE[1], NEW_ATTRIUTE[2], UNKNOWN_ATTRIBUTE[1]);
         require(callback, MODULE_NAME);
         wait.until(RESULT_SET);
-        assertEquals(getResult(), String.valueOf(v));
+        assertEquals(getResult(), String.valueOf(v), getMessage());
     }
 
-    @Test
+    @Test(dependsOnMethods = "initializeDriver")
     public void namesTest() {
         Wait wait = load(MODULE_LOADER, 10);
         require(NAMES_FUNCTION, MODULE_NAME);
         wait.until(RESULT_SET);
         String result = getResult();
-        assertNotNull(result);
+        assertNotNull(result, getMessage());
         List<String> names = new ArrayList<>(Arrays.asList(result.split(",")));
         for (String[] attr : VALID_ATTRIBUTES) {
-            assertTrue(names.contains(attr[0]), attr[0]);
+            assertTrue(names.contains(attr[0]), getMessage() + ": " + attr[0]);
             names.remove(attr[0]);
         }
-        assertTrue(names.isEmpty());
+        assertTrue(names.isEmpty(), getMessage());
     }
 
     /**
@@ -156,16 +158,17 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
             switch (i) {
                 case 0:
                     wait.until(RESULT_SET);
-                    assertEquals(getResult(), attribute[2], attribute[0]);
+                    assertEquals(getResult(), attribute[2], getMessage() + ": " + attribute[0]);
                     break;
                 case 1:
                     wait.until(RESULT_SET);
-                    assertEquals(getResult(), attribute[3], attribute[0]);
+                    assertEquals(getResult(), attribute[3], getMessage() + ": " + attribute[0]);
                     break;
                 case 2:
                     wait.until(ExpectedConditions.alertIsPresent());
                     String alert = getAlert();
-                    assertTrue(alert.startsWith(String.format(ALREADY_SET, attribute[0])), attribute[0] + ": " + alert);
+                    assertTrue(alert.startsWith(String.format(ALREADY_SET, attribute[0])),
+                            getMessage() + ": " + attribute[0] + " --> " + alert);
                     break;
             }
         }
