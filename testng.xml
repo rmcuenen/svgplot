@@ -31,7 +31,8 @@
 
 <suite name="svgplot" verbose="1" >
     <parameter name="drivers" value="org.openqa.selenium.chrome.ChromeDriver,
-        org.openqa.selenium.firefox.FirefoxDriver" />
+        org.openqa.selenium.firefox.FirefoxDriver,
+        com.opera.core.systems.OperaDriver" />
     <test name="Integration">
         <packages>
             <package name="cuenen.raymond.svgplot" />

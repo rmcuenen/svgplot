@@ -70,9 +70,9 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void handlerTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER_PLOT, 10);
+        Wait wait = load(driver, MODULE_LOADER_PLOT, 1);
         String callback = String.format(CALLBACK_FORMAT, DONE_SCRIPT);
         require(driver, callback, MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(DONE_ID)));
@@ -85,9 +85,9 @@ public class SVGPlotHandlerTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void changeTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER_PLOT, 10);
+        Wait wait = load(driver, MODULE_LOADER_PLOT, 1);
         String callback = String.format(CALLBACK_FORMAT, APPEND_SCRIPT);
         require(driver, callback, MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(APPEND_ID)));

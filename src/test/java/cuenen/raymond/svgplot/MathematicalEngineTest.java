@@ -112,7 +112,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void basicArithmeticFunctionsTest(WebDriver driver) {
         executeTest(driver, BASIC_ARITHMETIC_RESULTS, BASIC_ARITHMETIC_FUNCTIONS);
     }
@@ -130,7 +130,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void roundingFunctionsTest(WebDriver driver) {
         executeTest(driver, ROUNDING_RESULTS, ROUNDING_FUNCTIONS);
     }
@@ -153,7 +153,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void trigonometricFunctionsTest(WebDriver driver) {
         executeTest(driver, TRIGONOMETRIC_RESULTS, TRIGONOMETRIC_FUNCTIONS);
     }
@@ -177,7 +177,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void comparisonAndLogicalFunctionsTest(WebDriver driver) {
         executeTest(driver, COMPARISON_AND_LOGICAL_RESULTS, COMPARISON_AND_LOGICAL_FUNCTIONS);
     }
@@ -193,7 +193,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void pseudoRandomFunctionsTest(WebDriver driver) {
         performRangeTest(driver, "rnd()", 0D, 1D);
         performRangeTest(driver, "rand()", -1D, 1D);
@@ -215,7 +215,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void miscellaneousFunctionsTest(WebDriver driver) {
         executeTest(driver, MISCELLANEOUS_RESULTS, MISCELLANEOUS_FUNCTIONS);
     }

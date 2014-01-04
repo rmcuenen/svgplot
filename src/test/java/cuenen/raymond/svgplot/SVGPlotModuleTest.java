@@ -54,9 +54,9 @@ public class SVGPlotModuleTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void testSVGPlotModuleLoaderWithBase(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER_WITH_BASE, 10);
+        Wait wait = load(driver, MODULE_LOADER_WITH_BASE, 1);
         require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
@@ -66,9 +66,9 @@ public class SVGPlotModuleTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void testSVGPlotModuleRelative(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER_RELATIVE, 10);
+        Wait wait = load(driver, MODULE_LOADER_RELATIVE, 1);
         require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME);
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id(TEST_MODULE_ID)));
     }
@@ -78,9 +78,9 @@ public class SVGPlotModuleTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
     public void testSVGPlotModuleWithError(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         require(driver, TEST_MODULE_CALLBACK, TEST_MODULE_NAME + "2");
         wait.until(ExpectedConditions.alertIsPresent());
         String alert = getAlert(driver);

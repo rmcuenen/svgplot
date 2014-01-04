@@ -34,6 +34,7 @@ import java.util.List;
 import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.WebDriver;
+import org.testng.Reporter;
 import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.Parameters;
@@ -49,24 +50,36 @@ public final class TestSuiteClass {
 
     @BeforeSuite(alwaysRun = true)
     @Parameters(value = "drivers")
-    public static void startSelenium(String drivers) throws Exception {
+    public static void startSelenium(String drivers) {
         String[] classes = drivers.split(",");
         for (String className : classes) {
-            Class<?> driverClass = Class.forName(className.trim());
-            DRIVERS.add((WebDriver) driverClass.newInstance());
+            try {
+                Class<?> driverClass = Class.forName(className.trim());
+                DRIVERS.add((WebDriver) driverClass.newInstance());
+            } catch (ClassNotFoundException |
+                    InstantiationException | IllegalAccessException ex) {
+                Reporter.log("Cannot load " + className + ": " + ex.getMessage(), true);
+            }
         }
     }
 
     @AfterSuite(alwaysRun = true)
     public static void stopSelenium() {
         for (WebDriver driver : DRIVERS) {
+            StringBuilder sb = new StringBuilder("Tested ");
             if (driver instanceof HasCapabilities) {
                 Capabilities caps = ((HasCapabilities) driver).getCapabilities();
-                System.out.println(String.format("Tested with %s %s on %s", caps.getBrowserName(),
-                        caps.getVersion(), caps.getPlatform()));
+                if (caps.getBrowserName().equals("opera")) {
+                    /* The OperaDriver has no support for JavaScript alert/popup dialogues. */
+                    sb.append("partly ");
+                }
+                sb.append("with ").append(caps.getBrowserName());
+                sb.append(" ").append(caps.getVersion());
+                sb.append(" on ").append(caps.getPlatform());
             } else {
-                System.out.println("Tested with " + driver);
+                sb.append("with ").append(driver);
             }
+            Reporter.log(sb.toString(), true);
             driver.quit();
         }
     }

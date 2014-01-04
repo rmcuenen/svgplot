@@ -28,9 +28,11 @@
  */
 package cuenen.raymond.svgplot;
 
+import java.util.Arrays;
 import java.util.List;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoAlertPresentException;
@@ -41,6 +43,11 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.IHookCallBack;
+import org.testng.IHookable;
+import org.testng.ITestNGMethod;
+import org.testng.ITestResult;
+import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 
 /**
@@ -48,7 +55,7 @@ import org.testng.annotations.DataProvider;
  *
  * @author R. M. Cuenen
  */
-public abstract class AbstractTestClass {
+public abstract class AbstractTestClass implements IHookable {
 
     public static final ExpectedCondition<Boolean> RESULT_SET = new ExpectedCondition<Boolean>() {
 
@@ -72,6 +79,20 @@ public abstract class AbstractTestClass {
     private static final String RESULT_ATTRIBUTE = "result";
     private static final String BASE_URL = "http://localhost:8080";
     private static final String CONTEXT = "/test";
+
+    @Override
+    public void run(IHookCallBack callBack, ITestResult testResult) {
+        ITestNGMethod method = testResult.getMethod();
+        List<String> groups = Arrays.asList(method.getGroups());
+        HasCapabilities driver = (HasCapabilities) callBack.getParameters()[0];
+        Capabilities caps = driver.getCapabilities();
+        /* The OperaDriver has no support for JavaScript alert/popup dialogues. */
+        if (groups.contains("alert") && caps.getBrowserName().equals("opera")) {
+            Reporter.log("Skipping " + method.getMethodName());
+        } else {
+            callBack.runTestMethod(testResult);
+        }
+    }
 
     /**
      * Load the given resource into the browser. This also sets the document's

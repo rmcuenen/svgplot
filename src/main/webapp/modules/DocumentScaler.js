@@ -39,9 +39,9 @@ SVGModule.define(
              */
             function findDocument(el) {
                 var doc = el;
-                while (doc.parentElement &&
+                while (doc.parentNode &&
                         doc.nodeName.toLowerCase() !== "svg") {
-                    doc = doc.parentElement;
+                    doc = doc.parentNode;
                 }
                 return doc;
             }

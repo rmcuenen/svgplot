@@ -49,21 +49,31 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void numberTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "0", 0, false), 0, msg);
-        assertStartsWith(evaluateExpression(driver, "0.", 0, true), "ParseError: Integer Expected at '0.[]'", msg);
         assertEquals(evaluateExpression(driver, "0.01", 0, false), 0.01, msg);
-        assertStartsWith(evaluateExpression(driver, ".", 0, true), "ParseError: Integer Expected at '.[]'", msg);
         assertEquals(evaluateExpression(driver, ".00", 0, false), 0, msg);
-        assertStartsWith(evaluateExpression(driver, "1e0", 0, true), "ParseError: Non-Zero Expected at '1e[0]'", msg);
         assertEquals(evaluateExpression(driver, "1e2", 0, false), 100, msg);
         assertEquals(evaluateExpression(driver, "2e-3", 0, false), 0.002, msg);
-        assertStartsWith(evaluateExpression(driver, "1e2.5", 0, true), "ParseError: Unrecognized character: 1e2[.]5", msg);
         assertEquals(evaluateExpression(driver, "0.01e+4", 0, false), 100, msg);
-        assertStartsWith(evaluateExpression(driver, "0e2", 0, true), "ParseError: Unrecognized character: 0[e]2", msg);
         assertEquals(evaluateExpression(driver, "124", 0, false), 124, msg);
+    }
+
+    /**
+     * Test the parsing of invalid {@code number}s.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidNumberTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        assertStartsWith(evaluateExpression(driver, "0.", 0, true), "ParseError: Integer Expected at '0.[]'", msg);
+        assertStartsWith(evaluateExpression(driver, ".", 0, true), "ParseError: Integer Expected at '.[]'", msg);
+        assertStartsWith(evaluateExpression(driver, "1e0", 0, true), "ParseError: Non-Zero Expected at '1e[0]'", msg);
+        assertStartsWith(evaluateExpression(driver, "1e2.5", 0, true), "ParseError: Unrecognized character: 1e2[.]5", msg);
+        assertStartsWith(evaluateExpression(driver, "0e2", 0, true), "ParseError: Unrecognized character: 0[e]2", msg);
     }
 
     /**
@@ -71,14 +81,24 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void variableTest(WebDriver driver) {
         String msg = getMessage(driver);
-        assertStartsWith(evaluateExpression(driver, "#x", Math.PI, true), "NotFoundError: Unknown variable '#x'", msg);
         assertEquals(evaluateExpression(driver, "#x\"); tree.setVariable(\"#x", Math.PI, false), Math.PI, msg);
+        assertEquals(evaluateExpression(driver, "#This_is_Valid_2\"); tree.setVariable(\"#This_is_Valid_2", 2.5, false), 2.5, msg);
+    }
+
+    /**
+     * Test the parsing of invalid {@code variable}s.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidVariableTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        assertStartsWith(evaluateExpression(driver, "#x", Math.PI, true), "NotFoundError: Unknown variable '#x'", msg);
         assertStartsWith(evaluateExpression(driver, "#0", 0, true), "ParseError: Variable Expected at '#[0]'", msg);
         assertStartsWith(evaluateExpression(driver, "#_Wrong", 0, true), "ParseError: Variable Expected at '#[_]Wrong'", msg);
-        assertEquals(evaluateExpression(driver, "#This_is_Valid_2\"); tree.setVariable(\"#This_is_Valid_2", 2.5, false), 2.5, msg);
     }
 
     /**
@@ -86,14 +106,24 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void functionTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "e", 0, false), Math.E, msg);
         assertBetween(evaluateExpression(driver, "sin(180)", 0, false), 0, 1E-15, msg);
         assertEquals(evaluateExpression(driver, "max(1,2.5,50,-3)", 0, false), 50, msg);
-        assertStartsWith(evaluateExpression(driver, "ajax", 0, true), "NotFoundError: Unknown function 'ajax'", msg);
         assertBetween(evaluateExpression(driver, "random()", 0, false), 0, 1, msg);
+    }
+
+    /**
+     * Test the parsing of invalid {@code function}s.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidFunctionTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        assertStartsWith(evaluateExpression(driver, "ajax", 0, true), "NotFoundError: Unknown function 'ajax'", msg);
     }
 
     /**
@@ -101,7 +131,7 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void fragmentTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "#x!\"); tree.setVariable(\"#x", 5, false), 120, msg);
@@ -115,7 +145,7 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void factorTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "#x^2\"); tree.setVariable(\"#x", 12, false), 144, msg);
@@ -129,14 +159,24 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void termTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "2*2*2*2", 0, false), 16, msg);
         assertEquals(evaluateExpression(driver, "-1/2*1/2", 0, false), -0.25, msg);
         assertEquals(evaluateExpression(driver, "#x/#x^2\"); tree.setVariable(\"#x", 2, false), 0.5, msg);
-        assertStartsWith(evaluateExpression(driver, "2**2", 0, true), "ParseError: Number Expected at '2*[*]2'", msg);
         assertEquals(evaluateExpression(driver, "#x&&(#x-1)\"); tree.setVariable(\"#x", 1, false), 0, msg);
+    }
+
+    /**
+     * Test the parsing of invalid {@code term)s.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidTermTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        assertStartsWith(evaluateExpression(driver, "2**2", 0, true), "ParseError: Number Expected at '2*[*]2'", msg);
     }
 
     /**
@@ -144,7 +184,7 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void expressionTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "-1+2-3+4", 0, false), 2, msg);
@@ -157,7 +197,7 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void relationTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "-5<0", 0, false), 1, msg);
@@ -173,12 +213,22 @@ public class ExpressionParserTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void specialTest(WebDriver driver) {
         String msg = getMessage(driver);
         assertEquals(evaluateExpression(driver, "true() ? #x : pi\"); tree.setVariable(\"#x", Math.E, false), Math.E, msg);
-        assertStartsWith(evaluateExpression(driver, "1 ? true", 0, true), "ParseError: ':' Expected at '1 ? true[]'", msg);
         assertEquals(evaluateExpression(driver, "cos(pi r)+1?acos(1):1.2", 0, false), 1.2, msg);
+    }
+
+    /**
+     * Test the parsing of invalid {@code special}s.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidSpecialTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        assertStartsWith(evaluateExpression(driver, "1 ? true", 0, true), "ParseError: ':' Expected at '1 ? true[]'", msg);
         assertStartsWith(evaluateExpression(driver, "0?:true", 0, true), "ParseError: Number Expected at '0?[:]true'", msg);
     }
 
@@ -193,7 +243,7 @@ public class ExpressionParserTest extends AbstractTestClass {
      * @return The parsed result.
      */
     private String evaluateExpression(WebDriver driver, String expression, double value, boolean alert) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String callback = String.format(FUNCTION_FORMAT, expression, value);
         require(driver, callback, MODULE_NAME);
         if (alert) {

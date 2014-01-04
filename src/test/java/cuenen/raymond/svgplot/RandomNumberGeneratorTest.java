@@ -63,7 +63,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void rangeTest(WebDriver driver) {
         String result = executeTest(driver, RANGE_TEST);
         String msg = getMessage(driver);
@@ -91,7 +91,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void meanTest(WebDriver driver) {
         String result = executeTest(driver, MEAN_TEST);
         String msg = getMessage(driver);
@@ -117,7 +117,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void varianceTest(WebDriver driver) {
         String result = executeTest(driver, VARIANCE_TEST);
         String msg = getMessage(driver);
@@ -153,7 +153,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void bucketTest(WebDriver driver) {
         String result = executeTest(driver, BUCKET_TEST);
         String msg = getMessage(driver);
@@ -188,7 +188,7 @@ public class RandomNumberGeneratorTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void ksTest(WebDriver driver) {
         String result = executeTest(driver, KS_TEST);
         String msg = getMessage(driver);

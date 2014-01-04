@@ -73,7 +73,7 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void validAttributesTest(WebDriver driver) {
         String msg = getMessage(driver);
         for (String[] attribute : VALID_ATTRIBUTES) {
@@ -82,11 +82,28 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
     }
 
     /**
+     * Verify the error when parsing the attribute twice.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void multipleAttributesTest(WebDriver driver) {
+        String msg = getMessage(driver);
+        for (String[] attribute : VALID_ATTRIBUTES) {
+            Wait wait = parseAttribute(driver, attribute[0], attribute[1], 2);
+            wait.until(ExpectedConditions.alertIsPresent());
+            String alert = getAlert(driver);
+            assertTrue(alert.startsWith(String.format(ALREADY_SET, attribute[0])),
+                    msg + ": " + attribute[0] + " --> " + alert);
+        }
+    }
+
+    /**
      * Verify the exceptions when an invalid attribute value is supplied.
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
     public void invalidAttributesTest(WebDriver driver) {
         String msg = getMessage(driver);
         for (String[] attribute : INVALID_ATTRIBUTES) {
@@ -103,7 +120,7 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
     public void unknownAttributeTest(WebDriver driver) {
         Wait wait = parseAttribute(driver, UNKNOWN_ATTRIBUTE[0], UNKNOWN_ATTRIBUTE[1], 0);
         wait.until(ExpectedConditions.alertIsPresent());
@@ -118,9 +135,30 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void newAttributeTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        int v = 0;
+        for (int i = 0; i < UNKNOWN_ATTRIBUTE[1].length(); i++) {
+            v += UNKNOWN_ATTRIBUTE[1].codePointAt(i);
+        }
+        Wait wait = load(driver, MODULE_LOADER, 1);
+        String callback = String.format(SET_FUNCTION_FORMAT, NEW_ATTRIUTE[0],
+                NEW_ATTRIUTE[1], NEW_ATTRIUTE[2], UNKNOWN_ATTRIBUTE[1]);
+        require(driver, callback, MODULE_NAME);
+        wait.until(RESULT_SET);
+        String result = getResult(driver);
+        String msg = getMessage(driver);
+        assertEquals(result, String.valueOf(v), msg);
+    }
+
+    /**
+     * Test for failure of a newly defined attribute.
+     *
+     * @param driver The WebDriver executing the test.
+     */
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
+    public void invalidNewAttributeTest(WebDriver driver) {
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String callback = String.format(SET_FUNCTION_FORMAT, NEW_ATTRIUTE[0],
                 NEW_ATTRIUTE[1], "{parse: function(a){return a;}}", UNKNOWN_ATTRIBUTE[1]);
         require(driver, callback, MODULE_NAME);
@@ -129,17 +167,6 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
         String alert = getAlert(driver);
         assertTrue(alert.startsWith("TypeError: Invalid parse function"),
                 msg + " --> " + alert);
-        int v = 0;
-        for (int i = 0; i < UNKNOWN_ATTRIBUTE[1].length(); i++) {
-            v += UNKNOWN_ATTRIBUTE[1].codePointAt(i);
-        }
-        wait = load(driver, MODULE_LOADER, 10);
-        callback = String.format(SET_FUNCTION_FORMAT, NEW_ATTRIUTE[0],
-                NEW_ATTRIUTE[1], NEW_ATTRIUTE[2], UNKNOWN_ATTRIBUTE[1]);
-        require(driver, callback, MODULE_NAME);
-        wait.until(RESULT_SET);
-        String result = getResult(driver);
-        assertEquals(result, String.valueOf(v), msg);
     }
 
     /**
@@ -147,9 +174,9 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void namesTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         require(driver, NAMES_FUNCTION, MODULE_NAME);
         wait.until(RESULT_SET);
         String msg = getMessage(driver);
@@ -177,25 +204,12 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      * @param msg The error message to use.
      */
     private void run(WebDriver driver, String[] attribute, String msg) {
-        for (int i = 0; i < 3; i++) {
-            Wait wait = parseAttribute(driver, attribute[0], attribute[1], i);
-            switch (i) {
-                case 0:
-                    wait.until(RESULT_SET);
-                    assertEquals(getResult(driver), attribute[2], msg + ": " + attribute[0]);
-                    break;
-                case 1:
-                    wait.until(RESULT_SET);
-                    assertEquals(getResult(driver), attribute[3], msg + ": " + attribute[0]);
-                    break;
-                case 2:
-                    wait.until(ExpectedConditions.alertIsPresent());
-                    String alert = getAlert(driver);
-                    assertTrue(alert.startsWith(String.format(ALREADY_SET, attribute[0])),
-                            msg + ": " + attribute[0] + " --> " + alert);
-                    break;
-            }
-        }
+        Wait wait = parseAttribute(driver, attribute[0], attribute[1], 0);
+        wait.until(RESULT_SET);
+        assertEquals(getResult(driver), attribute[2], msg + ": " + attribute[0]);
+        wait = parseAttribute(driver, attribute[0], attribute[1], 1);
+        wait.until(RESULT_SET);
+        assertEquals(getResult(driver), attribute[3], msg + ": " + attribute[0]);
     }
 
     /**
@@ -208,7 +222,7 @@ public class SVGPlotAttributesTest extends AbstractTestClass {
      * @return The {@code Wait} object obtained from the WebDriver.
      */
     private Wait parseAttribute(WebDriver driver, String name, String value, int count) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         String callback = String.format(ATTR_FUNCTION_FORMAT, name, count, value);
         require(driver, callback, MODULE_NAME);
         return wait;

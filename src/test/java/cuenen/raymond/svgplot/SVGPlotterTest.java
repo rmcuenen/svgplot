@@ -54,9 +54,9 @@ public class SVGPlotterTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver", expectedExceptions = NoSuchElementException.class)
+    @Test(dataProvider = "driver", groups = "all", expectedExceptions = NoSuchElementException.class)
     public void handlePlotElementTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
         addAttribute(plot, "stroke", "black");
         addAttribute(plot, "domain", "-1:1");
@@ -76,9 +76,9 @@ public class SVGPlotterTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void handleAndReplaceTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         StringBuilder plot = new StringBuilder(CREATE_ELEMENT);
         addAttribute(plot, "stroke", "blue");
         addAttribute(plot, "stroke-width", "0.05");
@@ -101,9 +101,9 @@ public class SVGPlotterTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = {"all", "alert"})
     public void handleNoFunctionTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER, 10);
+        Wait wait = load(driver, MODULE_LOADER, 1);
         StringBuilder elem = new StringBuilder(CREATE_ELEMENT);
         addAttribute(elem, "samples", "100");
         String callback = String.format(CALLBACK, elem.toString());

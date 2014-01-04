@@ -54,9 +54,9 @@ public class DocumentScalerTest extends AbstractTestClass {
      *
      * @param driver The WebDriver executing the test.
      */
-    @Test(dataProvider = "driver")
+    @Test(dataProvider = "driver", groups = "all")
     public void documentScalerTest(WebDriver driver) {
-        Wait wait = load(driver, MODULE_LOADER_SCALER, 10);
+        Wait wait = load(driver, MODULE_LOADER_SCALER, 1);
         wait.until(RESULT_SET);
         WebElement circle = getElementById(driver, PLACEHOLDER_ID);
         String before = circle.getAttribute("before");
@@ -68,15 +68,36 @@ public class DocumentScalerTest extends AbstractTestClass {
         assertEquals(toRect(before), beforeRect, msg);
         String[] size = getResult(driver).split(",");
         Rectangle2D afterRect = createRect(Double.parseDouble(size[0]), Double.parseDouble(size[1]));
-        if (caps.getBrowserName().equals("firefox")) {
-            /* Don't know if this is always true. Haven't figured out what firefox does here. */
-            afterRect.setRect(436.25, 130.25, 2 * afterRect.getWidth(), 2 * afterRect.getHeight());
+        switch (caps.getBrowserName()) {
+            case "firefox":
+                /* Don't know if this is always true. 
+                 Haven't figured out what firefox does here. */
+                afterRect.setRect(
+                        436.25,
+                        130.25,
+                        2 * afterRect.getWidth(),
+                        2 * afterRect.getHeight());
+                break;
+            case "opera":
+                afterRect.setRect(
+                        Math.floor(afterRect.getX()),
+                        Math.floor(afterRect.getY()),
+                        Math.floor(afterRect.getWidth()),
+                        Math.floor(afterRect.getHeight()));
+                break;
         }
         assertEquals(toRect(after), afterRect, msg);
     }
 
     private Rectangle2D getBeforeRect(Capabilities caps) {
         switch (caps.getBrowserName()) {
+            case "opera":
+                return new Rectangle2D.Double(
+                        Math.ceil(BBOX.getX()),
+                        Math.floor(BBOX.getY()),
+                        BBOX.getWidth(),
+                        BBOX.getHeight()
+                );
             case "firefox":
                 return new Rectangle2D.Double(
                         Math.floor(BBOX.getX()),

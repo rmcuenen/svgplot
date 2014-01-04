@@ -60,10 +60,8 @@ SVGModule.define(
             /* The SVGDocument is guaranteed to be loaded here. */
             handle(document.documentElement);
             /* Listen for document changes. */
-            document.addEventListener("DOMSubtreeModified", function(event) {
-                if (event.target.nodeName.toLowerCase() !== "plot") {
-                    handle(event.target);
-                }
+            document.addEventListener("DOMNodeInserted", function(event) {
+                handle(event.target);
             }, false);
         }
 );
