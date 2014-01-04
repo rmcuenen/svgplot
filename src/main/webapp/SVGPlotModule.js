@@ -437,7 +437,9 @@
          * @param {function(...[Object])} callback Callback method.
          */
         require: function(dependencies, callback) {
-            LOADER.requireModule(new ModuleFactory(dependencies, callback));
+            domReady(function() {
+                LOADER.requireModule(new ModuleFactory(dependencies, callback));
+            });
         },
         /**
          * This method should be invoked from within a initialization block of the
@@ -470,4 +472,51 @@
         alert(msg.replace("Uncaught ", '') + "\n\n" + url + " (" + line + ")");
         return false;
     };
+
+    /**
+     * Indicates whether or not the page is loaded.
+     * 
+     * @type Boolean
+     */
+    var isPageLoaded = false;
+
+    /**
+     * Array of callback functions waiting for the DOM to become ready.
+     * 
+     * @type Function[]
+     */
+    var readyCalls = [];
+
+    /**
+     * Sets the page as loaded.
+     */
+    function pageLoaded() {
+        if (!isPageLoaded) {
+            isPageLoaded = true;
+            var callbacks = readyCalls;
+            //Call the DOM ready callbacks
+            if (callbacks.length) {
+                readyCalls = [];
+                for (var i = 0; i < callbacks.length; i += 1) {
+                    callbacks[i]();
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers a callback for DOM ready.
+     * If DOM is already ready, the callback is called immediately.
+     * 
+     * @param {Function} callback The callback function.
+     */
+    function domReady(callback) {
+        if (isPageLoaded) {
+            callback();
+        } else {
+            readyCalls.push(callback);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", pageLoaded, false);
 })(document.getElementById('svgplot-loader'));

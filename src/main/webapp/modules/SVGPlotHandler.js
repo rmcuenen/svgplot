@@ -39,19 +39,6 @@ SVGModule.define(
             var plotElement;
 
             /**
-             * Callback method for when the whole SVGDocument is loaded.
-             */
-            function DOMParser() {
-                handle(document.documentElement);
-                /* Listen for document changes. */
-                document.addEventListener("DOMSubtreeModified", function(event) {
-                    if (event.target.nodeName.toLowerCase() !== "plot") {
-                        handle(event.target);
-                    }
-                }, false);
-            }
-
-            /**
              * This method inspects the given element. If it is an SVGPlotElement
              * it is delegated to the SVGPlotter, otherwise its children are
              * inspected recursively.
@@ -70,12 +57,13 @@ SVGModule.define(
                 }
             }
 
-            if (["interactive", "complete"].indexOf(document.readyState) !== -1) {
-                /* Document is already loaded; start parsing. */
-                DOMParser();
-            } else {
-                /* Register the callback method. */
-                document.addEventListener("DOMContentLoaded", DOMParser, false);
-            }
+            /* The SVGDocument is guaranteed to be loaded here. */
+            handle(document.documentElement);
+            /* Listen for document changes. */
+            document.addEventListener("DOMSubtreeModified", function(event) {
+                if (event.target.nodeName.toLowerCase() !== "plot") {
+                    handle(event.target);
+                }
+            }, false);
         }
 );
