@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+
+<!--/*
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * The contents of this file are subject to the Common Development and Distribution
+ * License Version 1.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://opensource.org/licenses/CDDL-1.0/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is SVG Plot Module Extension.
+ *
+ * The Initial Developer of the Original Code is R. M. Cuenen
+ * Portions created by the Initial Developer are Copyright (C) 2013
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *   Raymond Cuenen <Raymond.Cuenen@gmail.com>
+ *
+ * If applicable, add the following below the
+ * License Header, with the fields enclosed by brackets [] replaced by
+ * your own identifying information:
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ *
+ */-->
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8" />
+        <title>SVG Plot - Online Demo</title>
+        <link rel="shortcut icon" type="image/gif" href="../icons/fav-icon.gif" />
+        <link rel="icon" type="image/gif" href="../icons/fav-icon.gif" />
+        <link rel="stylesheet" type="text/css" media="screen" href="demo.css" />
+        <script type="text/javascript" src="demo.js"></script>
+    </head>
+    <body onload="loadDemo();">
+        <div class="frame">
+            <form id="plotinput" onsubmit="postData();
+                    return false;">
+                <input type="hidden" id="base" name="base" />
+                <input type="hidden" id="domain" name="domain" />
+                <table>
+                    <tbody>
+                        <tr>
+                            <td rowspan="5"><img src="../SVGPlot.png" alt="SVG Plot" /></td>
+                            <td class="label">Domain</td>
+                            <td><input type="text" id="min" value="-5" /> : <input type="text" id="max" value="5" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Samples</td>
+                            <td><input type="number" name="samples" value="25" min="1" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Variable</td>
+                            <td><input type="text" name="variable" value="#x" /></td>
+                        </tr>
+                        <tr>
+                            <td class="label">Connected</td>
+                            <td>
+                                <select name="connected">
+                                    <option selected="selected">sharp</option>
+                                    <option>smooth</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="label">Function</td>
+                            <td><input type="text" name="function" autofocus="autofocus" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" id="buttons">
+                                <input type="submit" value="Plot" />
+                                <input type="reset" value="Reset" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <script type="text/javascript">
+                    var base = window.location.href;
+                    document.getElementById("base").value =
+                            base.slice(0, base.indexOf('/demo'));
+                </script>
+            </form>
+            <div class="info-frame">
+                <a href="../svg/plots.html">
+                    <span class="info-name">Plots</span>
+                </a>
+            </div>
+        </div>
+        <div class="frame"><iframe id="plotwindow" /></div>
+    </body>
+</html>
