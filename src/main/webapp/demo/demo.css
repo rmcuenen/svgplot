@@ -45,7 +45,7 @@
 }
 
 .frame {
-    width: 395px;
+    width: 415px;
     background: white;
     border: 2px solid steelblue;
     border-radius: 15px;
@@ -80,14 +80,14 @@ iframe {
     position: relative;
     top: 6px;
     left: 6px;
-    width: 380px;
-    height: 380px;
+    width: 400px;
+    height: 400px;
     margin-bottom: 6px;
     border: none;
 }
 
 table {
-    width: 380px;
+    width: 400px;
     border: none;
 }
 

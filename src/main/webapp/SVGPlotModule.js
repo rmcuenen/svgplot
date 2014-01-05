@@ -258,7 +258,7 @@
             };
             this.waiting[module.name] = module;
             var scripts = document.getElementsByTagName("script");
-            document.documentElement.insertBefore(moduleClass, scripts[scripts.length - 1].nextSibling);
+            scripts[0].parentNode.insertBefore(moduleClass, scripts[scripts.length - 1].nextSibling);
         },
         /**
          * Get a {@link Module} from the store, or create one if it does not exists.
@@ -457,7 +457,7 @@
     if (node !== null && node.nodeName.toLowerCase() === "script") {
         var scriptBase = node.getAttributeNS(SVGModule.XLINK_NS, "href");
         if (scriptBase.indexOf("SVGPlotModule.js") > -1) {
-            var moduleBase = node.getAttribute("moduleBase");
+            var moduleBase = node.getAttribute("base");
             if (moduleBase === null) {
                 moduleBase = scriptBase.slice(0, scriptBase.lastIndexOf('/') + 1);
             }
