@@ -32,17 +32,9 @@
 */-->
 
 <web-app>
-    <icon>
-        <small-icon>icons/small-icon.gif</small-icon>
-        <large-icon>icons/large-icon.gif</large-icon>
-    </icon>
     <display-name>SVG Plot Module Extension</display-name>
     <error-page>
         <error-code>404</error-code>
         <location>/404.html</location>
     </error-page>
-    <welcome-file-list>
-        <welcome-file>demo.html</welcome-file>
-        <welcome-file>plots.html</welcome-file>
-    </welcome-file-list>
 </web-app>
