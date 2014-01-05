@@ -1,4 +1,5 @@
 # SVG Plot Module Extension
+**Note:** The [master](https://github.com/rmcuenen/svgplot/tree/master) branch only holds the JavaScript source and the Java test resources. The HTML pages are maintained in the [gh-pages](https://github.com/rmcuenen/svgplot/tree/gh-pages) branch.
 
 ## Information
 The SVG Plot Module Extension consists of multiple modules, each of which performs a specific task within the parsing of __‘plot’__ elements.    
