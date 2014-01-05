@@ -31,7 +31,8 @@
      xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>Example heart01- simple example of a 'plot'</title>
     <desc>Two plots that draws a heart</desc>
-    <script id="svgplot-loader" xlink:href="../../../SVGPlotModule.js" moduleBase="../../../modules" />
+    <script id="svgplot-loader" xlink:href="http://rmcuenen.github.io/svgplot/SVGPlotModule.js"
+            base="http://rmcuenen.github.io/svgplot/modules" />
     <g fill="none" stroke="red" stroke-width="0.15" transform="scale(1,3)">
         <plot function="0.75*(#x^2/25)^(1/3)+sqrt(1-#x^2/25)" />
         <plot function="0.75*(#x^2/25)^(1/3)-sqrt(1-#x^2/25)" />
