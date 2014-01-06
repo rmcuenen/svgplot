@@ -80,6 +80,7 @@
             <groupId>com.opera</groupId>
             <artifactId>operadriver</artifactId>
             <version>1.5</version>
+            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
