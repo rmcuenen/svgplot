@@ -35,7 +35,7 @@
         <link rel="shortcut icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
         <link rel="icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
         <style type="text/css">
-            div {
+            div.content-frame {
                 background: white;
                 border: 2px solid steelblue;
                 border-radius: 15px;
@@ -43,19 +43,123 @@
                 margin: 5px auto;
                 padding: 5px 6px 0px;
             }
+
+            div.logo-background {
+                position: relative;
+                top: 0px;
+                float: right;
+                opacity: 0.6;
+            }
+
+            span {
+                color: #2A2AA5;
+            }
+
+            strong {
+                color: #A52A2A;
+            }
+
+            :link {
+                color: #0000CC;
+                background: transparent;
+            }
+
+            :visited {
+                color: #660099;
+                background: transparent;
+            }
+
+            a:active {
+                color: #CC0000;
+                background: transparent;
+            }
+
+            a:hover {
+                background: #FFFFAA;
+            }
+
+            .btn {
+                display: inline-block;
+                background: -webkit-linear-gradient(top, rgba(40, 40, 40, 0.3), rgba(35, 35, 35, 0.3) 50%, rgba(10, 10, 10, 0.3) 50%, rgba(0, 0, 0, 0.3));
+                padding: 8px 18px;
+                border-radius: 50px;
+                border: 2px solid rgba(0, 0, 0, 0.7);
+                border-bottom: 2px solid rgba(0, 0, 0, 0.7);
+                border-top: 2px solid rgba(0, 0, 0, 1);
+                color: rgba(51, 51, 51, 0.8);
+                font-family: Helvetica, Arial, sans-serif;
+                font-weight: bold;
+                font-size: 13px;
+                text-decoration: none;
+                text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.75);
+                box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            }
+
+            .btn:hover {
+                background: -webkit-linear-gradient(top, rgba(40, 40, 40, 0.6), rgba(35, 35, 35, 0.6) 50%, rgba(10, 10, 10, 0.6) 50%, rgba(0, 0, 0, 0.6));
+            }
+
+            .btn .icon {
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                margin: 1px 8px 0 0;
+                float: left;
+            }
+
+            .btn-github .icon {
+                opacity: 0.6;
+                background: url("icons/blacktocat.png") 0 0 no-repeat;
+            }
         </style>
     </head>
     <body style="background: wheat;">
-        <div>TODO write content.
-            <p>
-                But you can visit the <a href="svg/plots.html">plots</a> page,
-                or the <a href="demo/demo.html">demo</a> page already.
-            </p>
-            <!--section id="downloads">
-                <a href="https://github.com/rmcuenen/svgplot/zipball/master" class="btn">Download as .zip</a>
-                <a href="https://github.com/rmcuenen/svgplot/tarball/master" class="btn">Download as .tar.gz</a>
-                <a href="https://github.com/rmcuenen/svgplot" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
-            </section-->
+        <div class="content-frame">
+            <div class="logo-background">
+                <img src="icons/SVGPlot.png" alt="SVG Plot"/>
+            </div>
+            <article>
+                <h1>SVG Plot Module Extension</h1>
+                <h2>Information</h2>
+                <p>
+                    The SVG Plot Module Extension consists of multiple modules,
+                    each of which performs a specific task within the parsing of
+                    <strong>‘plot’</strong> elements.<br/>
+                    The SVG Plot modules are loaded through the SVGModule object.
+                    This object, created by the <code>SVGPlotModule.js</code> file,
+                    provides an interface which is loosely derived from the
+                    CommonJS Modules 1.0 specification.<br/>
+                    Refer to the <a href="https://github.com/rmcuenen/svgplot/wiki" title="Wiki"><span>Wiki</span></a>
+                    for more project information or the <a href="svg/plots.html" title="Plots"><span>Plots Page</span></a>
+                    for more information on the  <strong>‘plot’</strong> element.
+                </p>
+                <h2>Usage</h2>
+                <p>
+                    T.B.S.
+                </p>
+                <h2>License</h2>
+                <p>
+                    The SVG Plot Module Extension is provided under the
+                    <a href="https://raw.github.com/rmcuenen/svgplot/master/LICENSE.txt"><span>Common Development and Distribution License (CDDL-1.0)</span></a>.
+                </p>
+                <h2>Online Demo</h2>
+                <p>
+                    Try out generating SVG Plots with the SVG Plot Module Extension
+                    by visiting the <a href="demo/demo.html" title="Demo"><span>online demo</span></a>.
+                </p>
+                <h2>Download</h2>
+                <p>
+                    You can download the JavaScript files of the SVG Plot Module Extension as:
+                </p>
+                <section>
+                    <a href="war/svgplot.war" class="btn">Web application archive</a>
+                    <a href="https://github.com/rmcuenen/svgplot/tarball/master" class="btn">With test classes (.tar.gz)</a>
+                    <a href="https://github.com/rmcuenen/svgplot" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+                </section>
+                <p>
+                    <img src="icons/rc.gif" alt="R. M. Cuenen" style="position: relative; left: 32px;"/>
+                </p>
+            </article>
         </div>
     </body>
 </html>
