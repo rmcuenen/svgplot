@@ -32,18 +32,10 @@
     <head>
         <meta charset="UTF-8">
         <title>SVG Plot Module Extension</title>
-        <link rel="shortcut icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
-        <link rel="icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
+        <link rel="shortcut icon" type="image/gif" href="images/fav-icon.gif" />
+        <link rel="icon" type="image/gif" href="images/fav-icon.gif" />
+        <link rel="stylesheet" type="text/css" media="screen" href="stylesheet.css" />
         <style type="text/css">
-            div.content-frame {
-                background: white;
-                border: 2px solid steelblue;
-                border-radius: 15px;
-                -moz-border-radius: 15px;
-                margin: 5px auto;
-                padding: 5px 6px 0px;
-            }
-
             div.logo-background {
                 position: relative;
                 top: 0px;
@@ -51,31 +43,8 @@
                 opacity: 0.6;
             }
 
-            span {
-                color: #2A2AA5;
-            }
-
             strong {
                 color: #A52A2A;
-            }
-
-            :link {
-                color: #0000CC;
-                background: transparent;
-            }
-
-            :visited {
-                color: #660099;
-                background: transparent;
-            }
-
-            a:active {
-                color: #CC0000;
-                background: transparent;
-            }
-
-            a:hover {
-                background: #FFFFAA;
             }
 
             .btn {
@@ -109,14 +78,14 @@
 
             .btn-github .icon {
                 opacity: 0.6;
-                background: url("icons/blacktocat.png") 0 0 no-repeat;
+                background: url("images/blacktocat.png") 0 0 no-repeat;
             }
         </style>
     </head>
-    <body style="background: wheat;">
+    <body>
         <div class="content-frame">
             <div class="logo-background">
-                <img src="icons/SVGPlot.png" alt="SVG Plot"/>
+                <img src="images/SVGPlot.png" alt="SVG Plot"/>
             </div>
             <article>
                 <h1>SVG Plot Module Extension</h1>
@@ -147,6 +116,21 @@
                     Try out generating SVG Plots with the SVG Plot Module Extension
                     by visiting the <a href="demo/demo.html" title="Demo"><span>online demo</span></a>.
                 </p>
+                <h2>Testing</h2>
+                <p>
+                    The SVG Plot Module Extension is tested with TestNG and the
+                    use of the WebDriver API of Selenium 2.0.<br/>
+                    Tests are divided into two groups: <em>all</em> and tests resulting
+                    in an <em>alert</em> (The OperaDriver has no support for
+                    JavaScript alert/popup dialogues).<br/>
+                    The SVG Plot Module Extension is tested and guaranteed to run
+                    on the following browsers:
+                </p>
+                <ul>
+                    <li>All tests passed on Google Chrome version 31.0.1650.63</li>
+                    <li>All tests passed on Mozilla Firefox version 26.0</li>
+                    <li>All tests, excluding the <em>alert</em> group, passed on Opera version 12.16</li>
+                </ul>
                 <h2>Download</h2>
                 <p>
                     You can download the JavaScript files of the SVG Plot Module Extension as:
@@ -157,7 +141,7 @@
                     <a href="https://github.com/rmcuenen/svgplot" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
                 </section>
                 <p>
-                    <img src="icons/rc.gif" alt="R. M. Cuenen" style="position: relative; left: 32px;"/>
+                    <img src="images/rc.gif" alt="R. M. Cuenen" style="position: relative; left: 32px;"/>
                 </p>
             </article>
         </div>

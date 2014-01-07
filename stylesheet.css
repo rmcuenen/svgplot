@@ -27,57 +27,40 @@
  *
  */
 
-td.label {
-    width: 70px;
+body {
+    background: wheat;
 }
 
-div.info-frame {
-    position: relative;
-    top: -25px;
-    left: 330px;
-    height: 0px;
+:link {
+    color: #0000CC;
+    background: transparent;
 }
 
-div.demo-frame {
-    width: 415px;
+:visited {
+    color: #660099;
+    background: transparent;
 }
 
-iframe {
-    position: relative;
-    top: 6px;
-    left: 6px;
-    width: 400px;
-    height: 400px;
-    margin-bottom: 6px;
-    border: none;
+a:active {
+    color: #CC0000;
+    background: transparent;
 }
 
-table {
-    width: 400px;
-    border: none;
+a:hover {
+    background: #FFFFAA;
 }
 
-input {
-    width: 170px;
+a span {
+    color: #2A2AA5;
+    font-weight: bold;
+    font-size: 90%;
 }
 
-select {
-    width: 100%;
-}
-
-#min {
-    width: 75px;
-}
-
-#max {
-    width: 75px;
-    float: right;
-}
-
-#buttons {
-    text-align: center;
-}
-
-#buttons input {
-    width: 100px;
+div.content-frame {
+    background: white;
+    border: 2px solid steelblue;
+    border-radius: 15px;
+    -moz-border-radius: 15px;
+    margin: 5px auto;
+    padding: 5px 6px 0px;
 }

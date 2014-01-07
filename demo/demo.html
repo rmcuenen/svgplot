@@ -33,13 +33,14 @@
     <head>
         <meta charset="UTF-8" />
         <title>SVG Plot - Online Demo</title>
-        <link rel="shortcut icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
-        <link rel="icon" type="image/gif" href="http://rmcuenen.github.io/svgplot/icons/fav-icon.gif" />
+        <link rel="shortcut icon" type="image/gif" href="../images/fav-icon.gif" />
+        <link rel="icon" type="image/gif" href="../images/fav-icon.gif" />
+        <link rel="stylesheet" type="text/css" media="screen" href="../stylesheet.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="demo.css" />
         <script type="text/javascript" src="demo.js"></script>
     </head>
     <body onload="loadDemo();">
-        <div class="frame">
+        <div class="content-frame demo-frame">
             <form id="plotinput" onsubmit="postData();
                     return false;">
                 <input type="hidden" id="base" name="base" />
@@ -47,7 +48,7 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td rowspan="5"><img src="http://rmcuenen.github.io/svgplot/icons/SVGPlot.png" alt="SVG Plot" /></td>
+                            <td rowspan="5"><img src="../images/SVGPlot.png" alt="SVG Plot" /></td>
                             <td class="label">Domain</td>
                             <td><input type="text" id="min" value="-5" /> : <input type="text" id="max" value="5" /></td>
                         </tr>
@@ -87,11 +88,11 @@
                 </script>
             </form>
             <div class="info-frame">
-                <a href="http://rmcuenen.github.io/svgplot/svg/plots.html">
-                    <span class="info-name">Plots</span>
+                <a href="../svg/plots.html">
+                    <span>Plots</span>
                 </a>
             </div>
         </div>
-        <div class="frame"><iframe id="plotwindow" /></div>
+        <div class="content-frame demo-frame"><iframe id="plotwindow" /></div>
     </body>
 </html>
