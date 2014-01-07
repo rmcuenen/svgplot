@@ -32,6 +32,10 @@
 */-->
 
 <web-app>
+    <icon>
+        <small-icon>icons/small-icon.gif</small-icon>
+        <large-icon>icons/large-icon.gif</large-icon>
+    </icon>
     <display-name>SVG Plot Module Extension</display-name>
     <error-page>
         <error-code>404</error-code>
