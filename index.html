@@ -43,8 +43,12 @@
                 opacity: 0.6;
             }
 
-            strong {
-                color: #A52A2A;
+            strong, pre {
+                color: brown;
+            }
+
+            code.xml {
+                color: green;
             }
 
             .btn {
@@ -104,13 +108,64 @@
                 </p>
                 <h2>Usage</h2>
                 <p>
-                    T.B.S.
+                    The <code>SVGPlotModule.js</code> file needs to be loaded into
+                    the SVGDocument with the <strong>‘script’</strong> element:
                 </p>
-                <h2>License</h2>
+                <pre>
+&lt;svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     …&gt;
+  &lt;script xlink:href="http://rmcuenen.github.io/svgplot/SVGPlotModule.js" /&gt;
+  &lt;plot … /&gt;
+&lt;/svg&gt;
+                </pre>
                 <p>
-                    The SVG Plot Module Extension is provided under the
-                    <a href="https://raw.github.com/rmcuenen/svgplot/master/LICENSE.txt"><span>Common Development and Distribution License (CDDL-1.0)</span></a>.
+                    Note that this will only create the SVGModule object through
+                    which the required modules will be loaded. <br/>
+                    How the SVGModule object resolves the modules depends on the
+                    following configuration:
                 </p>
+                <ul>
+                    <li>
+                        By default the module files are assumed to be relative
+                        to the address of the SVG document.
+                    </li>
+                    <li>
+                        When the <strong>‘script’</strong> element has the <span>‘id’</span>
+                        attribute set to <code class="xml">"svgplot-loader"</code> the module
+                        files are assumed to be relative to the address of the
+                        <code>SVGPlotModule.js</code> file.
+                    </li>
+                    <li>
+                        If the <code class="xml">"svgplot-loader"</code> element
+                        also has a <span>‘base’</span> attribute set. The module
+                        files are assumed to be relative to that attribute's value.
+                    </li>
+                </ul>
+                <p>
+                    Now the <code>SVGPlotHandler</code> module (and optionally the
+                    <code>DocumentScaler</code> module) can be loaded. <br/>
+                    To load (or require) modules (through the SVGModule object)
+                    add the following <strong>‘script’</strong> element:
+                </p>
+                <pre>
+&lt;svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     …&gt;
+  &lt;script xlink:href="http://rmcuenen.github.io/svgplot/SVGPlotModule.js"
+          id="svgplot-loader" base="http://rmcuenen.github.io/svgplot/modules" /&gt;
+  &lt;script&gt;
+  &lt;![CDATA[
+    SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
+      function(DocumentScaler) {
+        DocumentScaler.scaleTo(document.getElementById("test-plot"));
+      }
+    );
+  ]]&gt;
+  &lt;/script&gt;
+  &lt;plot id="test-plot" … /&gt;
+&lt;/svg&gt;
+                </pre>
                 <h2>Online Demo</h2>
                 <p>
                     Try out generating SVG Plots with the SVG Plot Module Extension
@@ -131,6 +186,11 @@
                     <li>All tests passed on Mozilla Firefox version 26.0</li>
                     <li>All tests, excluding the <em>alert</em> group, passed on Opera version 12.16</li>
                 </ul>
+                <h2>License</h2>
+                <p>
+                    The SVG Plot Module Extension is provided under the
+                    <a href="https://raw.github.com/rmcuenen/svgplot/master/LICENSE.txt"><span>Common Development and Distribution License (CDDL-1.0)</span></a>.
+                </p>
                 <h2>Download</h2>
                 <p>
                     You can download the JavaScript files of the SVG Plot Module Extension as:
