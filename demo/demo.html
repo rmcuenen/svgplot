@@ -41,8 +41,7 @@
     </head>
     <body onload="loadDemo();">
         <div class="content-frame demo-frame">
-            <form id="plotinput" onsubmit="postData();
-                    return false;">
+            <form id="plotinput" method="post" action="#" onsubmit="return postData();">
                 <input type="hidden" id="base" name="base" />
                 <input type="hidden" id="domain" name="domain" />
                 <table>

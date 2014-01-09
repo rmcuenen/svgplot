@@ -51,6 +51,7 @@ function postData() {
     } else {
         loadPlotData();
     }
+    return false;
 }
 
 /**
@@ -77,7 +78,7 @@ function loadData(data) {
     var target = document.getElementById("plotwindow");
     target = (target.contentWindow) ? target.contentWindow :
             (target.contentDocument.document) ? target.contentDocument.document : target.contentDocument;
-    target.document.open();
+    target.document.open("text/html", "replace");
     target.document.write(data);
     target.document.close();
     target.document.body.style.cssText = "margin: 0px;";
