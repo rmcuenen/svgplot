@@ -146,7 +146,7 @@
                     Now the <code>SVGPlotHandler</code> module (and optionally the
                     <code>DocumentScaler</code> module) can be loaded. <br/>
                     To load (or require) modules (through the SVGModule object)
-                    add the following <strong>‘script’</strong> element:
+                    see the following example:
                 </p>
                 <pre>
 &lt;svg xmlns="http://www.w3.org/2000/svg"
@@ -158,12 +158,13 @@
   &lt;![CDATA[
     SVGModule.require(["DocumentScaler", "SVGPlotHandler"],
       function(DocumentScaler) {
-        DocumentScaler.scaleTo(document.getElementById("test-plot"));
+        DocumentScaler.scaleTo(document.getElementById("circle"));
       }
     );
   ]]&gt;
   &lt;/script&gt;
-  &lt;plot id="test-plot" … /&gt;
+  &lt;plot id="circle" fill="none" stroke="magenta"
+    function="cos(#phi r),sin(#phi r)" variable="phi" domain="-pi:pi" /&gt;
 &lt;/svg&gt;
                 </pre>
                 <h2>Online Demo</h2>
