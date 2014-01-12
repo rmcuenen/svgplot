@@ -39,7 +39,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="demo.css" />
         <script type="text/javascript" src="demo.js"></script>
     </head>
-    <body onload="loadDemo();">
+    <body onload="loadDemo();" onpageshow="if (event.persisted) loadDemo();">
         <div class="content-frame demo-frame">
             <form id="plotinput" method="post" action="#" onsubmit="return postData();">
                 <input type="hidden" id="base" name="base" />
