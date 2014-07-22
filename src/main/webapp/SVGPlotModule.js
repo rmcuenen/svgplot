@@ -51,13 +51,13 @@
         if (!(Object.prototype.toString.call(dependencies) === '[object Array]')) {
             var error = new Error("Invalid dependencies");
             error.name = "TypeError";
-            throw error;
+            onerror(error);
         }
         if (typeof callback !== 'undefined' &&
                 !(Object.prototype.toString.call(callback) === '[object Function]')) {
             var error = new Error("Invalid callback");
             error.name = "TypeError";
-            throw error;
+            onerror(error);
         }
         this.dependencies = dependencies;
         this.callback = callback ? callback : function() {
@@ -254,7 +254,7 @@
             moduleClass.onerror = function() {
                 var error = new Error("Error while loading " + moduleUrl);
                 error.name = "ModuleError";
-                throw error;
+                onerror(error);
             };
             this.waiting[module.name] = module;
             var scripts = document.getElementsByTagName("script");
@@ -325,7 +325,11 @@
         checkModules: function() {
             for (var moduleId in this.modules) {
                 if (this.modules.hasOwnProperty(moduleId)) {
-                    this.executeModule(this.modules[moduleId]);
+                    try {
+                        this.executeModule(this.modules[moduleId]);
+                    } catch (e) {
+                        onerror(e);
+                    }
                 }
             }
         },
@@ -468,9 +472,8 @@
         }
     }
 
-    window.onerror = function(msg, url, line) {
-        alert(msg.replace("Uncaught ", '') + "\n\n" + url + " (" + line + ")");
-        return false;
+    onerror = function(error) {
+        alert(error.name + ": " + error.message);
     };
 
     /**

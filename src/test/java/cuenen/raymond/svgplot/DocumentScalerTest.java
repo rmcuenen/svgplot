@@ -73,8 +73,8 @@ public class DocumentScalerTest extends AbstractTestClass {
                 /* Don't know if this is always true. 
                  Haven't figured out what firefox does here. */
                 afterRect.setRect(
-                        436.25,
-                        130.25,
+                        431.3500061035156,
+                        134.85000610351562,
                         2 * afterRect.getWidth(),
                         2 * afterRect.getHeight());
                 break;
