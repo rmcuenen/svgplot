@@ -30,20 +30,17 @@
 SVGModule.define(
         "ExpressionParser",
         ["MathematicalEngine"],
-        function(MathematicalEngine) {
+        function (MathematicalEngine) {
             /**
              * @class This object represents the parse tree. It implements the
              *        visitor pattern where the nodes are stored as 'actions'
-             *        in a action list.
+             *        in an action list.
              * @name Visitor
+             * @param {Object[]} actionList The action list holding the 'actions' to visit.
              * @property {Object[]} ActionList The action list holding the 'actions' to visit.
-             * @property {Object[]} Stack The stack where intermediate ressults can be moved to.
-             * @property {String} Variable The string that should be replaced by a given value.
-             * @property {Object} Result The (current) result.
              */
-            function Visitor() {
-                this.ActionList = [];
-                this.Stack = [];
+            function Visitor(actionList) {
+                this.ActionList = actionList;
             }
 
             /**
@@ -51,26 +48,18 @@ SVGModule.define(
              */
             Visitor.prototype = {
                 /**
-                 * Sets the variable for which variable substitution actions should
-                 * insert a given value during the visiting of the parse tree.
-                 * 
-                 * @param {String} variable The variable token (including '#').
-                 */
-                setVariable: function(variable) {
-                    this.Variable = variable.substring(1);
-                },
-                /**
                  * Visits all the 'actions' of the parse tree.
                  * 
-                 * @param {Object} value The variable substitution value.
+                 * @param {Object} variables The variables and their substitution values.
                  * @returns {Object} The result of this parse tree visit.
                  */
-                visit: function(value) {
-                    this.Stack = [];
-                    this.ActionList.forEach(function(action) {
-                        action.visit(value);
-                    });
-                    return this.Result;
+                visit: function (variables) {
+                    var Stack = [];
+                    var Result = 0;
+                    for (var i = 0; i < this.ActionList.length; i++) {
+                        Result = this.ActionList[i].apply(Result, Stack, variables);
+                    }
+                    return Result;
                 }
             };
 
@@ -83,26 +72,26 @@ SVGModule.define(
 
             /**
              * @class This object represents the character stream that is being parsed.
-             * @name InputStream
+             * @name CharacterStream
              * @param {String} string The input characters for the stream.
              * @property {String} stream The string that represents the character stream.
-             * @property {Integer} pos The current position in the charater stream.
+             * @property {Integer} pos The current position in the character stream.
              */
-            function InputStream(string) {
+            function CharacterStream(string) {
                 this.stream = string;
                 this.pos = 0;
             }
 
             /**
-             * @lends InputStream
+             * @lends CharacterStream
              */
-            InputStream.prototype = {
+            CharacterStream.prototype = {
                 /**
                  * Read one character from the stream.
                  * 
                  * @returns {String} The current character of the stream.
                  */
-                read: function() {
+                read: function () {
                     if (this.pos >= this.stream.length) {
                         this.pos = this.stream.length + 1;
                         return '';
@@ -117,7 +106,7 @@ SVGModule.define(
                  * @throws {Exception} When the current position is not at the
                  *                     end of the stream.
                  */
-                flush: function() {
+                flush: function () {
                     if (this.pos <= this.stream.length) {
                         var error = new Error("Unrecognized character: " + this.split());
                         error.name = "ParseError";
@@ -125,12 +114,12 @@ SVGModule.define(
                     }
                 },
                 /**
-                 * Split the total character stream at the current positon.
+                 * Split the total character stream at the current position.
                  * 
                  * @returns {String} The string representation of the character stream
                  *                   with square brackets around the current position.
                  */
-                split: function() {
+                split: function () {
                     var char = this.stream.charAt(this.pos - 1);
                     if (typeof char === 'undefined') {
                         char = '';
@@ -142,115 +131,24 @@ SVGModule.define(
             };
 
             /**
-             * @class The Interpreter provides functions to put parsed and reconized
-             *        tokens in the action list of the parse tree.
-             * @name Interpreter
-             * @param {Visitor} visitor The parse tree.
-             * @property {Visitor} ParseTree Reference to the parse tree that
-             *                                 implements the visitor pattern.
-             */
-            function Interpreter(visitor) {
-                this.ParseTree = visitor;
-            }
-
-            /**
-             * @lends Interpreter
-             */
-            Interpreter.prototype = {
-                /**
-                 * Puts a literal (numerical) value on the action list.
-                 * 
-                 * @param {Number} value The literal value.
-                 */
-                literal: function(value) {
-                    var context = this.ParseTree;
-                    this.ParseTree.ActionList.push({
-                        visit: function() {
-                            context.Result = value;
-                        }
-                    });
-                },
-                /**
-                 * Puts a 'move to stack' action on the action list.
-                 */
-                move: function() {
-                    var context = this.ParseTree;
-                    this.ParseTree.ActionList.push({
-                        visit: function() {
-                            context.Stack.unshift(context.Result);
-                        }
-                    });
-                },
-                /**
-                 * Puts a variable substitution action on the action list.
-                 * 
-                 * @param {String} variable The variable name.
-                 */
-                variable: function(variable) {
-                    var context = this.ParseTree;
-                    this.ParseTree.ActionList.push({
-                        visit: function(value) {
-                            if (variable !== context.Variable) {
-                                var error = new Error("Unknown variable '#" + variable + "'");
-                                error.name = "NotFoundError";
-                                throw error;
-                            }
-                            context.Result = value;
-                        }
-                    });
-                },
-                /**
-                 * Puts a function evaluation action on the action list.
-                 * 
-                 * @param {String} name The name of the function to be evaluated.
-                 * @param {Integer} paramCount The number of function parameters.
-                 * @throws {NotFoundError} When the MathematicalEngine does not
-                 *                         have a function with the given name.
-                 */
-                function: function(name, paramCount) {
-                    if (typeof MathematicalEngine[name] === 'undefined') {
-                        var error = new Error("Unknown function '" + name + "'");
-                        error.name = "NotFoundError";
-                        throw error;
-                    }
-                    var context = this.ParseTree;
-                    this.ParseTree.ActionList.push({
-                        visit: function() {
-                            var count = paramCount | 0;
-                            var parameters = count === 0 ? [] : [context.Result];
-                            for (var i = 1; i < count; ++i) {
-                                parameters.unshift(context.Stack.shift());
-                            }
-                            context.Result = MathematicalEngine[name].apply(MathematicalEngine, parameters);
-                        }
-                    });
-                }
-            };
-
-            /**
-             * @class The Parser parses an input stream and converts the reconized
-             *        tokens into action nodes for the parse tree interpreter.
+             * @class The Parser parses an input stream and converts the recognized
+             *        tokens into action nodes for the parse tree.
              * @name Parser
-             * @param {InputStream} input The character stream to be parsed.
-             * @param {Interpreter} tree The interpreter that takes the actions.
-             * @property {InputStream} Input Reference to the character input stream.
-             * @property {Interpreter} Tree Reference to the parse tree interpreter.
+             * @param {CharacterStream} input The character stream to be parsed.
+             * @property {CharacterStream} Input Reference to the character input stream.
+             * @property {Object[]} ActionList The action list holding the 'actions' to visit.
+             * @property {String} Look The character we are looking at.
              */
-            function Parser(input, tree) {
+            function Parser(input) {
                 this.Input = input;
-                this.Tree = tree;
+                this.ActionList = [];
+                this.Look = '';
             }
 
             /**
              * @lends Parser
              */
             Parser.prototype = {
-                /**
-                 * The character we are looking at.
-                 * 
-                 * @type String
-                 */
-                Look: '',
                 /**
                  * The if-operator.
                  * 
@@ -306,12 +204,78 @@ SVGModule.define(
                  */
                 FacOp: ['!'],
                 /**
-                 * Throws an exception idicating that something was expected.
+                 * Puts a literal (numerical) value on the action list.
+                 * 
+                 * @param {Number} value The literal value.
+                 */
+                Literal: function (value) {
+                    this.ActionList.push({
+                        apply: function (result, stack, variables) {
+                            return value;
+                        }
+                    });
+                },
+                /**
+                 * Puts a 'move to stack' action on the action list.
+                 */
+                Move: function () {
+                    this.ActionList.push({
+                        apply: function (result, stack, variables) {
+                            stack.unshift(result);
+                            return result;
+                        }
+                    });
+                },
+                /**
+                 * Puts a variable substitution action on the action list.
+                 * 
+                 * @param {String} variable The variable name.
+                 */
+                Variable: function (variable) {
+                    this.ActionList.push({
+                        apply: function (result, stack, variables) {
+                            var Variables = variables || {};
+                            if (!Variables.hasOwnProperty(variable)) {
+                                var error = new Error("Unknown variable '#" + variable + "'");
+                                error.name = "NotFoundError";
+                                throw error;
+                            }
+                            return Variables[variable];
+                        }
+                    });
+                },
+                /**
+                 * Puts a function evaluation action on the action list.
+                 * 
+                 * @param {String} name The name of the function to be evaluated.
+                 * @param {Integer} paramCount The number of function parameters.
+                 * @throws {NotFoundError} When the MathematicalEngine does not
+                 *                         have a function with the given name.
+                 */
+                Function: function (name, paramCount) {
+                    if (typeof MathematicalEngine[name] === 'undefined') {
+                        var error = new Error("Unknown function '" + name + "'");
+                        error.name = "NotFoundError";
+                        throw error;
+                    }
+                    this.ActionList.push({
+                        apply: function (result, stack, variables) {
+                            var count = paramCount | 0;
+                            var parameters = count === 0 ? [] : [result];
+                            for (var i = 1; i < count; ++i) {
+                                parameters.unshift(stack.shift());
+                            }
+                            return MathematicalEngine[name].apply(MathematicalEngine, parameters);
+                        }
+                    });
+                },
+                /**
+                 * Throws an exception indicating that something was expected.
                  * 
                  * @param {String} s The string describing what was expected.
                  * @throws {ParseError}
                  */
-                Expected: function(s) {
+                Expected: function (s) {
                     var error = new Error(s + " Expected at '" + this.Input.split() + "'");
                     error.name = "ParseError";
                     throw error;
@@ -319,24 +283,24 @@ SVGModule.define(
                 /**
                  * Retrieve the next character from the input stream.
                  */
-                GetChar: function() {
+                GetChar: function () {
                     this.Look = this.Input.read();
                 },
                 /**
-                 * Keep reading whitespace characters to skip parsing.
+                 * Keep reading white-space characters to skip parsing.
                  */
-                SkipWhite: function() {
+                SkipWhite: function () {
                     while (this.Look === ' ' || this.Look === '\t') {
                         this.GetChar();
                     }
                 },
                 /**
-                 * Parses a varibale token (after the '#' character).
+                 * Parses a variable token (after the '#' character).
                  * 
                  * Grammar:
                  * variable := '#' [a-zA-Z] [a-zA-Z0-9_]*
                  */
-                Var: function() {
+                Var: function () {
                     var Token = '';
                     if (!/[a-zA-Z]/.test(this.Look)) { // [a-zA-Z]
                         this.Expected("Variable");
@@ -346,7 +310,7 @@ SVGModule.define(
                         this.GetChar();
                     }
                     this.SkipWhite();
-                    this.Tree.variable(Token);
+                    this.Variable(Token);
                 },
                 /**
                  * Parses a function token.
@@ -354,7 +318,7 @@ SVGModule.define(
                  * Grammar:
                  * function := [a-z] [a-z0-9_]* ('(' special? | special (',' special)* ')')?
                  */
-                Func: function() {
+                Func: function () {
                     var Name = '';
                     if (!/[a-z]/.test(this.Look)) { // [a-z]
                         this.Expected("Function");
@@ -371,7 +335,7 @@ SVGModule.define(
                             this.Special();
                             count++;
                             while (this.Look === ',') { // (',' special)*
-                                this.Tree.move();
+                                this.Move();
                                 this.Match(',');
                                 this.Special();
                                 count++;
@@ -379,7 +343,7 @@ SVGModule.define(
                         }
                         this.Match(')');
                     }
-                    this.Tree.function(Name, count);
+                    this.Function(Name, count);
                 },
                 /**
                  * Parses a number token.
@@ -389,7 +353,7 @@ SVGModule.define(
                  * zero := '0'
                  * non-zero := '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
                  */
-                Num: function() {
+                Num: function () {
                     var Value = this.Look;
                     if (!/[0-9\.]/.test(this.Look)) { // zero | non-zero | '.'
                         this.Expected("Number");
@@ -417,7 +381,7 @@ SVGModule.define(
                             break;
                     }
                     this.SkipWhite();
-                    this.Tree.literal(new Number(Value));
+                    this.Literal(new Number(Value));
                 },
                 /**
                  * Parses and returns the fraction fragment of a number token.
@@ -430,7 +394,7 @@ SVGModule.define(
                  * @returns {String} The fraction part of a number or an empty
                  *                   string when no fraction fragment is present.
                  */
-                Frac: function() {
+                Frac: function () {
                     var Value = '';
                     if (this.Look !== '.') {
                         this.Expected("'.'");
@@ -442,7 +406,7 @@ SVGModule.define(
                 },
                 /**
                  * Parses and returns the integer fragment of a number token
-                 * (required = false) or the interer part of an exponent part
+                 * (required = false) or the integer part of an exponent part
                  * or a fraction fragment (required = true).
                  * 
                  * Grammar:
@@ -455,7 +419,7 @@ SVGModule.define(
                  * @returns {String} The parsed integer part, or an empty string
                  *                   when no integer part is present.
                  */
-                Int: function(required) {
+                Int: function (required) {
                     var Value = '';
                     while (/[0-9]/.test(this.Look)) { // (zero | non-zero)*
                         Value += this.Look;
@@ -477,7 +441,7 @@ SVGModule.define(
                  * @returns {String} The parsed exponent part, or an empty string
                  *                   when no exponent part is present.
                  */
-                Exp: function() {
+                Exp: function () {
                     var Value = '';
                     if (this.Look === 'e' || this.Look === 'E') { // ('e' | 'E')
                         Value += this.Look;
@@ -502,7 +466,7 @@ SVGModule.define(
                  * @param {String} x The character to match to.
                  * @throws {Exception} When the characters do not match.
                  */
-                Match: function(x) {
+                Match: function (x) {
                     if (this.Look !== x) {
                         this.Expected("'" + x + "'");
                     } else {
@@ -516,7 +480,7 @@ SVGModule.define(
                  * Grammar:
                  * fragment := ('(' special ')' | variable | function | number) FacOp?
                  */
-                Fragment: function() {
+                Fragment: function () {
                     if (this.Look === '(') { // '(' special ')'
                         this.Match('(');
                         this.Special();
@@ -531,7 +495,7 @@ SVGModule.define(
                     }
                     if (this.Look === this.FacOp[0]) { // FacOp?
                         this.Match(this.FacOp[0]);
-                        this.Tree.function("factorial", 1);
+                        this.Function("factorial", 1);
                     }
                 },
                 /**
@@ -540,12 +504,12 @@ SVGModule.define(
                  * Grammar:
                  * signed-fragment := NegNotOp? fragment
                  */
-                SignedFragment: function() {
+                SignedFragment: function () {
                     var index = this.NegNotOp.indexOf(this.Look);
                     if (index === -1) { // fragment
                         this.Fragment();
                     } else { // NegNotOp fragment
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.NegNotOp[index]);
                         var func;
                         switch (index) {
@@ -557,7 +521,7 @@ SVGModule.define(
                                 break;
                         }
                         this.Fragment();
-                        this.Tree.function(func, 1);
+                        this.Function(func, 1);
                     }
                 },
                 /**
@@ -566,17 +530,17 @@ SVGModule.define(
                  * Grammar:
                  * factor := fragment (PowOp signed-fragment)* DegOp?
                  */
-                Factor: function() {
+                Factor: function () {
                     this.Fragment(); // fragment
                     while (this.Look === this.PowOp[0]) { // (PowOp signed-fragment)*
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.PowOp[0]);
                         this.SignedFragment();
-                        this.Tree.function("pow", 2);
+                        this.Function("pow", 2);
                     }
                     if (this.Look === this.DegOp[0]) { // DegOp?
                         this.Match(this.DegOp[0]);
-                        this.Tree.function("deg", 1);
+                        this.Function("deg", 1);
                     }
                 },
                 /**
@@ -585,12 +549,12 @@ SVGModule.define(
                  * Grammar:
                  * signed-factor := NegNotOp? factor
                  */
-                SignedFactor: function() {
+                SignedFactor: function () {
                     var index = this.NegNotOp.indexOf(this.Look);
                     if (index === -1) { // factor
                         this.Factor();
                     } else { // NegNotOp factor
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.NegNotOp[index]);
                         var func;
                         switch (index) {
@@ -602,7 +566,7 @@ SVGModule.define(
                                 break;
                         }
                         this.Factor();
-                        this.Tree.function(func, 1);
+                        this.Function(func, 1);
                     }
                 },
                 /**
@@ -611,11 +575,11 @@ SVGModule.define(
                  * Grammar:
                  * term := signed-factor (MultDevAndOp signed-factor)*
                  */
-                Term: function() {
+                Term: function () {
                     this.SignedFactor(); // signed-factor
                     var index = this.MultDevAndOp.indexOf(this.Look);
                     while (index !== -1) { // (MultDevAndOp signed-factor)*
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.MultDevAndOp[index]);
                         var func;
                         switch (index) {
@@ -631,7 +595,7 @@ SVGModule.define(
                                 break;
                         }
                         this.SignedFactor();
-                        this.Tree.function(func, 2);
+                        this.Function(func, 2);
                         index = this.MultDevAndOp.indexOf(this.Look);
                     }
                 },
@@ -641,11 +605,11 @@ SVGModule.define(
                  * Grammar:
                  * expression := term (AddSubOrOp term)*
                  */
-                Expression: function() {
+                Expression: function () {
                     this.Term(); // term
                     var index = this.AddSubOrOp.indexOf(this.Look);
                     while (index !== -1) { // (AddSubOrOp term)*
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.AddSubOrOp[index]);
                         var func;
                         switch (index) {
@@ -661,7 +625,7 @@ SVGModule.define(
                                 break;
                         }
                         this.Term();
-                        this.Tree.function(func, 2);
+                        this.Function(func, 2);
                         index = this.AddSubOrOp.indexOf(this.Look);
                     }
                 },
@@ -671,11 +635,11 @@ SVGModule.define(
                  * Grammar:
                  * relation := expression (RelOp expression)*
                  */
-                Relation: function() {
+                Relation: function () {
                     this.Expression(); // expression
                     var index = this.RelOp.indexOf(this.Look);
                     while (index !== -1) { // (RelOp expression)*
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.RelOp[index]);
                         var func;
                         switch (index) {
@@ -701,7 +665,7 @@ SVGModule.define(
                                 }
                         }
                         this.Expression();
-                        this.Tree.function(func, 2);
+                        this.Function(func, 2);
                         index = this.RelOp.indexOf(this.Look);
                     }
                 },
@@ -711,25 +675,29 @@ SVGModule.define(
                  * Grammar:
                  * special := relation (IfOp relation ElOp relation)?
                  */
-                Special: function() {
+                Special: function () {
                     this.Relation(); // relation
                     if (this.Look === this.IfOp[0]) { // (IfOp relation ElOp relation)?
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.IfOp[0]);
                         this.Relation();
-                        this.Tree.move();
+                        this.Move();
                         this.Match(this.ElOp[0]);
                         this.Relation();
-                        this.Tree.function("ifthenelse", 3);
+                        this.Function("ifthenelse", 3);
                     }
                 },
                 /**
                  * Parse the character input stream into the parse tree.
+                 * 
+                 * @return {Visitor} The resulting parse tree.
                  */
-                parse: function() {
+                parse: function () {
                     this.GetChar();
                     this.SkipWhite();
                     this.Special();
+                    this.Input.flush();
+                    return new Visitor(this.ActionList);
                 }
             };
 
@@ -743,19 +711,15 @@ SVGModule.define(
              */
             return {
                 /**
-                 * Parses the given exprerssion into a parse tree.
+                 * Parses the given expression into a parse tree.
                  * 
                  * @param {String} expression The expression string.
                  * @returns {Visitor} The resulting parse tree.
                  */
-                parse: function(expression) {
-                    var input = new InputStream(expression);
-                    var visitor = new Visitor();
-                    var tree = new Interpreter(visitor);
-                    var parser = new Parser(input, tree);
-                    parser.parse();
-                    input.flush();
-                    return visitor;
+                parse: function (expression) {
+                    var input = new CharacterStream(expression);
+                    var parser = new Parser(input);
+                    return parser.parse();
                 }
             };
         });

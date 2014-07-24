@@ -27,7 +27,7 @@
  *
  */
 
-(function(node) {
+(function (node) {
     /**
      * @class The ModuleFactory is responsible for creating a {@link Module}.
      *        Only one {@link Module} can be created by any one factory.
@@ -38,9 +38,9 @@
      * @name ModuleFactory
      * @param {String[]} dependencies The module identifiers the target module depends on.
      * @param {function(...[Object])} callback Callback method. This method is invoked
-     *        when therequested modules (and their dependencies) are resolved.
+     *        when the requested modules (and their dependencies) are resolved.
      * @throws {TypeError} When the given dependencies is not an array.
-     * @throws {TypeError} When an ivalid callback function is given.
+     * @throws {TypeError} When an invalid callback function is given.
      * @property {String[]} dependencies Module identifiers the target module depends on.
      * @property {function(...[Object])} callback Creation method. This method is
      *           invoked when the module dependencies (and their dependencies) are
@@ -60,7 +60,7 @@
             onerror(error);
         }
         this.dependencies = dependencies;
-        this.callback = callback ? callback : function() {
+        this.callback = callback ? callback : function () {
         };
     }
 
@@ -140,7 +140,7 @@
          * 
          * @param {Module} module The dependency.
          */
-        addDependency: function(module) {
+        addDependency: function (module) {
             if (this.dependencies.indexOf(module) === -1) {
                 this.dependencies.push(module);
             }
@@ -151,7 +151,7 @@
          * @param {Object} obj The object to compare to this module.
          * @returns {boolean}
          */
-        equals: function(obj) {
+        equals: function (obj) {
             return this.moduleId === obj.moduleId;
         },
         /**
@@ -159,7 +159,7 @@
          * 
          * @returns {String}
          */
-        toString: function() {
+        toString: function () {
             return JSON.stringify({
                 mid: this.moduleId,
                 file: this.file,
@@ -202,7 +202,7 @@
          * @param {ModuleFactory} factory The {@link ModuleFactory} providing the
          *        module's dependencies and definition function.
          */
-        defineModule: function(name, factory) {
+        defineModule: function (name, factory) {
             var module = this.waiting[name];
             if (typeof module !== 'undefined') {
                 delete this.waiting[name];
@@ -227,7 +227,7 @@
          * @param {ModuleFactory} factory The {@link ModuleFactory} providing the
          *        requested module identifiers.
          */
-        requireModule: function(factory) {
+        requireModule: function (factory) {
             var module = this.getModule(uid());
             module.injected = Status.ARRIVED;
             module.factory = factory;
@@ -243,7 +243,7 @@
          * 
          * @param {Module} module The {@link Module} which resources is to be loaded.
          */
-        injectModule: function(module) {
+        injectModule: function (module) {
             if (module.executed || module.injected) {
                 return;
             }
@@ -251,7 +251,7 @@
             var moduleClass = document.createElementNS(SVGModule.SVG_NS, "script");
             var moduleUrl = this.moduleBase + module.file;
             moduleClass.setAttributeNS(SVGModule.XLINK_NS, "href", moduleUrl);
-            moduleClass.onerror = function() {
+            moduleClass.onerror = function () {
                 var error = new Error("Error while loading " + moduleUrl);
                 error.name = "ModuleError";
                 onerror(error);
@@ -266,7 +266,7 @@
          * @param {String} moduleId The module identifier.
          * @returns {Module} The {@link Module} instance representing the requested module.
          */
-        getModule: function(moduleId) {
+        getModule: function (moduleId) {
             var module = this.modules[moduleId];
             if (typeof module === 'undefined') {
                 module = new Module(moduleId);
@@ -280,7 +280,7 @@
          * @see ModuleLoader#injectModule
          * @param {Module} module The module to inject the dependencies for.
          */
-        injectDependencies: function(module) {
+        injectDependencies: function (module) {
             for (var i = 0; i < module.dependencies.length; ++i) {
                 this.injectModule(module.dependencies[i]);
             }
@@ -291,7 +291,7 @@
          * 
          * @param {Module} module The module to be defined.
          */
-        executeModule: function(module) {
+        executeModule: function (module) {
             if (module.executed === Process.EXECUTING) {
                 return null;
             }
@@ -309,9 +309,7 @@
                     }
                     args.push(def);
                 }
-                if (typeof module.factory !== 'undefined') {
-                    module.exports = module.factory.callback.apply(window, args);
-                }
+                module.exports = module.factory.callback.apply(window, args);
                 module.executed = Process.EXECUTED;
                 if (REQUIRE_ID.test(module.moduleId)) {
                     delete this.modules[module.moduleId];
@@ -322,7 +320,7 @@
         /**
          * Check if requested modules need and can be executed.
          */
-        checkModules: function() {
+        checkModules: function () {
             for (var moduleId in this.modules) {
                 if (this.modules.hasOwnProperty(moduleId)) {
                     try {
@@ -342,7 +340,7 @@
          * @param {String} id The relative module identifier.
          * @returns {String} The absolute module identifier.
          */
-        resolveRelative: function(module, id) {
+        resolveRelative: function (module, id) {
             var hierarchy = module.moduleId.split("/");
             var hIndex = hierarchy.length - 2;
             if (hIndex < 0) {
@@ -400,7 +398,6 @@
     function uid() {
         return "require*_" + _uid++;
     }
-    ;
 
     /**
      * Reference to the singleton instance.
@@ -430,7 +427,7 @@
         XLINK_NS: "http://www.w3.org/1999/xlink",
         /**
          * This method is invoked to request one or more modules. This is usually
-         * done by the application during startup, but it is also possible to request
+         * done by the application during start-up, but it is also possible to request
          * modules within a module execution context. However, it is more common to 
          * require a module as dependency rather then to request it upon execution.
          * The request is asynchronous. That means that this method returns as soon
@@ -440,8 +437,8 @@
          * @param {String[]} dependencies The module identifiers being requested.
          * @param {function(...[Object])} callback Callback method.
          */
-        require: function(dependencies, callback) {
-            domReady(function() {
+        require: function (dependencies, callback) {
+            domReady(function () {
                 LOADER.requireModule(new ModuleFactory(dependencies, callback));
             });
         },
@@ -453,7 +450,7 @@
          * @param {String[]} dependencies
          * @param {function(...[Object])} callback
          */
-        define: function(name, dependencies, callback) {
+        define: function (name, dependencies, callback) {
             LOADER.defineModule(name, new ModuleFactory(dependencies, callback));
         }
     };
@@ -472,7 +469,7 @@
         }
     }
 
-    onerror = function(error) {
+    onerror = function (error) {
         alert(error.name + ": " + error.message);
     };
 
