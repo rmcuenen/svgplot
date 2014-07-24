@@ -68,25 +68,21 @@ public class DocumentScalerTest extends AbstractTestClass {
         assertEquals(toRect(before), beforeRect, msg);
         String[] size = getResult(driver).split(",");
         Rectangle2D afterRect = createRect(Double.parseDouble(size[0]), Double.parseDouble(size[1]));
-        switch (caps.getBrowserName()) {
-            case "firefox":
-                /* Don't know if this is always true. 
-                 Haven't figured out what firefox does here. */
-                afterRect.setRect(
-                        431.3500061035156,
-                        134.85000610351562,
-                        2 * afterRect.getWidth(),
-                        2 * afterRect.getHeight());
-                break;
-            case "opera":
-                afterRect.setRect(
-                        Math.floor(afterRect.getX()),
-                        Math.floor(afterRect.getY()),
-                        Math.floor(afterRect.getWidth()),
-                        Math.floor(afterRect.getHeight()));
-                break;
+        if ("opera".equals(caps.getBrowserName())) {
+            afterRect.setRect(
+                    Math.floor(afterRect.getX()),
+                    Math.floor(afterRect.getY()),
+                    Math.floor(afterRect.getWidth()),
+                    Math.floor(afterRect.getHeight()));
         }
-        assertEquals(toRect(after), afterRect, msg);
+        Rectangle2D expected = toRect(after);
+        if ("firefox".equals(caps.getBrowserName())) {
+            /* Don't know how firefox comes op with its position coordinates. */
+            assertTrue(Double.compare(expected.getWidth(), 2 * afterRect.getWidth()) == 0);
+            assertTrue(Double.compare(expected.getHeight(), 2 * afterRect.getHeight()) == 0);
+        } else {
+            assertEquals(expected, afterRect, msg);
+        }
     }
 
     private Rectangle2D getBeforeRect(Capabilities caps) {
