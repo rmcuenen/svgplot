@@ -44,9 +44,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:rmcuenen/svg.git</connection>
+        <connection>scm:git:git@github.com:rmcuenen/svgplot.git</connection>
         <developerConnection>scm:git:git@github.com:rmcuenen/svgplot.git</developerConnection>
-        <url>git@github.com:rmcuenen/svgplot.git</url>
+        <url>https://github.comrmcuenen/svgplot</url>
     </scm>
     <developers>
         <developer>
