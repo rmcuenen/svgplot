@@ -30,9 +30,9 @@
 SVGModule.define(
         "MathematicalEngine",
         ["RandomNumberGenerator"],
-        function(RandomNumberGenerator) {
+        function (RandomNumberGenerator) {
             /**
-             * This mathematical engine consits solely of functions, which either
+             * This mathematical engine consists solely of functions, which either
              * make use of other internal functions, the JavaScript Math object
              * or the browser's mathematical engine.
              * 
@@ -45,17 +45,17 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                abs: function(x) {
+                abs: function (x) {
                     return Math.abs(x);
                 },
                 /**
-                 * Arccosine of x in degrees.
+                 * Arc-cosine of x in degrees.
                  * The result is in the range [0&deg;, 180&deg;].
                  * 
                  * @param {Number} x
                  * @returns {Number}
                  */
-                acos: function(x) {
+                acos: function (x) {
                     return this.deg(Math.acos(x));
                 },
                 /**
@@ -65,7 +65,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                add: function(x, y) {
+                add: function (x, y) {
                     return x + y;
                 },
                 /**
@@ -76,7 +76,7 @@ SVGModule.define(
                  * @param {Object} y
                  * @returns {0|1}
                  */
-                and: function(x, y) {
+                and: function (x, y) {
                     return x != 0 && y != 0 ? 1 : 0;
                 },
                 /**
@@ -86,7 +86,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                asin: function(x) {
+                asin: function (x) {
                     return this.deg(Math.asin(x));
                 },
                 /**
@@ -95,7 +95,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                atan: function(x) {
+                atan: function (x) {
                     return this.deg(Math.atan(x));
                 },
                 /**
@@ -106,7 +106,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                atan2: function(x, y) {
+                atan2: function (x, y) {
                     return this.ifthenelse(this.not(y), this.ifthenelse(this.less(x, 0), 180, 0), this.multiply(2, this.atan(this.divide(y, this.add(this.veclen(x, y), x)))));
                 },
                 /**
@@ -115,7 +115,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                ceil: function(x) {
+                ceil: function (x) {
                     return Math.ceil(x);
                 },
                 /**
@@ -124,16 +124,16 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                cos: function(x) {
+                cos: function (x) {
                     return Math.cos(this.rad(x));
                 },
                 /**
-                 * Cosecant of x. By employing the r operator, x can be in radians.
+                 * Co-secant of x. By employing the r operator, x can be in radians.
                  * 
                  * @param {Number} x
                  * @returns {Number}
                  */
-                cosec: function(x) {
+                cosec: function (x) {
                     return this.divide(1, this.sin(x));
                 },
                 /**
@@ -142,8 +142,8 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                cosh: function(x) {
-                    return this.multiply(0.5, this.add(this.exp(x), this.exp(-x)));
+                cosh: function (x) {
+                    return this.multiply(0.5, this.add(this.exp(x), this.exp(this.neg(x))));
                 },
                 /**
                  * Cotangent of x. By employing the r operator, x can be in radians.
@@ -151,7 +151,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                cot: function(x) {
+                cot: function (x) {
                     return this.divide(1, this.tan(x));
                 },
                 /**
@@ -160,7 +160,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                deg: function(x) {
+                deg: function (x) {
                     return this.multiply(x, this.divide(180, this.pi()));
                 },
                 /**
@@ -170,7 +170,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Integer}
                  */
-                div: function(x, y) {
+                div: function (x, y) {
                     return this.int(this.round(this.divide(x, y)));
                 },
                 /**
@@ -180,7 +180,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                divide: function(x, y) {
+                divide: function (x, y) {
                     return x / y;
                 },
                 /**
@@ -188,7 +188,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                e: function() {
+                e: function () {
                     return Math.E;
                 },
                 /**
@@ -198,7 +198,7 @@ SVGModule.define(
                  * @param {Object} y
                  * @returns {0|1}
                  */
-                equal: function(x, y) {
+                equal: function (x, y) {
                     return x == y ? 1 : 0;
                 },
                 /**
@@ -208,7 +208,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                exp: function(x) {
+                exp: function (x) {
                     return Math.exp(x);
                 },
                 /**
@@ -217,7 +217,7 @@ SVGModule.define(
                  * @param {Integer} x
                  * @returns {Number}
                  */
-                factorial: function(x) {
+                factorial: function (x) {
                     return this.int(x) === 0 ? 1 : this.multiply(this.int(x), this.factorial(this.subtract(x, 1)));
                 },
                 /**
@@ -225,7 +225,7 @@ SVGModule.define(
                  * 
                  * @returns {0}
                  */
-                false: function() {
+                false: function () {
                     return 0;
                 },
                 /**
@@ -234,7 +234,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                floor: function(x) {
+                floor: function (x) {
                     return Math.floor(x);
                 },
                 /**
@@ -243,7 +243,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                frac: function(x) {
+                frac: function (x) {
                     return x % 1;
                 },
                 /**
@@ -253,7 +253,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {0|1}
                  */
-                greater: function(x, y) {
+                greater: function (x, y) {
                     return x > y ? 1 : 0;
                 },
                 /**
@@ -262,7 +262,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Integer}
                  */
-                int: function(x) {
+                int: function (x) {
                     return 0 | x;
                 },
                 /**
@@ -274,7 +274,7 @@ SVGModule.define(
                  * @param {Object} z
                  * @returns {Object}
                  */
-                ifthenelse: function(x, y, z) {
+                ifthenelse: function (x, y, z) {
                     return x != 0 ? y : z;
                 },
                 /**
@@ -284,7 +284,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {0|1}
                  */
-                less: function(x, y) {
+                less: function (x, y) {
                     return x < y ? 1 : 0;
                 },
                 /**
@@ -295,7 +295,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                ln: function(x) {
+                ln: function (x) {
                     return Math.log(x);
                 },
                 /**
@@ -304,7 +304,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                log10: function(x) {
+                log10: function (x) {
                     return this.divide(this.ln(x), this.ln(10));
                 },
                 /**
@@ -313,7 +313,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                log2: function(x) {
+                log2: function (x) {
                     return this.divide(this.ln(x), this.ln(2));
                 },
                 /**
@@ -321,7 +321,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                max: function() {
+                max: function () {
                     var m = Number.NEGATIVE_INFINITY;
                     for (var i = 0; i < arguments.length; i++) {
                         m = Math.max(m, arguments[i]);
@@ -333,7 +333,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                min: function() {
+                min: function () {
                     var m = Number.POSITIVE_INFINITY;
                     for (var i = 0; i < arguments.length; i++) {
                         m = Math.min(m, arguments[i]);
@@ -348,7 +348,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                mod: function(x, y) {
+                mod: function (x, y) {
                     return this.subtract(x, this.multiply(y, this.int(this.divide(x, y))));
                 },
                 /**
@@ -359,7 +359,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                Mod: function(x, y) {
+                modf: function (x, y) {
                     return this.subtract(x, this.multiply(y, this.floor(this.divide(x, y))));
                 },
                 /**
@@ -369,7 +369,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                multiply: function(x, y) {
+                multiply: function (x, y) {
                     return x * y;
                 },
                 /**
@@ -378,7 +378,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                neg: function(x) {
+                neg: function (x) {
                     return -x;
                 },
                 /**
@@ -387,7 +387,7 @@ SVGModule.define(
                  * @param {Object} x
                  * @returns {0|1}
                  */
-                not: function(x) {
+                not: function (x) {
                     return x == 0 ? 1 : 0;
                 },
                 /**
@@ -397,7 +397,7 @@ SVGModule.define(
                  * @param {Object} y
                  * @returns {0|1}
                  */
-                notequal: function(x, y) {
+                notequal: function (x, y) {
                     return this.not(this.equal(x, y));
                 },
                 /**
@@ -407,7 +407,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {0|1}
                  */
-                notgreater: function(x, y) {
+                notgreater: function (x, y) {
                     return this.not(this.greater(x, y));
                 },
                 /**
@@ -417,7 +417,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {0|1}
                  */
-                notless: function(x, y) {
+                notless: function (x, y) {
                     return this.not(this.less(x, y));
                 },
                 /**
@@ -428,7 +428,7 @@ SVGModule.define(
                  * @param {Object} y
                  * @returns {0|1}
                  */
-                or: function(x, y) {
+                or: function (x, y) {
                     return x != 0 || y != 0 ? 1 : 0;
                 },
                 /**
@@ -437,7 +437,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                pi: function() {
+                pi: function () {
                     return Math.PI;
                 },
                 /**
@@ -447,7 +447,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                pow: function(x, y) {
+                pow: function (x, y) {
                     return Math.pow(x, y);
                 },
                 /**
@@ -456,7 +456,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                rad: function(x) {
+                rad: function (x) {
                     return this.multiply(x, this.divide(this.pi(), 180));
                 },
                 /**
@@ -464,7 +464,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                rand: function() {
+                rand: function () {
                     return RandomNumberGenerator.random(-1, 1);
                 },
                 /**
@@ -476,7 +476,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                random: function() {
+                random: function () {
                     var a = 0, b = 1;
                     if (arguments.length > 0) {
                         a = 1;
@@ -494,7 +494,7 @@ SVGModule.define(
                  * @param {Object} x
                  * @returns {Number}
                  */
-                real: function(x) {
+                real: function (x) {
                     return new Number(x);
                 },
                 /**
@@ -502,7 +502,7 @@ SVGModule.define(
                  * 
                  * @returns {Number}
                  */
-                rnd: function() {
+                rnd: function () {
                     return RandomNumberGenerator.random();
                 },
                 /**
@@ -512,7 +512,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                round: function(x) {
+                round: function (x) {
                     return this.multiply(this.subtract(this.greater(x, 0), this.less(x, 0)), Math.round(this.abs(x)));
                 },
                 /**
@@ -521,7 +521,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                sec: function(x) {
+                sec: function (x) {
                     return this.divide(1, this.cos(x));
                 },
                 /**
@@ -530,7 +530,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                sin: function(x) {
+                sin: function (x) {
                     return Math.sin(this.rad(x));
                 },
                 /**
@@ -539,7 +539,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                sinh: function(x) {
+                sinh: function (x) {
                     return this.multiply(0.5, this.subtract(this.exp(x), this.exp(-x)));
                 },
                 /**
@@ -547,7 +547,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                sqrt: function(x) {
+                sqrt: function (x) {
                     return Math.sqrt(x);
                 },
                 /**
@@ -557,7 +557,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                subtract: function(x, y) {
+                subtract: function (x, y) {
                     return x - y;
                 },
                 /**
@@ -566,7 +566,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                tan: function(x) {
+                tan: function (x) {
                     return Math.tan(this.rad(x));
                 },
                 /**
@@ -575,7 +575,7 @@ SVGModule.define(
                  * @param {Number} x
                  * @returns {Number}
                  */
-                tanh: function(x) {
+                tanh: function (x) {
                     return this.divide(this.sinh(x), this.cosh(x));
                 },
                 /**
@@ -583,7 +583,7 @@ SVGModule.define(
                  * 
                  * @returns {1}
                  */
-                true: function() {
+                true: function () {
                     return 1;
                 },
                 /**
@@ -593,7 +593,7 @@ SVGModule.define(
                  * @param {Number} y
                  * @returns {Number}
                  */
-                veclen: function(x, y) {
+                veclen: function (x, y) {
                     return this.sqrt(this.add(this.pow(x, 2), this.pow(y, 2)));
                 }
             };

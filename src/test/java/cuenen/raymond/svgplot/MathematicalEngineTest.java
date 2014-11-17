@@ -48,7 +48,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
         "neg(50)", "multiply(75,6)", "divide(75,6)", "div(75,9)", "factorial(5)",
         "sqrt(10)", "sqrt(8765.432)", "pow(2,7)", "exp(1)", "exp(2.34)", "ln(10)",
         "ln(ME.exp(5))", "log10(100)", "log2(128)", "abs(-5)", "abs(4*-3)*-1",
-        "mod(20,6)", "mod(-100,30)", "Mod(-100,30)"};
+        "mod(20,6)", "mod(-100,30)", "modf(-100,30)"};
     private static final String[] ROUNDING_FUNCTIONS = {"round(32.5/17)", "round(398/12)",
         "floor(32.5/17)", "floor(398/12)", "ceil(32.5/17)", "ceil(398/12)", "int(32.5/17)",
         "frac(32.5/17)", "real(4)"};
@@ -91,23 +91,23 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the Basic Arithmetic Functions.
      * <ul>
-     * <li>add
-     * <li>subtract
-     * <li>neg
-     * <li>multiply
-     * <li>divide
-     * <li>div
-     * <li>factorial
-     * <Li>sqrt
-     * <li>pow
-     * <li>e
-     * <li>exp
-     * <li>ln
-     * <li>log10
-     * <li>log2
-     * <li>abs
-     * <li>mod
-     * <li>Mod
+     * <li>add</li>
+     * <li>subtract</li>
+     * <li>neg</li>
+     * <li>multiply</li>
+     * <li>divide</li>
+     * <li>div</li>
+     * <li>factorial</li>
+     * <Li>sqrt</li>
+     * <li>pow</li>
+     * <li>e</li>
+     * <li>exp</li>
+     * <li>ln</li>
+     * <li>log10</li>
+     * <li>log2</li>
+     * <li>abs</li>
+     * <li>mod</li>
+     * <li>modf</li>
      * </ul>
      *
      * @param driver The WebDriver executing the test.
@@ -120,12 +120,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the Rounding Functions.
      * <ul>
-     * <li>round
-     * <li>floor
-     * <li>ceil
-     * <li>int
-     * <li>frac
-     * <li>real
+     * <li>round</li>
+     * <li>floor</li>
+     * <li>ceil</li>
+     * <li>int</li>
+     * <li>frac</li>
+     * <li>real</li>
      * </ul>
      *
      * @param driver The WebDriver executing the test.
@@ -138,17 +138,17 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the Trigonometric Functions.
      * <ul>
-     * <li>pi
-     * <li>sin
-     * <li>cos
-     * <li>tan
-     * <li>sec
-     * <li>cosec
-     * <li>cot
-     * <li>asin
-     * <li>acos
-     * <li>atan
-     * <li>atan2
+     * <li>pi</li>
+     * <li>sin</li>
+     * <li>cos</li>
+     * <li>tan</li>
+     * <li>sec</li>
+     * <li>cosec</li>
+     * <li>cot</li>
+     * <li>asin</li>
+     * <li>acos</li>
+     * <li>atan</li>
+     * <li>atan2</li>
      * </ul>
      *
      * @param driver The WebDriver executing the test.
@@ -161,18 +161,18 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the Comparison and Logical Functions.
      * <ul>
-     * <li>equal
-     * <li>greater
-     * <li>less
-     * <li>notequal
-     * <li>notgreater
-     * <li>notless
-     * <li>and
-     * <li>or
-     * <li>not
-     * <li>ifthenelse
-     * <li>true
-     * <li>false
+     * <li>equal</li>
+     * <li>greater</li>
+     * <li>less</li>
+     * <li>notequal</li>
+     * <li>notgreater</li>
+     * <li>notless</li>
+     * <li>and</li>
+     * <li>or</li>
+     * <li>not</li>
+     * <li>ifthenelse</li>
+     * <li>true</li>
+     * <li>false</li>
      * </ul>
      *
      * @param driver The WebDriver executing the test.
@@ -185,9 +185,9 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the range of the Pseudo-random Functions.
      * <ul>
-     * <li>rnd
-     * <li>rand
-     * <li>random
+     * <li>rnd</li>
+     * <li>rand</li>
+     * <li>random</li>
      * </ul>
      * These functions use the {@code RandomNumberGenerator} module.
      *
@@ -205,12 +205,12 @@ public class MathematicalEngineTest extends AbstractTestClass {
     /**
      * Test the Miscellaneous Functions.
      * <ul>
-     * <li>min
-     * <li>max
-     * <li>veclen
-     * <li>sinh
-     * <li>cosh
-     * <li>tanh
+     * <li>min</li>
+     * <li>max</li>
+     * <li>veclen</li>
+     * <li>sinh</li>
+     * <li>cosh</li>
+     * <li>tanh</li>
      * </ul>
      *
      * @param driver The WebDriver executing the test.
@@ -325,8 +325,7 @@ public class MathematicalEngineTest extends AbstractTestClass {
         for (int i = 0; i < expected.length; i++) {
             Object actual = convertValue(results[i], expected[i].getClass());
             if (actual instanceof Double) {
-                assertEquals(((Double) actual).doubleValue(), ((Double) expected[i]).doubleValue(),
-                        1E-6, msg + ": " + functions[i]);
+                assertEquals(((Double) actual), ((Double) expected[i]), 1E-6, msg + ": " + functions[i]);
             } else {
                 assertEquals(actual, expected[i], msg + ": " + functions[i]);
             }

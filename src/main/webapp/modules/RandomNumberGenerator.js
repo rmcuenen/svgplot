@@ -30,7 +30,7 @@
 SVGModule.define(
         "RandomNumberGenerator",
         [],
-        function() {
+        function () {
             /**
              * The Euclidean algorithm to determine the greatest common divisor
              * (GCD) between two natural numbers.
@@ -82,7 +82,7 @@ SVGModule.define(
             var rr = 2836;
 
             /**
-             * Factor to convert the LCG's integers into pseudorandom numbers
+             * Factor to convert the LCG's integers into pseudo-random numbers
              * between 0 and 1.
              * 
              * @constant
@@ -117,9 +117,9 @@ SVGModule.define(
                  * there are two arguments, a random number between x and y is
                  * generated.
                  * 
-                 * @returns {Number} The generated pseudorandom number.
+                 * @returns {Number} The generated pseudo-random number.
                  */
-                random: function() {
+                random: function () {
                     var l = parseInt(seed / ql);
                     seed = Ar * (seed - ql * l) - rr * l;
                     if (seed < 0) {

@@ -30,14 +30,14 @@
 SVGModule.define(
         "SVGPlotter",
         ["SVGPlotAttributes", "ExpressionParser"],
-        function(SVGPlotAttributes, ExpressionParser) {
+        function (SVGPlotAttributes, ExpressionParser) {
             /**
              * @class The PathCreator is responsible for converting an SVGPlotElement
              *        into an SVGPathElement.
              *        The conversion is done by evaluating the given function and
              *        creating the appropriate path data with the resulting coordinates.
              * @name PathCreator
-             * @property {Elememt} pathElement The SVGPathElement being constructed.
+             * @property {Element} pathElement The SVGPathElement being constructed.
              * @property {SVGPlotAttribute} names Actually all the SVPlotAttributes
              *                                    as defined by {@link SVGPlotAttribute#names}.
              */
@@ -60,7 +60,7 @@ SVGModule.define(
                  * 
                  * @param {Element} plotElement The SVGPlotElement being handled.
                  */
-                parseSVGPlotElement: function(plotElement) {
+                parseSVGPlotElement: function (plotElement) {
                     var attributes = plotElement.attributes;
                     for (var i = 0; i < attributes.length; ++i) {
                         var attribute = attributes[i];
@@ -78,7 +78,7 @@ SVGModule.define(
                  * Creates the path data by evaluating the 'function' attribute.
                  * This method assumes that the 'function' attribute it set.
                  */
-                createPath: function() {
+                createPath: function () {
                     var scale = 1; // May be useful later.
                     var token = this["connected"].value === "smooth" ? 'S' : 'L';
                     var start = this["domain"].value[0];
@@ -90,17 +90,20 @@ SVGModule.define(
                     }
                     var x = this["function"].value[0];
                     var y = this["function"].value[1];
-                    x.setVariable(this["variable"].value);
-                    y.setVariable(this["variable"].value);
+                    var v = this["variable"].value.substring(1);
+                    var vars = {};
                     var value = start;
-                    var point = [scale * x.visit(value), -scale * y.visit(value)];
+                    vars[v] = value;
+                    var point = [scale * x.visit(vars), -scale * y.visit(vars)];
                     var path = 'M' + point[0] + ',' + point[1];
                     for (var i = 0; i < count; i++) {
                         value += step;
+                        vars[v] = value;
                         path += token;
-                        point = [scale * x.visit(value), -scale * y.visit(value)];
+                        point = [scale * x.visit(vars), -scale * y.visit(vars)];
                         if (token === 'S') {
-                            var mid = [scale * x.visit(value - step / 2), -scale * y.visit(value - step / 2)];
+                            vars[v] = value - step / 2;
+                            var mid = [scale * x.visit(vars), -scale * y.visit(vars)];
                             path += mid[0] + ',' + mid[1] + ' ';
                         }
                         path += point[0] + ',' + point[1];
@@ -145,7 +148,7 @@ SVGModule.define(
                  * @throws {NotFoundError} When the 'function' attribute is not set.
                  * @returns {Element} The converted SVGPathElement
                  */
-                handle: function(plotElement) {
+                handle: function (plotElement) {
                     var creator = new PathCreator();
                     creator.parseSVGPlotElement(plotElement);
                     if (!creator["function"].set) {

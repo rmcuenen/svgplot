@@ -30,7 +30,7 @@
 SVGModule.define(
         "SVGPlotHandler",
         ["SVGPlotter"],
-        function(SVGPlotter) {
+        function (SVGPlotter) {
             /**
              * Reference to the (last) plot element being handled.
              * 
@@ -60,7 +60,7 @@ SVGModule.define(
             /* The SVGDocument is guaranteed to be loaded here. */
             handle(document.documentElement);
             /* Listen for document changes. */
-            document.addEventListener("DOMNodeInserted", function(event) {
+            document.addEventListener("DOMNodeInserted", function (event) {
                 handle(event.target);
             }, false);
         }

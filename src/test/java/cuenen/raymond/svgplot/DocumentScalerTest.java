@@ -32,6 +32,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
 import java.util.Map;
 import org.openqa.selenium.Capabilities;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -78,8 +79,10 @@ public class DocumentScalerTest extends AbstractTestClass {
         Rectangle2D expected = toRect(after);
         if ("firefox".equals(caps.getBrowserName())) {
             /* Don't know how firefox comes op with its position coordinates. */
-            assertTrue(Double.compare(expected.getWidth(), 2 * afterRect.getWidth()) == 0);
-            assertTrue(Double.compare(expected.getHeight(), 2 * afterRect.getHeight()) == 0);
+            Dimension dim = driver.manage().window().getSize();
+            assertTrue(Double.compare(0.25 * dim.getHeight() - 17.75, afterRect.getY()) == 0);
+            assertTrue(Double.compare(0.5 * dim.getHeight() - 35.5, afterRect.getWidth()) == 0);
+            assertTrue(Double.compare(0.5 * dim.getHeight() - 35.5, afterRect.getHeight()) == 0);
         } else {
             assertEquals(expected, afterRect, msg);
         }
