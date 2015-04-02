@@ -30,7 +30,7 @@
 SVGModule.define(
         "DocumentScaler",
         [],
-        function() {
+        function () {
             /**
              * Find the SVGDocument the element belongs to.
              * 
@@ -49,7 +49,7 @@ SVGModule.define(
             /**
              * This interface can be used to scale the entire SVGDocument
              * to the dimensions of an SVGElement.
-             * This is done by creating a viewport width the desired dimensions
+             * This is done by creating a view-port width the desired dimensions
              * and using a stroke width scaled with the current client dimensions.
              * 
              * @namespace DocumentScaler
@@ -62,7 +62,7 @@ SVGModule.define(
                  * @param {SVGElement} element The reference element used to scale
                  *                          the entire document.
                  */
-                scaleTo: function(element) {
+                scaleTo: function (element) {
                     var doc = findDocument(element);
                     var box = element.getBBox();
                     var viewport = doc.createSVGRect();
